@@ -27,6 +27,7 @@ class ViewportPaint extends StatelessWidget {
       ),
       builder: (context, value) {
         final (zoom, panOffset, geometries) = value;
+
         return CustomPaint(
           painter: _ViewportPainter(
             zoom: zoom,
@@ -53,10 +54,10 @@ class _ViewportPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final viewportMidpoint = Offset(size.width, size.height) / 2;
-    final midPoint = viewportMidpoint + panOffset;
+    final viewportOffset = viewportMidpoint + panOffset;
 
     for (final geometry in geometries) {
-      geometry.render(canvas, midPoint, zoom);
+      geometry.render(canvas, viewportOffset, zoom);
     }
   }
 

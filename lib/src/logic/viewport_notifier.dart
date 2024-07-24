@@ -19,7 +19,12 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
 
   /// Applies the pan delta to the current [ViewportState.panOffset] state.
   void onPan(Offset delta) {
-    value = value.copyWith(panOffset: value.panOffset + delta);
+    final ViewportState(:zoom, :panOffset, :cursorPosition) = value;
+
+    value = value.copyWith(
+      panOffset: panOffset + delta,
+      cursorPosition: cursorPosition - delta / zoom,
+    );
   }
 
   /// Applies the zoom scale to the current [ViewportState.zoom] state.
