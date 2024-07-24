@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart' hide Viewport;
 
 import '../constants/arcadia_colors.dart';
 import '../providers/viewport_notifier_provider.dart';
+import 'cursor_paint.dart';
 import 'viewport_paint.dart';
 
 // TODO: Add tests.
@@ -20,6 +21,15 @@ class ProjectPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void onPointerMovement(PointerEvent event) {
+      if (context.size case final size?) {
+        context.viewportNotifier.onCursorMove(
+          viewportPosition: event.localPosition,
+          viewportMidPoint: Offset(size.width, size.height) / 2,
+        );
+      }
+    }
+
     return Listener(
       onPointerSignal: (event) {
         switch (event) {
@@ -29,14 +39,8 @@ class ProjectPage extends StatelessWidget {
             context.viewportNotifier.onZoom(scale);
         }
       },
-      onPointerHover: (event) {
-        if (context.size case final size?) {
-          context.viewportNotifier.onCursorMove(
-            viewportPosition: event.localPosition,
-            viewportMidPoint: Offset(size.width, size.height) / 2,
-          );
-        }
-      },
+      onPointerMove: onPointerMovement,
+      onPointerHover: onPointerMovement,
       onPointerUp: (event) => context.viewportNotifier.onCursorClick(),
       child: const ColoredBox(
         color: ArcadiaColors.viewportBackground,
@@ -44,6 +48,9 @@ class ProjectPage extends StatelessWidget {
           children: [
             Positioned.fill(
               child: ViewportPaint(),
+            ),
+            Positioned.fill(
+              child: CursorPaint(),
             ),
           ],
         ),
