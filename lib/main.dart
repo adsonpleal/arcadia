@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 
+import 'src/providers/viewport_notifier_provider.dart';
+import 'src/ui/project_page.dart';
+
 void main() {
-  runApp(const MainApp());
+  runApp(const Arcadia());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+/// The arcadia app root widget.
+class Arcadia extends StatelessWidget {
+  /// Default constructor for [Arcadia].
+  const Arcadia({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
       home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
+        body: ViewportNotifierProvider(
+          child: ProjectPage(),
         ),
       ),
     );

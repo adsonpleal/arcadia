@@ -5,9 +5,6 @@ analyzer:
     strict-casts: true
     strict-inference: true
     strict-raw-types: true
-  exclude:
-    - "**/*.g.dart"
-    - "**/*.mocks.dart"
 
 linter:
   rules:
@@ -113,7 +110,7 @@ linter:
     - package_names
     - package_prefixed_library_names
     - parameter_assignments
-    # - public_member_api_docs TODO: Enable this rule
+    - public_member_api_docs
     - prefer_adjacent_string_concatenation
     - prefer_asserts_in_initializer_lists
     - prefer_asserts_with_message
