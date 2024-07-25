@@ -17,6 +17,7 @@ dev_dependencies:
     sdk: flutter
   # Unfortunately we can't use flutter_test with macros.
   # TODO: remove this when macros start supporting flutter_test.
+  meta: ^1.15.0
   test: ^1.25.8
 
 flutter:
