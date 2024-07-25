@@ -1,8 +1,6 @@
 import 'dart:ui';
 
-part 'point.dart';
-
-/// A class that represents a geometry.
+/// A class that represents a generic geometry.
 ///
 /// A geometry is a generic concept that encompasses all geometric shapes,
 /// regardless of the number of dimensions. Such as:
@@ -10,9 +8,7 @@ part 'point.dart';
 /// - Lines, one-dimensional geometry.
 /// - Arcs.
 /// - And any other possible shape.
-sealed class Geometry {
-  const Geometry();
-
+abstract interface class Geometry {
   /// A method to render the geometry to the viewport.
   ///
   /// It takes a [canvas], where the shape will be rendered, a [viewportOffset]

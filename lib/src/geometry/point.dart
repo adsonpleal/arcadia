@@ -1,4 +1,6 @@
-part of 'geometry.dart';
+import 'dart:ui';
+
+import 'geometry.dart';
 
 /// The shape of a point.
 ///
@@ -20,7 +22,7 @@ const _pointOffset = Offset(_pointSize / 2, _pointSize / 2);
 /// The point is rendered in the viewport as a 2D shape,
 /// defined by [shape].
 /// The point needs a [position] and a [color].
-class Point extends Geometry {
+class Point implements Geometry {
   /// The default constructor
   const Point({
     required this.position,

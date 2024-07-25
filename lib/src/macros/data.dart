@@ -44,8 +44,8 @@ macro class Data implements ClassDeclarationsMacro, ClassDefinitionMacro {
       );
     }
 
-    _declareCopyWith(builder, clazz, fields);
     await [
+      _declareCopyWith(builder, clazz, fields),
       _declareEquals(builder),
       _declareHashCode(builder),
     ].wait;
@@ -86,14 +86,25 @@ macro class Data implements ClassDeclarationsMacro, ClassDefinitionMacro {
     ClassDeclaration clazz,
     List<FieldDeclaration> fields,
   ) async {
-    final builder = await typeBuilder.buildMethod(copyWith.identifier);
+    final (builder, objectType) = await (
+      typeBuilder.buildMethod(copyWith.identifier),
+      // ignore: deprecated_member_use
+      typeBuilder.resolveIdentifier(_dartCore, 'Object'),
+    ).wait;
 
     builder.augment(
       FunctionBodyCode.fromParts(
         [
           '=> ',
+          '({',
+          for (final field in fields) ...[
+            objectType,
+            if (field.type.isNullable) '?',
+            ' ${field.identifier.name} = _undefined,',
+          ],
+          '}) =>',
           '${clazz.identifier.name}(',
-          for (final field in fields) _buildCopyWithField(field),
+          for (final field in fields) ..._buildCopyWithField(field),
           ');',
         ],
       ),
@@ -156,20 +167,28 @@ macro class Data implements ClassDeclarationsMacro, ClassDefinitionMacro {
     );
   }
 
-  void _declareCopyWith(
+  Future<void> _declareCopyWith(
     MemberDeclarationBuilder builder,
     ClassDeclaration clazz,
     List<FieldDeclaration> fields,
-  ) {
-    builder.declareInType(
-      DeclarationCode.fromParts(
-        [
-          'external ${clazz.identifier.name} copyWith({',
-          for (final field in fields) ..._buildCopyWithFieldArgument(field),
-          '});',
-        ],
-      ),
-    );
+  ) async {
+    // ignore: deprecated_member_use
+    final objectType = await builder.resolveIdentifier(_dartCore, 'Object');
+    builder
+      ..declareInLibrary(
+        DeclarationCode.fromParts(
+          ['const _undefined = ', objectType, '();'],
+        ),
+      )
+      ..declareInType(
+        DeclarationCode.fromParts(
+          [
+            'external ${clazz.identifier.name} Function({',
+            for (final field in fields) ..._buildCopyWithFieldArgument(field),
+            '}) get copyWith;',
+          ],
+        ),
+      );
   }
 
   Future<void> _declareEquals(
@@ -216,6 +235,7 @@ List<Object> _buildTypeDeclaration(NamedTypeAnnotation type) {
 
   return [
     type.identifier,
+    if (type.isNullable) '?',
     if (typeArguments.isNotEmpty) ...[
       '<',
       for (final argument in typeArguments)
@@ -228,13 +248,14 @@ List<Object> _buildTypeDeclaration(NamedTypeAnnotation type) {
 List<Object> _buildCopyWithFieldArgument(FieldDeclaration field) {
   final type = field.type as NamedTypeAnnotation;
 
-  return [..._buildTypeDeclaration(type), '? ${field.identifier.name},'];
+  return [..._buildTypeDeclaration(type), ' ${field.identifier.name},'];
 }
 
-String _buildCopyWithField(FieldDeclaration field) {
+List<Object> _buildCopyWithField(FieldDeclaration field) {
   final name = field.identifier.name;
+  final type = _buildTypeDeclaration(field.type as NamedTypeAnnotation);
 
-  return '$name: $name ?? this.$name,';
+  return ['$name: $name == _undefined ? this.$name : $name as ', ...type, ','];
 }
 
 extension on MemberDeclarationBuilder {

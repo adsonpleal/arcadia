@@ -7,32 +7,29 @@ import 'viewport_painter.dart';
 // this file depends on both flutter and macro stuff, so we can't test
 // it for now.
 
-/// The paint of the viewport.
-///
-/// This widget renders the geometries.
-class ViewportPaint extends StatelessWidget {
-  /// The default [ViewportPaint] constructor.
-  const ViewportPaint({
+/// The paint for the tool geometries.
+class ToolViewportPaint extends StatelessWidget {
+  /// The default constructor for [ToolViewportPaint].
+  const ToolViewportPaint({
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
     return ViewportStateBuilder(
-      // Only rebuild if zoom or panOffset or geometries change.
       select: (state) => (
         state.zoom,
         state.panOffset,
-        state.geometries,
+        state.toolGeometries,
       ),
       builder: (context, value) {
-        final (zoom, panOffset, geometries) = value;
+        final (zoom, panOffset, toolGeometries) = value;
 
         return CustomPaint(
           painter: ViewportPainter(
             zoom: zoom,
             panOffset: panOffset,
-            geometries: geometries,
+            geometries: toolGeometries,
           ),
         );
       },
