@@ -49,10 +49,10 @@ class Viewport extends StatelessWidget {
                 child: ViewportPaint(),
               ),
               Positioned.fill(
-                child: ToolViewportPaint(),
+                child: SnappingViewportPaint(),
               ),
               Positioned.fill(
-                child: SnappingViewportPaint(),
+                child: ToolViewportPaint(),
               ),
               Positioned.fill(
                 child: CursorPaint(),
