@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import '../constants/arcadia_colors.dart';
 import '../providers/viewport_notifier_provider.dart';
 import 'cursor_paint.dart';
+import 'snapping_viewport_paint.dart';
 import 'tool_viewport_paint.dart';
 import 'viewport_paint.dart';
 
@@ -46,6 +47,9 @@ class Viewport extends StatelessWidget {
             children: [
               Positioned.fill(
                 child: ViewportPaint(),
+              ),
+              Positioned.fill(
+                child: SnappingViewportPaint(),
               ),
               Positioned.fill(
                 child: ToolViewportPaint(),

@@ -1,7 +1,11 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
+import '../constants/arcadia_colors.dart';
 import '../data/viewport_state.dart';
 import '../geometry/geometry.dart';
+import '../geometry/line.dart';
+import '../geometry/point.dart';
 import '../tools/tool.dart';
 
 // TODO: Add tests.
@@ -18,6 +22,13 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
 
   ToolAction? _toolAction;
 
+  // We need to save this to a variable to avoid computing the
+  // snapping points on every cursor position change.
+  List<Point> _snappingPoints = [];
+
+  /// Saves the last three snaps for right angle snapping.
+  final List<Offset> _lastSnaps = [];
+
   /// Select the given tool and start performing its action.
   void selectTool(Tool tool) {
     _toolAction = tool.toolActionFactory()..bind(this);
@@ -29,6 +40,7 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
     clearToolGeometries();
     _toolAction = null;
     value = value.copyWith(selectedTool: null);
+    _lastSnaps.clear();
   }
 
   /// Applies the pan delta to the current [ViewportState.panOffset] state.
@@ -65,10 +77,102 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
     required Offset viewportMidPoint,
   }) {
     final ViewportState(:zoom, :panOffset) = value;
-    // TODO: handle snapping
-    value = value.copyWith(
-      cursorPosition: (viewportPosition - viewportMidPoint - panOffset) / zoom,
-    );
+    final newCursorPosition =
+        (viewportPosition - viewportMidPoint - panOffset) / zoom;
+
+    void applyDefaultCursorMovement() {
+      value = value.copyWith(
+        cursorPosition: newCursorPosition,
+        snappingGeometries: [],
+      );
+    }
+
+    // only perform snapping if there is a selected tool.
+    if (_toolAction != null) {
+      final snappingPoint = _snappingPoints.firstWhereOrNull(
+        (point) {
+          final actionArea = Rect.fromCenter(
+            center: point.position,
+            width: 10 / zoom,
+            height: 10 / zoom,
+          );
+
+          return actionArea.contains(newCursorPosition);
+        },
+      );
+
+      if (snappingPoint != null) {
+        if (!_lastSnaps.contains(snappingPoint.position)) {
+          if (_lastSnaps.length == 3) {
+            _lastSnaps.removeAt(0);
+          } else {
+            _lastSnaps.add(snappingPoint.position);
+          }
+        }
+
+        value = value.copyWith(
+          cursorPosition: snappingPoint.position,
+          snappingGeometries: [snappingPoint],
+        );
+      } else {
+        var orthoCursorPosition = newCursorPosition;
+        final snappedLines = <Offset>[];
+        var snappedVertically = false;
+        var snappedHorizontally = false;
+
+        for (final snapOffset in _lastSnaps) {
+          if (!snappedVertically) {
+            final verticalSnappingRect = Rect.fromCenter(
+              center: snapOffset,
+              width: 10 / zoom,
+              height: double.infinity,
+            );
+
+            if (verticalSnappingRect.contains(orthoCursorPosition)) {
+              snappedLines.add(snapOffset);
+              orthoCursorPosition =
+                  Offset(snapOffset.dx, orthoCursorPosition.dy);
+              snappedVertically = true;
+              continue;
+            }
+          }
+
+          if (!snappedHorizontally) {
+            final horizontalSnappingRect = Rect.fromCenter(
+              center: snapOffset,
+              width: double.infinity,
+              height: 10 / zoom,
+            );
+
+            if (horizontalSnappingRect.contains(orthoCursorPosition)) {
+              snappedLines.add(snapOffset);
+              orthoCursorPosition =
+                  Offset(orthoCursorPosition.dx, snapOffset.dy);
+              snappedHorizontally = true;
+            }
+          }
+        }
+
+        if (snappedLines.isNotEmpty) {
+          value = value.copyWith(
+            cursorPosition: orthoCursorPosition,
+            snappingGeometries: [
+              for (final offset in snappedLines)
+                Line(
+                  color: ArcadiaColors.snappingLine,
+                  start: offset,
+                  end: orthoCursorPosition,
+                ),
+            ],
+          );
+        } else {
+          applyDefaultCursorMovement();
+        }
+      }
+    } else {
+      applyDefaultCursorMovement();
+    }
+
     _toolAction?.onCursorPositionChange();
   }
 
@@ -80,13 +184,16 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
         ...geometries,
       ],
     );
+    _snappingPoints = [
+      for (final geometry in value.geometries) ...geometry.snappingPoints,
+    ];
   }
 
   /// Add tool geometries to state.
   void addToolGeometries(List<Geometry> geometries) {
     value = value.copyWith(
       toolGeometries: [
-        ...value.geometries,
+        ...value.toolGeometries,
         ...geometries,
       ],
     );

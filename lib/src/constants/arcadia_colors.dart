@@ -17,12 +17,21 @@ abstract final class ArcadiaColors {
   /// The default color of geometries in the viewport.
   static const Color geometry = Color(0xFFFFFFFF);
 
-  /// The default separator color
+  /// The default separator color.
   static const Color separator = Color(0xFF696565);
 
-  /// The default hover color
+  /// The default hover color.
   static const Color hover = Color(0xFF565353);
 
-  /// The default selected color
+  /// The default selected color.
   static const Color selected = Color(0xFF696565);
+
+  /// The default snapping point color.
+  static const Color snappingPoint = Color(0xFFF76902);
+
+  /// The default snapping debug area color.
+  static const Color snappingDebugArea = Color.fromARGB(124, 137, 19, 240);
+
+  /// The default color for snapping lines.
+  static const Color snappingLine = Color(0xFFF50BDE);
 }
