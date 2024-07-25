@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'point.dart';
+
 /// A class that represents a generic geometry.
 ///
 /// A geometry is a generic concept that encompasses all geometric shapes,
@@ -9,6 +11,9 @@ import 'dart:ui';
 /// - Arcs.
 /// - And any other possible shape.
 abstract interface class Geometry {
+  /// The list of points that can be used for snapping.
+  List<Point> get snappingPoints;
+
   /// A method to render the geometry to the viewport.
   ///
   /// It takes a [canvas], where the shape will be rendered, a [viewportOffset]

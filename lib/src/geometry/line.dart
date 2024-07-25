@@ -1,6 +1,8 @@
 import 'package:flutter/painting.dart';
 
+import '../constants/arcadia_colors.dart';
 import 'geometry.dart';
+import 'point.dart';
 
 /// A one-dimensional geometry that is defined by two points.
 class Line implements Geometry {
@@ -19,6 +21,25 @@ class Line implements Geometry {
 
   /// The color of the 2d representation.
   final Color color;
+
+  @override
+  List<Point> get snappingPoints => [
+        Point(
+          position: start,
+          color: ArcadiaColors.snappingPoint,
+          shape: PointShape.square,
+        ),
+        Point(
+          position: end,
+          color: ArcadiaColors.snappingPoint,
+          shape: PointShape.square,
+        ),
+        Point(
+          position: (start + end) / 2,
+          color: ArcadiaColors.snappingPoint,
+          shape: PointShape.triangle,
+        ),
+      ];
 
   @override
   void render(Canvas canvas, Offset viewportOffset, double zoom) {

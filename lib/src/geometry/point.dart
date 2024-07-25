@@ -30,6 +30,9 @@ class Point implements Geometry {
     required this.shape,
   });
 
+  @override
+  List<Point> get snappingPoints => [];
+
   /// The position in which the point's center will be placed.
   final Offset position;
 
