@@ -70,7 +70,6 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
     _addLastSnap(value.cursorPosition);
     // TODO: handle selection
     _toolAction?.onClick();
-    
   }
 
   /// Handle cursor movement.
