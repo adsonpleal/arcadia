@@ -1,3 +1,4 @@
+import 'arc_tool.dart';
 import 'line_tool.dart';
 import 'tool.dart';
 
@@ -10,4 +11,5 @@ import 'tool.dart';
 /// The order is important.
 const tools = <Tool>[
   LineTool(),
+  ArcTool(),
 ];
