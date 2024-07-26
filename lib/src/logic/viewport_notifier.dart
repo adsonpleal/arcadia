@@ -67,8 +67,10 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
 
   /// Handle click action.
   void onCursorClick() {
+    _addLastSnap(value.cursorPosition);
     // TODO: handle selection
     _toolAction?.onClick();
+    
   }
 
   /// Handle cursor movement.
@@ -102,13 +104,7 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
       );
 
       if (snappingPoint != null) {
-        if (!_lastSnaps.contains(snappingPoint.position)) {
-          if (_lastSnaps.length == 3) {
-            _lastSnaps.removeAt(0);
-          } else {
-            _lastSnaps.add(snappingPoint.position);
-          }
-        }
+        _addLastSnap(snappingPoint.position);
 
         value = value.copyWith(
           cursorPosition: snappingPoint.position,
@@ -202,5 +198,15 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
   /// Clear the tool geometries list.
   void clearToolGeometries() {
     value = value.copyWith(toolGeometries: []);
+  }
+
+  void _addLastSnap(Offset offset) {
+    if (!_lastSnaps.contains(offset)) {
+      if (_lastSnaps.length == 3) {
+        _lastSnaps.removeAt(0);
+      } else {
+        _lastSnaps.add(offset);
+      }
+    }
   }
 }
