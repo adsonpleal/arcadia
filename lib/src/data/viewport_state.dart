@@ -20,6 +20,7 @@ class ViewportState {
     this.panOffset = Offset.zero,
     this.cursorPosition = Offset.zero,
     this.selectedTool,
+    this.userInput = '',
   });
 
   /// The [Geometry] list of the viewport.
@@ -50,4 +51,7 @@ class ViewportState {
 
   /// The selected tool.
   final Tool? selectedTool;
+
+  /// Whether or not show value picker;
+  final String userInput;
 }

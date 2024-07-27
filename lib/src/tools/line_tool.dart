@@ -34,36 +34,74 @@ class LineTool implements Tool {
 class _LineToolAction extends ToolAction {
   Offset? _firstPoint;
 
+  double? _fixedLength;
+
+  @override
+  bool get acceptValueInput => true;
+
   @override
   void onCursorPositionChange() {
-    if (_firstPoint case final point?) {
-      final cursorPosition = state.cursorPosition;
+    _updateToolGeometry();
+  }
 
+  @override
+  void onClick() {
+    if (_firstPoint case final point?) {
+      final endPoint = _getEndPoint();
+      addGeometries([
+        Line(
+          color: ArcadiaColors.geometry,
+          start: point,
+          end: endPoint,
+        ),
+      ]);
+      _firstPoint = endPoint;
+    } else {
+      _firstPoint = state.cursorPosition;
+    }
+    if (_firstPoint case final point?) {
+      addSnapPoint(point);
+    }
+    _fixedLength = null;
+    clearUserInput();
+  }
+
+  @override
+  void onValueTyped(double? value) {
+    _fixedLength = value;
+    _updateToolGeometry();
+  }
+
+  Offset _getEndPoint() {
+    if (_firstPoint case final point?) {
+      final cursor = state.cursorPosition;
+      if (_fixedLength case final fixedLength?) {
+        final angle = (cursor - point).direction;
+
+        return point +
+            Offset(
+              fixedLength * cos(angle),
+              fixedLength * sin(angle),
+            );
+      } else {
+        return cursor;
+      }
+    } else {
+      return Offset.zero;
+    }
+  }
+
+  void _updateToolGeometry() {
+    if (_firstPoint case final point?) {
       clearToolGeometries();
       addToolGeometries([
         Line(
           color: ArcadiaColors.geometry,
           start: point,
-          end: cursorPosition,
+          end: _getEndPoint(),
         ),
       ]);
     }
-  }
-
-  @override
-  void onClick() {
-    final cursorPosition = state.cursorPosition;
-
-    if (_firstPoint case final point?) {
-      addGeometries([
-        Line(
-          color: ArcadiaColors.geometry,
-          start: point,
-          end: cursorPosition,
-        ),
-      ]);
-    }
-    _firstPoint = cursorPosition;
   }
 }
 

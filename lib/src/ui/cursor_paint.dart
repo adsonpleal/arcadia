@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import '../constants/arcadia_colors.dart';
@@ -20,21 +21,63 @@ class CursorPaint extends StatelessWidget {
   Widget build(BuildContext context) {
     return MouseRegion(
       cursor: SystemMouseCursors.none,
-      child: ViewportStateBuilder(
-        select: (state) => (
-          state.cursorPosition,
-          state.zoom,
-          state.panOffset,
-        ),
-        builder: (context, value) {
-          final (cursorPosition, zoom, panOffset) = value;
-
-          return CustomPaint(
-            painter: _CursorPainter(
-              cursorPosition: cursorPosition,
-              panOffset: panOffset,
-              zoom: zoom,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return ViewportStateBuilder(
+            select: (state) => (
+              state.cursorPosition,
+              state.zoom,
+              state.panOffset,
+              state.userInput,
             ),
+            builder: (context, value) {
+              final (cursorPosition, zoom, panOffset, userInput) = value;
+
+              final viewportMidpoint = Offset(
+                constraints.maxWidth / 2,
+                constraints.maxHeight / 2,
+              );
+              final viewportOffset = viewportMidpoint + panOffset;
+              final viewportPosition = (cursorPosition * zoom) + viewportOffset;
+
+              return Stack(
+                children: [
+                  Positioned.fill(
+                    child: CustomPaint(
+                      painter: _CursorPainter(
+                        viewportPosition: viewportPosition,
+                      ),
+                    ),
+                  ),
+                  if (userInput != '')
+                    Positioned(
+                      top: viewportPosition.dy - _cursorHalfSize,
+                      left: viewportPosition.dx + _cursorHalfSize + 4,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          minHeight: _cursorSize,
+                        ),
+                        child: Center(
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            constraints: const BoxConstraints(maxWidth: 100),
+                            decoration: ShapeDecoration(
+                              color: ArcadiaColors.viewportBackground,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4),
+                                side: const BorderSide(
+                                  color: ArcadiaColors.separator,
+                                ),
+                              ),
+                            ),
+                            child: Text(userInput),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
           );
         },
       ),
@@ -47,21 +90,13 @@ const _cursorHalfSize = _cursorSize / 2;
 
 class _CursorPainter extends CustomPainter {
   _CursorPainter({
-    required this.cursorPosition,
-    required this.panOffset,
-    required this.zoom,
+    required this.viewportPosition,
   });
 
-  final Offset cursorPosition;
-  final Offset panOffset;
-  final double zoom;
+  final Offset viewportPosition;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final viewportMidpoint = Offset(size.width, size.height) / 2;
-    final viewportOffset = viewportMidpoint + panOffset;
-    final viewportPosition = (cursorPosition * zoom) + viewportOffset;
-
     final paint = Paint()
       ..color = ArcadiaColors.cursor
       ..style = PaintingStyle.stroke
@@ -82,6 +117,6 @@ class _CursorPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _CursorPainter oldDelegate) {
-    return cursorPosition != oldDelegate.cursorPosition;
+    return viewportPosition != oldDelegate.viewportPosition;
   }
 }
