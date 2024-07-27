@@ -31,6 +31,7 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
 
   /// Select the given tool and start performing its action.
   void selectTool(Tool tool) {
+    clearToolGeometries();
     _toolAction = tool.toolActionFactory()..bind(this);
     value = value.copyWith(selectedTool: tool);
   }
