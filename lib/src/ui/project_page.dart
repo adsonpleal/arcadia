@@ -23,10 +23,19 @@ class ProjectPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final numbersInput = [
+      for (var i = 0; i <= 9; i++) '$i',
+      '.',
+    ];
+
     return Shortcuts(
       shortcuts: {
         for (final tool in tools) tool.shortcut: _ToolIntent(tool),
         const SingleActivator(LogicalKeyboardKey.escape): const _CancelIntent(),
+        for (final input in numbersInput)
+          CharacterActivator(input): _ValueInputIntent(input),
+        const SingleActivator(LogicalKeyboardKey.backspace):
+            const _ValueInputIntent('back'),
       },
       child: Actions(
         actions: {
@@ -48,6 +57,12 @@ class ProjectPage extends StatelessWidget {
           _CancelIntent: CallbackAction<_CancelIntent>(
             onInvoke: (_) {
               context.viewportNotifier.cancelToolAction();
+              return null;
+            },
+          ),
+          _ValueInputIntent: CallbackAction<_ValueInputIntent>(
+            onInvoke: (intent) {
+              context.viewportNotifier.onUserInput(intent.input);
               return null;
             },
           ),
@@ -78,4 +93,10 @@ class _ToolIntent extends Intent {
 
 class _CancelIntent extends Intent {
   const _CancelIntent();
+}
+
+class _ValueInputIntent extends Intent {
+  const _ValueInputIntent(this.input);
+
+  final String input;
 }

@@ -11,6 +11,8 @@ import '../logic/viewport_notifier.dart';
 /// A factory that creates a tool action.
 typedef ToolActionFactory = ToolAction Function();
 
+@immutable
+
 /// The interface of a Tool.
 abstract interface class Tool {
   /// The name of the tool.
@@ -29,6 +31,9 @@ abstract interface class Tool {
 /// An action that is performed by a tool;
 abstract class ToolAction {
   late final ViewportNotifier _viewportNotifier;
+
+  /// Whether or not this action accepts a value input.
+  final acceptValueInput = false;
 
   /// The current [ViewportState].
   ViewportState get state => _viewportNotifier.value;
@@ -53,9 +58,29 @@ abstract class ToolAction {
     _viewportNotifier.addGeometries(geometries);
   }
 
+  /// Clear the current user input.
+  void clearUserInput() {
+    _viewportNotifier.clearUserInput();
+  }
+
+  /// Add a snap point to the list.
+  void addSnapPoint(Offset offset) {
+    _viewportNotifier.addSnapPoint(offset);
+  }
+
   /// Triggered on cursor position change.
   void onCursorPositionChange();
 
   /// Triggered on cursor click.
   void onClick();
+
+  /// Triggered whenever the user types a value.
+  ///
+  /// You don't need to call super for this override.
+  /// This has a body just for convenience, there is no implementation in
+  /// the [Tool] class.
+  /// Receiving null means the user canceled the value.
+  /// If you want to use this you must override [acceptValueInput] setting
+  /// it to true.
+  void onValueTyped(double? value) {}
 }

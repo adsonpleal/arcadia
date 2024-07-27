@@ -39,7 +39,10 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
   void cancelToolAction() {
     clearToolGeometries();
     _toolAction = null;
-    value = value.copyWith(selectedTool: null);
+    value = value.copyWith(
+      selectedTool: null,
+      userInput: '',
+    );
     _lastSnaps.clear();
   }
 
@@ -67,7 +70,6 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
 
   /// Handle click action.
   void onCursorClick() {
-    _addLastSnap(value.cursorPosition);
     // TODO: handle selection
     _toolAction?.onClick();
   }
@@ -197,6 +199,37 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
   /// Clear the tool geometries list.
   void clearToolGeometries() {
     value = value.copyWith(toolGeometries: []);
+  }
+
+  /// Called when a user types a value.
+  void onUserInput(String input) {
+    if (_toolAction case final tool? when tool.acceptValueInput) {
+      var userInput = value.userInput;
+      if (input == 'back') {
+        if (userInput != '') {
+          userInput = userInput.substring(0, userInput.length - 1);
+        }
+      } else if (input == '.') {
+        if (!userInput.contains('.')) {
+          userInput = '$userInput.';
+        }
+      } else {
+        userInput = '$userInput$input';
+      }
+
+      tool.onValueTyped(double.tryParse(userInput));
+      value = value.copyWith(userInput: userInput);
+    }
+  }
+
+  /// Clear the current user input.
+  void clearUserInput() {
+    value = value.copyWith(userInput: '');
+  }
+
+  /// Add a snap point to the list.
+  void addSnapPoint(Offset offset) {
+    _addLastSnap(offset);
   }
 
   void _addLastSnap(Offset offset) {
