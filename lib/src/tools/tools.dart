@@ -1,6 +1,7 @@
 import 'arc_tool.dart';
 import 'center_rectangle_tool.dart';
 import 'circle_tool.dart';
+import 'corners_rectangle_tool.dart';
 import 'line_tool.dart';
 import 'tool.dart';
 
@@ -16,4 +17,5 @@ const tools = <Tool>[
   ArcTool(),
   CircleTool(),
   CenterRectangleTool(),
+  CornersRectangleTool(),
 ];
