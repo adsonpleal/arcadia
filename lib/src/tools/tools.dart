@@ -1,4 +1,5 @@
 import 'arc_tool.dart';
+import 'center_rectangle_tool.dart';
 import 'circle_tool.dart';
 import 'line_tool.dart';
 import 'tool.dart';
@@ -14,4 +15,5 @@ const tools = <Tool>[
   LineTool(),
   ArcTool(),
   CircleTool(),
+  CenterRectangleTool(),
 ];
