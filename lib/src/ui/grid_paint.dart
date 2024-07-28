@@ -35,7 +35,8 @@ class GridPaint extends StatelessWidget {
   }
 }
 
-const _gridDistance = 10 * unitVirtualPixelRatio;
+const _gridSquareSize = 10;
+const _gridDistance = _gridSquareSize * unitVirtualPixelRatio;
 
 class _GridPainter extends CustomPainter {
   _GridPainter({
@@ -48,7 +49,11 @@ class _GridPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final distance = _gridDistance / pow(10, (log(zoom) / log(10)).floor());
+    final distance = _gridDistance /
+        pow(
+          _gridSquareSize,
+          (log(zoom) / log(_gridSquareSize)).floor(),
+        );
     final viewportMidpoint = Offset(size.width, size.height) / 2;
     final viewportOffset = viewportMidpoint + panOffset;
     final space = distance * zoom;
