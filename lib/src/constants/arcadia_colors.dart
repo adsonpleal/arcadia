@@ -17,6 +17,9 @@ abstract final class ArcadiaColors {
   /// The default color of geometries in the viewport.
   static const Color geometry = Color(0xFFFFFFFF);
 
+  /// The default color of geometries in the viewport.
+  static const Color grid = Color(0x22FFFFFF);
+
   /// The default separator color.
   static const Color separator = Color(0xFF696565);
 
