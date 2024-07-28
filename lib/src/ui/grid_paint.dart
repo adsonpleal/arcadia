@@ -48,7 +48,7 @@ class _GridPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final distance = _gridDistance / pow(2, (log(zoom) / log(2)).floor());
+    final distance = _gridDistance / pow(10, (log(zoom) / log(10)).floor());
     final viewportMidpoint = Offset(size.width, size.height) / 2;
     final viewportOffset = viewportMidpoint + panOffset;
     final space = distance * zoom;
