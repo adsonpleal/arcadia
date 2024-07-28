@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
 import '../constants/arcadia_colors.dart';
+import '../constants/config.dart';
 import '../data/viewport_state.dart';
 import '../geometry/geometry.dart';
 import '../geometry/line.dart';
@@ -11,6 +12,12 @@ import '../tools/tool.dart';
 // TODO: Add tests.
 // this file depends on both flutter and macro stuff, so we can't test
 // it for now.
+
+const _origin = Point(
+  position: Offset.zero,
+  color: ArcadiaColors.snappingPoint,
+  shape: PointShape.triangle,
+);
 
 /// A [ValueNotifier] that holds the [ViewportState].
 ///
@@ -24,7 +31,7 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
 
   // We need to save this to a variable to avoid computing the
   // snapping points on every cursor position change.
-  List<Point> _snappingPoints = [];
+  List<Point> _snappingPoints = [_origin];
 
   /// Saves the last three snaps for right angle snapping.
   final List<Offset> _lastSnaps = [];
@@ -53,7 +60,7 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
 
     value = value.copyWith(
       panOffset: panOffset + delta,
-      cursorPosition: cursorPosition - delta / zoom,
+      cursorPosition: cursorPosition - delta / zoom / unitVirtualPixelRatio,
     );
     _toolAction?.onCursorPositionChange();
   }
@@ -65,7 +72,8 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
 
     value = value.copyWith(
       zoom: newZoom,
-      panOffset: panOffset - cursorPosition * (newZoom - zoom),
+      panOffset:
+          panOffset - cursorPosition * unitVirtualPixelRatio * (newZoom - zoom),
     );
   }
 
@@ -82,7 +90,9 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
   }) {
     final ViewportState(:zoom, :panOffset) = value;
     final newCursorPosition =
-        (viewportPosition - viewportMidPoint - panOffset) / zoom;
+        (viewportPosition - viewportMidPoint - panOffset) /
+            zoom /
+            unitVirtualPixelRatio;
 
     void applyDefaultCursorMovement() {
       value = value.copyWith(
@@ -183,6 +193,7 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
       ],
     );
     _snappingPoints = [
+      _origin,
       for (final geometry in value.geometries) ...geometry.snappingPoints,
     ];
   }

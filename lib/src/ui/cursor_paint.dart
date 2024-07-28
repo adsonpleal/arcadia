@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import '../constants/arcadia_colors.dart';
+import '../constants/config.dart';
 import '../providers/viewport_notifier_provider.dart';
 import 'viewport_paint.dart';
 
@@ -25,7 +26,7 @@ class CursorPaint extends StatelessWidget {
         builder: (context, constraints) {
           return ViewportStateBuilder(
             select: (state) => (
-              state.cursorPosition,
+              state.cursorPosition * unitVirtualPixelRatio,
               state.zoom,
               state.panOffset,
               state.userInput,

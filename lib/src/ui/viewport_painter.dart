@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 
+import '../constants/config.dart';
 import '../geometry/geometry.dart';
 
 /// A custom painter for geometries.
@@ -26,7 +27,7 @@ class ViewportPainter extends CustomPainter {
     final viewportOffset = viewportMidpoint + panOffset;
 
     for (final geometry in geometries) {
-      geometry.render(canvas, viewportOffset, zoom);
+      geometry.render(canvas, viewportOffset, zoom * unitVirtualPixelRatio);
     }
   }
 
