@@ -12,12 +12,13 @@ const _cornerPoints = [
 ];
 
 /// A circle geometry, with radius and center point.
-class Circle implements Geometry {
+class Circle extends Geometry {
   /// The default constructor for [Circle].
   const Circle({
     required this.center,
     required this.radius,
-    required this.color,
+    required super.color,
+    super.strokeWidth,
   });
 
   /// The center of the circle.
@@ -25,9 +26,6 @@ class Circle implements Geometry {
 
   /// The radius of the circle.
   final double radius;
-
-  /// The color that this geometry will be rendered.
-  final Color color;
 
   @override
   List<Point> get snappingPoints {
@@ -51,9 +49,26 @@ class Circle implements Geometry {
     final viewportCenter = (center * zoom) + viewportOffset;
     final paint = Paint()
       ..color = color
-      ..strokeWidth = 1
+      ..strokeWidth = strokeWidth
       ..style = PaintingStyle.stroke;
 
     canvas.drawCircle(viewportCenter, radius * zoom, paint);
+  }
+
+  @override
+  bool contains(Offset offset, double tolerance) {
+    final distance = ((offset - center).distance - radius).abs();
+
+    return distance <= tolerance;
+  }
+
+  @override
+  Geometry copyWith({double? strokeWidth, Color? color}) {
+    return Circle(
+      center: center,
+      radius: radius,
+      color: color ?? this.color,
+      strokeWidth: strokeWidth ?? this.strokeWidth,
+    );
   }
 }

@@ -22,12 +22,13 @@ const _pointOffset = Offset(_pointSize / 2, _pointSize / 2);
 /// The point is rendered in the viewport as a 2D shape,
 /// defined by [shape].
 /// The point needs a [position] and a [color].
-class Point implements Geometry {
+class Point extends Geometry {
   /// The default constructor
   const Point({
     required this.position,
-    required this.color,
+    required super.color,
     required this.shape,
+    super.strokeWidth,
   });
 
   @override
@@ -35,9 +36,6 @@ class Point implements Geometry {
 
   /// The position in which the point's center will be placed.
   final Offset position;
-
-  /// The point shape's color
-  final Color color;
 
   /// The shape of the 2D representation
   final PointShape shape;
@@ -67,5 +65,20 @@ class Point implements Geometry {
           paint,
         );
     }
+  }
+
+  @override
+  bool contains(Offset offset, double tolerance) {
+    return (position - offset).distance <= tolerance;
+  }
+
+  @override
+  Geometry copyWith({double? strokeWidth, Color? color}) {
+    return Point(
+      position: position,
+      color: color ?? this.color,
+      shape: shape,
+      strokeWidth: strokeWidth ?? this.strokeWidth,
+    );
   }
 }

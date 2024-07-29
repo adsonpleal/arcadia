@@ -28,13 +28,6 @@ macro class Data implements ClassDeclarationsMacro, ClassDefinitionMacro {
 
     final constructors = await builder.constructorsOf(clazz);
 
-    if (constructors.length != 1) {
-      return builder.reportError(
-        'The target class should have exactly one constructor',
-        clazz.asDiagnosticTarget,
-      );
-    }
-
     final constructor = constructors.first;
 
     if (constructor.identifier.name != '') {

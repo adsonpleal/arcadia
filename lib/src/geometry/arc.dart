@@ -2,18 +2,20 @@ import 'dart:math';
 import 'dart:ui';
 
 import '../constants/arcadia_colors.dart';
+import '../constants/config.dart';
 import 'geometry.dart';
 import 'point.dart';
 
 /// An Arc geometry, as a segment of a circle.
-class Arc implements Geometry {
+class Arc extends Geometry {
   const Arc._({
     required this.center,
     required this.radius,
     required this.startAngle,
     required this.sweepAngle,
-    required this.color,
+    required super.color,
     required this.snappingPoints,
+    super.strokeWidth,
   });
 
   /// Creates an arc given three points.
@@ -121,9 +123,6 @@ class Arc implements Geometry {
   /// The sweep angle for this arc.
   final double sweepAngle;
 
-  /// The arc's color.
-  final Color color;
-
   @override
   final List<Point> snappingPoints;
 
@@ -131,7 +130,7 @@ class Arc implements Geometry {
   void render(Canvas canvas, Offset viewportOffset, double zoom) {
     final paint = Paint()
       ..color = color
-      ..strokeWidth = 1
+      ..strokeWidth = strokeWidth
       ..style = PaintingStyle.stroke;
     final rect = Rect.fromCircle(
       center: center * zoom + viewportOffset,
@@ -139,5 +138,34 @@ class Arc implements Geometry {
     );
 
     canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
+  }
+
+  @override
+  bool contains(Offset offset, double tolerance) {
+    final delta = offset - center;
+    final distance = delta.distance;
+
+    if (distance > radius + tolerance || distance < radius - tolerance) {
+      return false;
+    }
+
+    final angle = delta.direction;
+    final normalizedAngle = angle < 0 ? 2 * pi + angle : angle;
+
+    return normalizedAngle <= sweepAngle + startAngle &&
+        normalizedAngle >= startAngle;
+  }
+
+  @override
+  Geometry copyWith({double? strokeWidth, Color? color}) {
+    return Arc._(
+      center: center,
+      radius: radius,
+      startAngle: startAngle,
+      sweepAngle: sweepAngle,
+      color: color ?? this.color,
+      snappingPoints: snappingPoints,
+      strokeWidth: strokeWidth ?? this.strokeWidth,
+    );
   }
 }

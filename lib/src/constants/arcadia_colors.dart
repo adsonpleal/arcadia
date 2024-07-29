@@ -34,4 +34,10 @@ abstract final class ArcadiaColors {
 
   /// The default color for snapping lines.
   static const Color snappingLine = Color(0xFFF50BDE);
+
+  /// The default hovering color for geometries.
+  static const Color hoveringGeometry = Color(0x99FF5A13);
+
+  /// The default selected color for geometries.
+  static const Color selectedGeometry = Color(0x99706DF6);
 }
