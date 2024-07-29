@@ -1,5 +1,5 @@
+import 'package:flutter/material.dart' hide Viewport;
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart' hide Viewport;
 
 import '../providers/viewport_notifier_provider.dart';
 import '../tools/tool.dart';
@@ -23,6 +23,7 @@ class ProjectPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMacOS = Theme.of(context).platform == TargetPlatform.macOS;
     final numbersInput = [
       for (var i = 0; i <= 9; i++) '$i',
       '.',
@@ -36,6 +37,17 @@ class ProjectPage extends StatelessWidget {
           CharacterActivator(input): _ValueInputIntent(input),
         const SingleActivator(LogicalKeyboardKey.backspace):
             const _ValueInputIntent('back'),
+        SingleActivator(
+          LogicalKeyboardKey.keyZ,
+          meta: isMacOS,
+          control: !isMacOS,
+        ): const _UndoIntent(),
+        SingleActivator(
+          LogicalKeyboardKey.keyZ,
+          meta: isMacOS,
+          control: !isMacOS,
+          shift: true,
+        ): const _RedoIntent(),
       },
       child: Actions(
         actions: {
@@ -63,6 +75,18 @@ class ProjectPage extends StatelessWidget {
           _ValueInputIntent: CallbackAction<_ValueInputIntent>(
             onInvoke: (intent) {
               context.viewportNotifier.onUserInput(intent.input);
+              return null;
+            },
+          ),
+          _RedoIntent: CallbackAction<_RedoIntent>(
+            onInvoke: (_) {
+              context.viewportNotifier.redo();
+              return null;
+            },
+          ),
+          _UndoIntent: CallbackAction<_UndoIntent>(
+            onInvoke: (_) {
+              context.viewportNotifier.undo();
               return null;
             },
           ),
@@ -99,4 +123,12 @@ class _ValueInputIntent extends Intent {
   const _ValueInputIntent(this.input);
 
   final String input;
+}
+
+class _RedoIntent extends Intent {
+  const _RedoIntent();
+}
+
+class _UndoIntent extends Intent {
+  const _UndoIntent();
 }
