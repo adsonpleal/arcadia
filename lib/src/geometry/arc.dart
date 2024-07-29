@@ -2,7 +2,6 @@ import 'dart:math';
 import 'dart:ui';
 
 import '../constants/arcadia_colors.dart';
-import '../constants/config.dart';
 import 'geometry.dart';
 import 'point.dart';
 
