@@ -36,8 +36,13 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
   /// Saves the last three snaps for right angle snapping.
   final List<Offset> _lastSnaps = [];
 
+  final List<Geometry> _selectedGeometries = [];
+
+  Geometry? _hoveringGeometry;
+
   /// Select the given tool and start performing its action.
   void selectTool(Tool tool) {
+    _clearSelectedGeometries();
     clearToolGeometries();
     _toolAction = tool.toolActionFactory()..bind(this);
     value = value.copyWith(selectedTool: tool);
@@ -52,6 +57,20 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
       userInput: '',
     );
     _lastSnaps.clear();
+    _clearSelectedGeometries();
+  }
+
+  /// Delete the selected geometries
+  void deleteSelectedGeometries() {
+    if (_selectedGeometries.isNotEmpty) {
+      value = value.copyWith(
+        geometries: [
+          for (final geometry in value.geometries)
+            if (!_selectedGeometries.contains(geometry)) geometry,
+        ],
+      );
+      _clearSelectedGeometries();
+    }
   }
 
   /// Applies the pan delta to the current [ViewportState.panOffset] state.
@@ -79,8 +98,19 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
 
   /// Handle click action.
   void onCursorClick() {
-    // TODO: handle selection
-    _toolAction?.onClick();
+    if (_toolAction case final action?) {
+      action.onClick();
+    } else {
+      final selected = _geometryBellowCursor();
+      if (selected != null) {
+        if (_selectedGeometries.contains(selected)) {
+          _selectedGeometries.remove(selected);
+        } else {
+          _selectedGeometries.add(selected);
+        }
+        _updateSelectedGeometries();
+      }
+    }
   }
 
   /// Handle cursor movement.
@@ -104,15 +134,10 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
     // only perform snapping if there is a selected tool.
     if (_toolAction != null) {
       final snappingPoint = _snappingPoints.firstWhereOrNull(
-        (point) {
-          final actionArea = Rect.fromCenter(
-            center: point.position,
-            width: 10 / zoom,
-            height: 10 / zoom,
-          );
-
-          return actionArea.contains(newCursorPosition);
-        },
+        (point) => point.contains(
+          newCursorPosition,
+          5 / zoom,
+        ),
       );
 
       if (snappingPoint != null) {
@@ -179,6 +204,8 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
       }
     } else {
       applyDefaultCursorMovement();
+      _hoveringGeometry = _geometryBellowCursor();
+      _updateSelectedGeometries();
     }
 
     _toolAction?.onCursorPositionChange();
@@ -231,6 +258,11 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
 
       tool.onValueTyped(double.tryParse(userInput));
       value = value.copyWith(userInput: userInput);
+    } else {
+      // TODO: improve the back logic
+      if (input == 'back') {
+        deleteSelectedGeometries();
+      }
     }
   }
 
@@ -252,5 +284,37 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
         _lastSnaps.add(offset);
       }
     }
+  }
+
+  void _updateSelectedGeometries() {
+    value = value.copyWith(
+      selectionGeometries: [
+        if (_hoveringGeometry case final hovering?)
+          hovering.copyWith(
+            strokeWidth: 5,
+            color: ArcadiaColors.hoveringGeometry,
+          ),
+        for (final geometry in _selectedGeometries)
+          geometry.copyWith(
+            strokeWidth: 5,
+            color: ArcadiaColors.selectedGeometry,
+          ),
+      ],
+    );
+  }
+
+  Geometry? _geometryBellowCursor() {
+    return value.geometries.firstWhereOrNull(
+      (geometry) => geometry.contains(
+        value.cursorPosition,
+        selectionTolerance / value.zoom,
+      ),
+    );
+  }
+
+  void _clearSelectedGeometries() {
+    _selectedGeometries.clear();
+    _hoveringGeometry = null;
+    _updateSelectedGeometries();
   }
 }

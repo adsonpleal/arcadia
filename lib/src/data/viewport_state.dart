@@ -16,6 +16,7 @@ class ViewportState {
     this.geometries = const [],
     this.toolGeometries = const [],
     this.snappingGeometries = const [],
+    this.selectionGeometries = const [],
     this.zoom = 1.0,
     this.panOffset = Offset.zero,
     this.cursorPosition = Offset.zero,
@@ -39,6 +40,11 @@ class ViewportState {
   ///
   /// These geometries are used to represent snapping areas.
   final List<Geometry> snappingGeometries;
+
+  /// The selection [Geometry] list.
+  ///
+  /// These geometries are used to hover and selected geometries.
+  final List<Geometry> selectionGeometries;
 
   /// The current zoom.
   final double zoom;
