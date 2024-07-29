@@ -40,6 +40,9 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
 
   Geometry? _hoveringGeometry;
 
+  final List<List<Geometry>> _undoStack = [];
+  final List<List<Geometry>> _redoStack = [];
+
   /// Select the given tool and start performing its action.
   void selectTool(Tool tool) {
     _clearSelectedGeometries();
@@ -63,6 +66,7 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
   /// Delete the selected geometries
   void deleteSelectedGeometries() {
     if (_selectedGeometries.isNotEmpty) {
+      _undoStack.add(value.geometries);
       value = value.copyWith(
         geometries: [
           for (final geometry in value.geometries)
@@ -213,6 +217,8 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
 
   /// Add geometries to state.
   void addGeometries(List<Geometry> geometries) {
+    _undoStack.add([...value.geometries]);
+    _redoStack.clear();
     value = value.copyWith(
       geometries: [
         ...value.geometries,
@@ -274,6 +280,26 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
   /// Add a snap point to the list.
   void addSnapPoint(Offset offset) {
     _addLastSnap(offset);
+  }
+
+  /// Undo the latest geometries changes.
+  void undo() {
+    if (_undoStack.isNotEmpty) {
+      _redoStack.add([...value.geometries]);
+      value = value.copyWith(
+        geometries: _undoStack.removeLast(),
+      );
+    }
+  }
+
+  /// Redo the latest undo.
+  void redo() {
+    if (_redoStack.isNotEmpty) {
+      _undoStack.add(value.geometries);
+      value = value.copyWith(
+        geometries: _redoStack.removeLast(),
+      );
+    }
   }
 
   void _addLastSnap(Offset offset) {
