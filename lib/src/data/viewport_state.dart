@@ -1,15 +1,19 @@
 import 'dart:ui';
 
+import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
+
 import '../geometry/geometry.dart';
-import '../macros/data.dart';
 import '../tools/tool.dart';
 
-@Data()
+const _undefined = Object();
+const _geometryListEquality = ListEquality<Geometry>();
 
 /// The state of the viewport.
 ///
 /// It contains all the [geometries] being displayed,
 /// the current [zoom] and the [panOffset].
+@immutable
 class ViewportState {
   /// The default [ViewportState] constructor
   const ViewportState({
@@ -60,4 +64,73 @@ class ViewportState {
 
   /// Whether or not show value picker;
   final String userInput;
+
+  /// Creates a copy of [ViewportState] with replaced values.
+  ///
+  /// For [selectedTool], passing `null` explicitly clears the selected tool.
+  /// Omitting [selectedTool] preserves the previous value.
+  ViewportState copyWith({
+    List<Geometry>? geometries,
+    List<Geometry>? toolGeometries,
+    List<Geometry>? snappingGeometries,
+    List<Geometry>? selectionGeometries,
+    double? zoom,
+    Offset? panOffset,
+    Offset? cursorPosition,
+    Object? selectedTool = _undefined,
+    String? userInput,
+  }) {
+    return ViewportState(
+      geometries: geometries ?? this.geometries,
+      toolGeometries: toolGeometries ?? this.toolGeometries,
+      snappingGeometries: snappingGeometries ?? this.snappingGeometries,
+      selectionGeometries: selectionGeometries ?? this.selectionGeometries,
+      zoom: zoom ?? this.zoom,
+      panOffset: panOffset ?? this.panOffset,
+      cursorPosition: cursorPosition ?? this.cursorPosition,
+      selectedTool: identical(selectedTool, _undefined)
+          ? this.selectedTool
+          : selectedTool as Tool?,
+      userInput: userInput ?? this.userInput,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        other is ViewportState &&
+            _geometryListEquality.equals(geometries, other.geometries) &&
+            _geometryListEquality.equals(
+              toolGeometries,
+              other.toolGeometries,
+            ) &&
+            _geometryListEquality.equals(
+              snappingGeometries,
+              other.snappingGeometries,
+            ) &&
+            _geometryListEquality.equals(
+              selectionGeometries,
+              other.selectionGeometries,
+            ) &&
+            zoom == other.zoom &&
+            panOffset == other.panOffset &&
+            cursorPosition == other.cursorPosition &&
+            selectedTool == other.selectedTool &&
+            userInput == other.userInput;
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(
+      _geometryListEquality.hash(geometries),
+      _geometryListEquality.hash(toolGeometries),
+      _geometryListEquality.hash(snappingGeometries),
+      _geometryListEquality.hash(selectionGeometries),
+      zoom,
+      panOffset,
+      cursorPosition,
+      selectedTool,
+      userInput,
+    );
+  }
 }
