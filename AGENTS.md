@@ -57,7 +57,8 @@ Always verify before claiming completion:
 
 1. Run static analysis.
 2. Run relevant tests (or full suite when scope is broad/unclear).
-3. Run impacted golden tests when rendering output changes.
+3. Run `dart format` after analysis/tests (prefer Dart MCP tooling).
+4. Run impacted golden tests when rendering output changes.
 
 Do not claim completion without command outcomes.
 
