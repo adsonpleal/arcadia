@@ -395,7 +395,7 @@ Run:
 
 ```bash
 dart analyze
-./run_all_tests.sh
+dart test
 ```
 
 Expected: if failures exist, capture exact errors and fix minimally.
@@ -411,7 +411,7 @@ Run:
 
 ```bash
 dart analyze
-./run_all_tests.sh
+dart test
 ```
 
 Expected: both commands PASS.

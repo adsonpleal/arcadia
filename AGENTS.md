@@ -93,5 +93,5 @@ Preferred: use Dart MCP tooling.
 Fallback commands:
 
 - `dart analyze`
-- `./run_all_tests.sh`
+- `dart test`
 - `dart format lib test`

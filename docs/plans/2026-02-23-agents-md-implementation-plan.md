@@ -13,7 +13,7 @@ The document will define ownership boundaries (`logic`, `tools`, `geometry`,
 Validation is performed with content assertions and repo verification commands.
 
 **Tech Stack:** Markdown, Dart/Flutter project conventions, git, `rg`,
-`dart analyze`, `./run_all_tests.sh`.
+`dart analyze`, `dart test`.
 
 ---
 
@@ -208,13 +208,13 @@ git commit -m "docs: add AGENTS workflow and verification gate"
 
 ```bash
 rg -n '## Testing Strategy|## Report Output Contract|## Quick Command Reference' AGENTS.md && \
-rg -n 'dart analyze|./run_all_tests.sh' AGENTS.md
+rg -n 'dart analyze|dart test' AGENTS.md
 ```
 
 **Step 2: Run test to verify it fails**
 
 Run:
-`rg -n '## Testing Strategy|## Report Output Contract|## Quick Command Reference|dart analyze|./run_all_tests.sh' AGENTS.md`
+`rg -n '## Testing Strategy|## Report Output Contract|## Quick Command Reference|dart analyze|dart test' AGENTS.md`
 Expected: missing one or more sections/commands.
 
 **Step 3: Write minimal implementation**
@@ -245,14 +245,14 @@ Every agent completion report must include:
 Preferred: use Dart MCP tooling.
 Fallback commands:
 - `dart analyze`
-- `./run_all_tests.sh`
+- `dart test`
 - `dart format lib test`
 ```
 
 **Step 4: Run test to verify it passes**
 
 Run:
-`rg -n '## Testing Strategy|## Report Output Contract|## Quick Command Reference|dart analyze|./run_all_tests.sh|dart format lib test' AGENTS.md`
+`rg -n '## Testing Strategy|## Report Output Contract|## Quick Command Reference|dart analyze|dart test|dart format lib test' AGENTS.md`
 Expected: all sections and commands are present.
 
 **Step 5: Commit**
@@ -330,7 +330,7 @@ If verification passes:
 
 **Step 4: Run test to verify it passes**
 
-Run: `dart analyze && ./run_all_tests.sh`
+Run: `dart analyze && dart test`
 Expected: both commands pass.
 
 **Step 5: Commit**
