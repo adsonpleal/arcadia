@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../constants/arcadia_colors.dart';
+import '../constants/arcadia_color.dart';
 import '../geometry/line.dart';
 import 'tool.dart';
 
@@ -45,9 +45,7 @@ class _LineToolAction extends ToolAction {
   void onClick() {
     if (_firstPoint case final point?) {
       final endPoint = _getEndPoint();
-      addGeometries([
-        Line(color: ArcadiaColors.geometry, start: point, end: endPoint),
-      ]);
+      addGeometries([Line(color: .geometry, start: point, end: endPoint)]);
       _firstPoint = endPoint;
     } else {
       _firstPoint = state.cursorPosition;
@@ -85,7 +83,7 @@ class _LineToolAction extends ToolAction {
     if (_firstPoint case final point?) {
       clearToolGeometries();
       addToolGeometries([
-        Line(color: ArcadiaColors.geometry, start: point, end: _getEndPoint()),
+        Line(color: .geometry, start: point, end: _getEndPoint()),
       ]);
     }
   }
@@ -98,7 +96,11 @@ class _LineToolIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return Transform.rotate(
       angle: -pi / 4,
-      child: Container(width: 20, height: 1, color: ArcadiaColors.geometry),
+      child: Container(
+        width: 20,
+        height: 1,
+        color: ArcadiaColor.geometry.color,
+      ),
     );
   }
 }

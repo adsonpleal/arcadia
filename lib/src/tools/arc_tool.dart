@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/widgets.dart';
 
-import '../constants/arcadia_colors.dart';
+import '../constants/arcadia_color.dart';
 import '../geometry/arc.dart';
 import '../geometry/line.dart';
 import 'tool.dart';
@@ -50,7 +50,7 @@ class _ArcToolAction extends ToolAction {
         first: firstPoint!,
         second: secondPoint!,
         third: state.cursorPosition,
-        color: ArcadiaColors.geometry,
+        color: .geometry,
       ),
     ]);
 
@@ -64,11 +64,7 @@ class _ArcToolAction extends ToolAction {
     if (firstPoint != null) {
       if (secondPoint == null) {
         addToolGeometries([
-          Line(
-            start: firstPoint!,
-            end: state.cursorPosition,
-            color: ArcadiaColors.geometry,
-          ),
+          Line(start: firstPoint!, end: state.cursorPosition, color: .geometry),
         ]);
       } else {
         addToolGeometries([
@@ -76,7 +72,7 @@ class _ArcToolAction extends ToolAction {
             first: firstPoint!,
             second: secondPoint!,
             third: state.cursorPosition,
-            color: ArcadiaColors.geometry,
+            color: .geometry,
           ),
         ]);
       }
@@ -100,7 +96,7 @@ class _ArcToolIconPainter extends CustomPainter {
     const radius = 7.0;
     final paint = Paint()
       ..strokeWidth = 1
-      ..color = ArcadiaColors.geometry
+      ..color = ArcadiaColor.geometry.color
       ..style = .stroke;
     const points = [Offset(-radius, 0), Offset(radius, 0), Offset(0, -radius)];
 

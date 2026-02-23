@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import '../constants/arcadia_colors.dart';
+import '../constants/arcadia_color.dart';
 import 'geometry.dart';
 import 'point.dart';
 
@@ -33,14 +33,10 @@ class Circle extends Geometry {
       for (final corner in _cornerPoints)
         Point(
           position: corner * radius + center,
-          color: ArcadiaColors.snappingPoint,
+          color: .snappingPoint,
           shape: .square,
         ),
-      Point(
-        position: center,
-        color: ArcadiaColors.snappingPoint,
-        shape: .triangle,
-      ),
+      Point(position: center, color: .snappingPoint, shape: .triangle),
     ];
   }
 
@@ -48,7 +44,7 @@ class Circle extends Geometry {
   void render(Canvas canvas, Offset viewportOffset, double zoom) {
     final viewportCenter = (center * zoom) + viewportOffset;
     final paint = Paint()
-      ..color = color
+      ..color = color.color
       ..strokeWidth = strokeWidth
       ..style = .stroke;
 
@@ -63,7 +59,7 @@ class Circle extends Geometry {
   }
 
   @override
-  Geometry copyWith({double? strokeWidth, Color? color}) {
+  Geometry copyWith({double? strokeWidth, ArcadiaColor? color}) {
     return Circle(
       center: center,
       radius: radius,

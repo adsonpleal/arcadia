@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import '../constants/arcadia_color.dart';
 import 'point.dart';
 
 /// A class that represents a generic geometry.
@@ -15,7 +16,7 @@ abstract class Geometry {
   const Geometry({required this.color, this.strokeWidth = 1});
 
   /// The geometry's color.
-  final Color color;
+  final ArcadiaColor color;
 
   /// The width of the drawn stroke.
   final double strokeWidth;
@@ -36,5 +37,5 @@ abstract class Geometry {
   bool contains(Offset offset, double tolerance);
 
   /// Creates a copy of this geometry, replacing its [color] or/and [strokeWidth].
-  Geometry copyWith({double? strokeWidth, Color? color});
+  Geometry copyWith({double? strokeWidth, ArcadiaColor? color});
 }

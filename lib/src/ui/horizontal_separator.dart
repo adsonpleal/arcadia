@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import '../constants/arcadia_colors.dart';
+import '../constants/arcadia_color.dart';
 
 /// A horizontal separator that fits the width.
 class HorizontalSeparator extends StatelessWidget {
@@ -9,6 +9,6 @@ class HorizontalSeparator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(height: 1, color: ArcadiaColors.separator);
+    return Container(height: 1, color: ArcadiaColor.separator.color);
   }
 }

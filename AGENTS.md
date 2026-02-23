@@ -39,6 +39,7 @@ System flow:
 - Preserve existing interaction behavior for selection, snapping, undo/redo,
   and tool preview/finalization flows unless the task explicitly changes them.
 - Prefer Dart dot shorthands whenever possible.
+- Prefer `ArcadiaColor` instead of `Color` whenever possible.
 
 ## Change Workflow
 

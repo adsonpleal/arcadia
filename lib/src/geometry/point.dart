@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import '../constants/arcadia_color.dart';
 import 'geometry.dart';
 
 /// The shape of a point.
@@ -46,7 +47,7 @@ class Point extends Geometry {
     // shapes. The shape itself is just a 2D representation, so it will
     // not scale with the zoom.
     final viewportPosition = (position * zoom) + viewportOffset;
-    final paint = Paint()..color = color;
+    final paint = Paint()..color = color.color;
 
     switch (shape) {
       case .triangle:
@@ -73,7 +74,7 @@ class Point extends Geometry {
   }
 
   @override
-  Geometry copyWith({double? strokeWidth, Color? color}) {
+  Geometry copyWith({double? strokeWidth, ArcadiaColor? color}) {
     return Point(
       position: position,
       color: color ?? this.color,

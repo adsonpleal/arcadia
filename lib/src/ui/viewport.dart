@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 
-import '../constants/arcadia_colors.dart';
+import '../constants/arcadia_color.dart';
 import '../providers/viewport_notifier_provider.dart';
 import 'cursor_paint.dart';
 import 'grid_paint.dart';
@@ -42,10 +42,10 @@ class Viewport extends StatelessWidget {
       onPointerMove: onPointerMovement,
       onPointerHover: onPointerMovement,
       onPointerUp: (event) => context.viewportNotifier.onCursorClick(),
-      child: const ClipRRect(
+      child: ClipRRect(
         child: ColoredBox(
-          color: ArcadiaColors.viewportBackground,
-          child: Stack(
+          color: ArcadiaColor.viewportBackground.color,
+          child: const Stack(
             children: [
               Positioned.fill(child: GridPaint()),
               Positioned.fill(child: SelectionPaint()),

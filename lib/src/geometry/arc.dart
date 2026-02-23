@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
-import '../constants/arcadia_colors.dart';
+import '../constants/arcadia_color.dart';
 import 'geometry.dart';
 import 'point.dart';
 
@@ -25,7 +25,7 @@ class Arc extends Geometry {
     required Offset first,
     required Offset second,
     required Offset third,
-    required Color color,
+    required ArcadiaColor color,
   }) {
     final mid1 = (first + second) / 2;
     final mid2 = (second + third) / 2;
@@ -90,21 +90,9 @@ class Arc extends Geometry {
       sweepAngle: arcLength,
       color: color,
       snappingPoints: [
-        Point(
-          position: startSnapping,
-          color: ArcadiaColors.snappingPoint,
-          shape: .square,
-        ),
-        Point(
-          position: endSnapping,
-          color: ArcadiaColors.snappingPoint,
-          shape: .square,
-        ),
-        Point(
-          position: center,
-          color: ArcadiaColors.snappingPoint,
-          shape: .triangle,
-        ),
+        Point(position: startSnapping, color: .snappingPoint, shape: .square),
+        Point(position: endSnapping, color: .snappingPoint, shape: .square),
+        Point(position: center, color: .snappingPoint, shape: .triangle),
       ],
     );
   }
@@ -127,7 +115,7 @@ class Arc extends Geometry {
   @override
   void render(Canvas canvas, Offset viewportOffset, double zoom) {
     final paint = Paint()
-      ..color = color
+      ..color = color.color
       ..strokeWidth = strokeWidth
       ..style = .stroke;
     final rect = Rect.fromCircle(
@@ -155,7 +143,7 @@ class Arc extends Geometry {
   }
 
   @override
-  Geometry copyWith({double? strokeWidth, Color? color}) {
+  Geometry copyWith({double? strokeWidth, ArcadiaColor? color}) {
     return Arc._(
       center: center,
       radius: radius,

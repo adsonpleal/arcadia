@@ -1,3 +1,4 @@
+import 'package:arcadia/src/constants/arcadia_color.dart';
 import 'package:arcadia/src/geometry/point.dart';
 import 'package:arcadia/src/ui/viewport_painter.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,7 @@ void main() {
             zoom: 1,
             panOffset: .zero,
             geometries: const [
-              Point(position: .zero, color: Colors.red, shape: .triangle),
+              Point(position: .zero, color: .snappingPoint, shape: .triangle),
             ],
           ),
         ),
@@ -31,7 +32,7 @@ void main() {
             panOffset: .zero,
             zoom: 1,
             geometries: const [
-              Point(position: .zero, color: Colors.red, shape: .square),
+              Point(position: .zero, color: .snappingPoint, shape: .square),
             ],
           ),
         ),
@@ -50,7 +51,11 @@ void main() {
             zoom: 1,
             panOffset: const Offset(10, 10),
             geometries: [
-              const Point(position: .zero, color: Colors.red, shape: .square),
+              const Point(
+                position: .zero,
+                color: .snappingPoint,
+                shape: .square,
+              ),
             ],
           ),
         ),
@@ -71,12 +76,12 @@ void main() {
             geometries: const [
               Point(
                 position: Offset(0, -10),
-                color: Colors.red,
+                color: .snappingPoint,
                 shape: .square,
               ),
               Point(
                 position: Offset(0, 10),
-                color: Colors.blue,
+                color: .snappingLine,
                 shape: .square,
               ),
             ],
@@ -101,12 +106,12 @@ void main() {
             geometries: const [
               Point(
                 position: Offset(0, -10),
-                color: Colors.red,
+                color: .snappingPoint,
                 shape: .square,
               ),
               Point(
                 position: Offset(0, 10),
-                color: Colors.blue,
+                color: .snappingLine,
                 shape: .square,
               ),
             ],
@@ -130,7 +135,7 @@ void main() {
               for (var i = 0; i < 25; i++)
                 Point(
                   position: Offset((i % 5) * 10, (i ~/ 5) * 10),
-                  color: [Colors.red, Colors.blue][i % 2],
+                  color: <ArcadiaColor>[.snappingPoint, .snappingLine][i % 2],
                   shape: .values[i % 2],
                 ),
             ],

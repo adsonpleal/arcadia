@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../constants/arcadia_colors.dart';
 import '../constants/config.dart';
 import '../data/viewport_state.dart';
 import '../foundation/extensions/iterable_extensions.dart';
@@ -13,11 +12,7 @@ import '../tools/tool.dart';
 // this file depends on both flutter and macro stuff, so we can't test
 // it for now.
 
-const _origin = Point(
-  position: .zero,
-  color: ArcadiaColors.snappingPoint,
-  shape: .triangle,
-);
+const _origin = Point(position: .zero, color: .snappingPoint, shape: .triangle);
 
 /// A [ValueNotifier] that holds the [ViewportState].
 ///
@@ -194,7 +189,7 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
             snappingGeometries: [
               for (final offset in snappedLines)
                 Line(
-                  color: ArcadiaColors.snappingLine,
+                  color: .snappingLine,
                   start: offset,
                   end: orthoCursorPosition,
                 ),
@@ -302,15 +297,9 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
     value = value.copyWith(
       selectionGeometries: [
         if (_hoveringGeometry case final hovering?)
-          hovering.copyWith(
-            strokeWidth: 5,
-            color: ArcadiaColors.hoveringGeometry,
-          ),
+          hovering.copyWith(strokeWidth: 5, color: .hoveringGeometry),
         for (final geometry in _selectedGeometries)
-          geometry.copyWith(
-            strokeWidth: 5,
-            color: ArcadiaColors.selectedGeometry,
-          ),
+          geometry.copyWith(strokeWidth: 5, color: .selectedGeometry),
       ],
     );
   }

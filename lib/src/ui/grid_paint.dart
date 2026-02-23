@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import '../constants/arcadia_colors.dart';
+import '../constants/arcadia_color.dart';
 import '../constants/config.dart';
 import '../providers/viewport_notifier_provider.dart';
 
@@ -52,7 +52,7 @@ class _GridPainter extends CustomPainter {
     final dyEnd = dyStart + size.height ~/ space + 2;
 
     final paint = Paint()
-      ..color = ArcadiaColors.grid
+      ..color = ArcadiaColor.grid.color
       ..style = .stroke
       ..strokeWidth = 1;
 

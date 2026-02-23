@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../constants/arcadia_colors.dart';
+import '../constants/arcadia_color.dart';
 import '../providers/viewport_notifier_provider.dart';
 import '../tools/tool.dart';
 import '../tools/tools.dart';
@@ -18,7 +18,7 @@ class Toolbar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 40,
-      color: ArcadiaColors.componentBackground,
+      color: ArcadiaColor.componentBackground.color,
       alignment: Alignment.centerLeft,
       child: ListView.separated(
         padding: const EdgeInsets.all(8),
@@ -78,13 +78,13 @@ class _ToolButtonState extends State<_ToolButton> {
               height: 24,
               decoration: ShapeDecoration(
                 color: selected
-                    ? ArcadiaColors.selected
+                    ? ArcadiaColor.selected.color
                     : hovering
-                    ? ArcadiaColors.hover
+                    ? ArcadiaColor.hover.color
                     : null,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(4)),
-                  side: BorderSide(color: ArcadiaColors.geometry),
+                shape: RoundedRectangleBorder(
+                  borderRadius: const BorderRadius.all(Radius.circular(4)),
+                  side: BorderSide(color: ArcadiaColor.geometry.color),
                 ),
               ),
               child: Center(child: widget.tool.icon),

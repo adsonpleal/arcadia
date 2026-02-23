@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/widgets.dart';
 
-import '../constants/arcadia_colors.dart';
+import '../constants/arcadia_color.dart';
 import '../geometry/circle.dart';
 import '../geometry/line.dart';
 import 'tool.dart';
@@ -71,7 +71,7 @@ class _CircleToolAction extends ToolAction {
       clearToolGeometries();
       addToolGeometries([
         _getCurrentCircle(center),
-        Line(start: center, end: endPoint, color: ArcadiaColors.geometry),
+        Line(start: center, end: endPoint, color: .geometry),
       ]);
     }
   }
@@ -79,7 +79,7 @@ class _CircleToolAction extends ToolAction {
   Circle _getCurrentCircle(Offset center) {
     return Circle(
       center: center,
-      color: ArcadiaColors.geometry,
+      color: .geometry,
       radius: _fixedRadius ?? (state.cursorPosition - center).distance,
     );
   }
@@ -93,8 +93,10 @@ class _CircleToolIcon extends StatelessWidget {
     return Container(
       width: 16,
       height: 16,
-      decoration: const ShapeDecoration(
-        shape: CircleBorder(side: BorderSide(color: ArcadiaColors.geometry)),
+      decoration: ShapeDecoration(
+        shape: CircleBorder(
+          side: BorderSide(color: ArcadiaColor.geometry.color),
+        ),
       ),
     );
   }

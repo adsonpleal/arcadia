@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/painting.dart';
 
-import '../constants/arcadia_colors.dart';
+import '../constants/arcadia_color.dart';
 import 'geometry.dart';
 import 'point.dart';
 
@@ -25,13 +25,9 @@ class Line extends Geometry {
 
   @override
   List<Point> get snappingPoints => [
-    Point(position: start, color: ArcadiaColors.snappingPoint, shape: .square),
-    Point(position: end, color: ArcadiaColors.snappingPoint, shape: .square),
-    Point(
-      position: (start + end) / 2,
-      color: ArcadiaColors.snappingPoint,
-      shape: .triangle,
-    ),
+    Point(position: start, color: .snappingPoint, shape: .square),
+    Point(position: end, color: .snappingPoint, shape: .square),
+    Point(position: (start + end) / 2, color: .snappingPoint, shape: .triangle),
   ];
 
   @override
@@ -44,7 +40,7 @@ class Line extends Geometry {
     final endPosition = toViewportPosition(end);
 
     final paint = Paint()
-      ..color = color
+      ..color = color.color
       // Lines are always rendered with a width of 1 logical pixel.
       // Regardless of zoom.
       ..strokeWidth = strokeWidth;
@@ -75,7 +71,7 @@ class Line extends Geometry {
   }
 
   @override
-  Geometry copyWith({double? strokeWidth, Color? color}) {
+  Geometry copyWith({double? strokeWidth, ArcadiaColor? color}) {
     return Line(
       start: start,
       end: end,
