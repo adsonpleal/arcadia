@@ -1,13 +1,11 @@
 import 'dart:ui';
 
-import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
 import '../geometry/geometry.dart';
 import '../tools/tool.dart';
 
 const _undefined = Object();
-const _geometryListEquality = ListEquality<Geometry>();
 
 /// The state of the viewport.
 ///
@@ -99,19 +97,10 @@ class ViewportState {
   bool operator ==(Object other) {
     return identical(this, other) ||
         other is ViewportState &&
-            _geometryListEquality.equals(geometries, other.geometries) &&
-            _geometryListEquality.equals(
-              toolGeometries,
-              other.toolGeometries,
-            ) &&
-            _geometryListEquality.equals(
-              snappingGeometries,
-              other.snappingGeometries,
-            ) &&
-            _geometryListEquality.equals(
-              selectionGeometries,
-              other.selectionGeometries,
-            ) &&
+            listEquals(geometries, other.geometries) &&
+            listEquals(toolGeometries, other.toolGeometries) &&
+            listEquals(snappingGeometries, other.snappingGeometries) &&
+            listEquals(selectionGeometries, other.selectionGeometries) &&
             zoom == other.zoom &&
             panOffset == other.panOffset &&
             cursorPosition == other.cursorPosition &&
@@ -121,16 +110,16 @@ class ViewportState {
 
   @override
   int get hashCode {
-    return Object.hash(
-      _geometryListEquality.hash(geometries),
-      _geometryListEquality.hash(toolGeometries),
-      _geometryListEquality.hash(snappingGeometries),
-      _geometryListEquality.hash(selectionGeometries),
+    return Object.hashAll([
+      Object.hashAll(geometries),
+      Object.hashAll(toolGeometries),
+      Object.hashAll(snappingGeometries),
+      Object.hashAll(selectionGeometries),
       zoom,
       panOffset,
       cursorPosition,
       selectedTool,
       userInput,
-    );
+    ]);
   }
 }

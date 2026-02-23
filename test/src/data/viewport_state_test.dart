@@ -108,21 +108,57 @@ void main() {
     });
 
     test('uses deep equality for list fields', () {
-      const first = ViewportState(
-        geometries: [_lineA, _lineB],
-        toolGeometries: [_lineC],
-        snappingGeometries: [_lineB, _lineC],
-        selectionGeometries: [_lineA],
+      final geometries = [_lineA, _lineB];
+      final toolGeometries = [_lineC];
+      final snappingGeometries = [_lineB, _lineC];
+      final selectionGeometries = [_lineA];
+      final first = ViewportState(
+        geometries: geometries,
+        toolGeometries: toolGeometries,
+        snappingGeometries: snappingGeometries,
+        selectionGeometries: selectionGeometries,
       );
-      const second = ViewportState(
-        geometries: [_lineA, _lineB],
-        toolGeometries: [_lineC],
-        snappingGeometries: [_lineB, _lineC],
-        selectionGeometries: [_lineA],
+      final second = ViewportState(
+        geometries: [...geometries],
+        toolGeometries: [...toolGeometries],
+        snappingGeometries: [...snappingGeometries],
+        selectionGeometries: [...selectionGeometries],
       );
 
       expect(first, equals(second));
       expect(first.hashCode, second.hashCode);
+    });
+
+    test('hashCode uses Object.hashAll for list hashes', () {
+      final geometries = [_lineA, _lineB];
+      final toolGeometries = [_lineC];
+      final snappingGeometries = [_lineB, _lineC];
+      final selectionGeometries = [_lineA];
+      final state = ViewportState(
+        geometries: geometries,
+        toolGeometries: toolGeometries,
+        snappingGeometries: snappingGeometries,
+        selectionGeometries: selectionGeometries,
+        zoom: 2,
+        panOffset: const Offset(1, 2),
+        cursorPosition: const Offset(3, 4),
+        selectedTool: const LineTool(),
+        userInput: '10',
+      );
+
+      final expected = Object.hashAll([
+        Object.hashAll(state.geometries),
+        Object.hashAll(state.toolGeometries),
+        Object.hashAll(state.snappingGeometries),
+        Object.hashAll(state.selectionGeometries),
+        state.zoom,
+        state.panOffset,
+        state.cursorPosition,
+        state.selectedTool,
+        state.userInput,
+      ]);
+
+      expect(state.hashCode, expected);
     });
 
     test('states are different when any scalar field changes', () {

@@ -1,9 +1,9 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
 import '../constants/arcadia_colors.dart';
 import '../constants/config.dart';
 import '../data/viewport_state.dart';
+import '../foundation/extensions/iterable_extensions.dart';
 import '../geometry/geometry.dart';
 import '../geometry/line.dart';
 import '../geometry/point.dart';
@@ -55,10 +55,7 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
   void cancelToolAction() {
     clearToolGeometries();
     _toolAction = null;
-    value = value.copyWith(
-      selectedTool: null,
-      userInput: '',
-    );
+    value = value.copyWith(selectedTool: null, userInput: '');
     _lastSnaps.clear();
     _clearSelectedGeometries();
   }
@@ -125,8 +122,8 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
     final ViewportState(:zoom, :panOffset) = value;
     final newCursorPosition =
         (viewportPosition - viewportMidPoint - panOffset) /
-            zoom /
-            unitVirtualPixelRatio;
+        zoom /
+        unitVirtualPixelRatio;
 
     void applyDefaultCursorMovement() {
       value = value.copyWith(
@@ -138,10 +135,7 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
     // only perform snapping if there is a selected tool.
     if (_toolAction != null) {
       final snappingPoint = _snappingPoints.firstWhereOrNull(
-        (point) => point.contains(
-          newCursorPosition,
-          5 / zoom,
-        ),
+        (point) => point.contains(newCursorPosition, 5 / zoom),
       );
 
       if (snappingPoint != null) {
@@ -167,8 +161,10 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
 
             if (verticalSnappingRect.contains(orthoCursorPosition)) {
               snappedLines.add(snapOffset);
-              orthoCursorPosition =
-                  Offset(snapOffset.dx, orthoCursorPosition.dy);
+              orthoCursorPosition = Offset(
+                snapOffset.dx,
+                orthoCursorPosition.dy,
+              );
               snappedVertically = true;
               continue;
             }
@@ -183,8 +179,10 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
 
             if (horizontalSnappingRect.contains(orthoCursorPosition)) {
               snappedLines.add(snapOffset);
-              orthoCursorPosition =
-                  Offset(orthoCursorPosition.dx, snapOffset.dy);
+              orthoCursorPosition = Offset(
+                orthoCursorPosition.dx,
+                snapOffset.dy,
+              );
               snappedHorizontally = true;
             }
           }
@@ -219,12 +217,7 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
   void addGeometries(List<Geometry> geometries) {
     _undoStack.add([...value.geometries]);
     _redoStack.clear();
-    value = value.copyWith(
-      geometries: [
-        ...value.geometries,
-        ...geometries,
-      ],
-    );
+    value = value.copyWith(geometries: [...value.geometries, ...geometries]);
     _snappingPoints = [
       _origin,
       for (final geometry in value.geometries) ...geometry.snappingPoints,
@@ -234,10 +227,7 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
   /// Add tool geometries to state.
   void addToolGeometries(List<Geometry> geometries) {
     value = value.copyWith(
-      toolGeometries: [
-        ...value.toolGeometries,
-        ...geometries,
-      ],
+      toolGeometries: [...value.toolGeometries, ...geometries],
     );
   }
 
@@ -286,9 +276,7 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
   void undo() {
     if (_undoStack.isNotEmpty) {
       _redoStack.add([...value.geometries]);
-      value = value.copyWith(
-        geometries: _undoStack.removeLast(),
-      );
+      value = value.copyWith(geometries: _undoStack.removeLast());
     }
   }
 
@@ -296,9 +284,7 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
   void redo() {
     if (_redoStack.isNotEmpty) {
       _undoStack.add(value.geometries);
-      value = value.copyWith(
-        geometries: _redoStack.removeLast(),
-      );
+      value = value.copyWith(geometries: _redoStack.removeLast());
     }
   }
 
