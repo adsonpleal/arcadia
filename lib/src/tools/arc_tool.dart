@@ -96,7 +96,7 @@ class _ArcToolIconPainter extends CustomPainter {
     const radius = 7.0;
     final paint = Paint()
       ..strokeWidth = 1
-      ..color = ArcadiaColor.geometry.color
+      ..color = ArcadiaColor.geometry
       ..style = .stroke;
     const points = [Offset(-radius, 0), Offset(radius, 0), Offset(0, -radius)];
 

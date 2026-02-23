@@ -1,48 +1,48 @@
 import 'dart:ui';
 
+typedef _C = ArcadiaColor;
+
 /// Colors for the arcadia project.
 ///
 /// This project is dark mode only, so no need to have colors based of
 /// a theme.
-enum ArcadiaColor {
+class ArcadiaColor extends Color {
+  /// Default constructor for [ArcadiaColor].
+  const ArcadiaColor(super.value);
+
   /// Viewport's default background color.
-  viewportBackground(Color(0xFF252825)),
+  static const viewportBackground = _C(0xFF252825);
 
   /// Component default background color.
-  componentBackground(Color(0xFF433F3F)),
+  static const componentBackground = _C(0xFF433F3F);
 
   /// The color of the cursor pointer.
-  cursor(Color(0xFF0F9224)),
+  static const cursor = _C(0xFF0F9224);
 
   /// The default color of geometries in the viewport.
-  geometry(Color(0xFFFFFFFF)),
+  static const geometry = _C(0xFFFFFFFF);
 
   /// The default color of geometries in the viewport.
-  grid(Color(0x22FFFFFF)),
+  static const grid = _C(0x22FFFFFF);
 
   /// The default separator color.
-  separator(Color(0xFF696565)),
+  static const separator = _C(0xFF696565);
 
   /// The default hover color.
-  hover(Color(0xFF565353)),
+  static const hover = _C(0xFF565353);
 
   /// The default selected color.
-  selected(Color(0xFF696565)),
+  static const selected = _C(0xFF696565);
 
   /// The default snapping point color.
-  snappingPoint(Color(0xFFF76902)),
+  static const snappingPoint = _C(0xFFF76902);
 
   /// The default color for snapping lines.
-  snappingLine(Color(0xFFF50BDE)),
+  static const snappingLine = _C(0xFFF50BDE);
 
   /// The default hovering color for geometries.
-  hoveringGeometry(Color(0x99FF5A13)),
+  static const hoveringGeometry = _C(0x99FF5A13);
 
   /// The default selected color for geometries.
-  selectedGeometry(Color(0x99706DF6));
-
-  const ArcadiaColor(this.color);
-
-  /// The concrete color consumed by Flutter painting APIs.
-  final Color color;
+  static const selectedGeometry = _C(0x99706DF6);
 }

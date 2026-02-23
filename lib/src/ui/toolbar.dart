@@ -18,7 +18,7 @@ class Toolbar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 40,
-      color: ArcadiaColor.componentBackground.color,
+      color: ArcadiaColor.componentBackground,
       alignment: Alignment.centerLeft,
       child: ListView.separated(
         padding: const EdgeInsets.all(8),
@@ -78,13 +78,13 @@ class _ToolButtonState extends State<_ToolButton> {
               height: 24,
               decoration: ShapeDecoration(
                 color: selected
-                    ? ArcadiaColor.selected.color
+                    ? ArcadiaColor.selected
                     : hovering
-                    ? ArcadiaColor.hover.color
+                    ? ArcadiaColor.hover
                     : null,
-                shape: RoundedRectangleBorder(
-                  borderRadius: const BorderRadius.all(Radius.circular(4)),
-                  side: BorderSide(color: ArcadiaColor.geometry.color),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(4)),
+                  side: BorderSide(color: ArcadiaColor.geometry),
                 ),
               ),
               child: Center(child: widget.tool.icon),

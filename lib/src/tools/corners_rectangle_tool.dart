@@ -67,11 +67,7 @@ class _CornersRectangleIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final point = Container(
-      width: 2,
-      height: 2,
-      color: ArcadiaColor.geometry.color,
-    );
+    final point = Container(width: 2, height: 2, color: ArcadiaColor.geometry);
 
     return Stack(
       children: [
@@ -81,7 +77,7 @@ class _CornersRectangleIcon extends StatelessWidget {
           width: 14,
           height: 14,
           decoration: BoxDecoration(
-            border: Border.all(color: ArcadiaColor.geometry.color),
+            border: Border.all(color: ArcadiaColor.geometry),
           ),
         ),
         Positioned(bottom: 0, right: 0, child: point),

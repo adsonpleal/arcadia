@@ -63,11 +63,11 @@ class CursorPaint extends StatelessWidget {
                             padding: const EdgeInsets.all(4),
                             constraints: const BoxConstraints(maxWidth: 100),
                             decoration: ShapeDecoration(
-                              color: ArcadiaColor.viewportBackground.color,
+                              color: ArcadiaColor.viewportBackground,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4),
-                                side: BorderSide(
-                                  color: ArcadiaColor.separator.color,
+                                side: const BorderSide(
+                                  color: ArcadiaColor.separator,
                                 ),
                               ),
                             ),
@@ -97,7 +97,7 @@ class _CursorPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = ArcadiaColor.cursor.color
+      ..color = ArcadiaColor.cursor
       ..style = .stroke
       ..strokeWidth = 1;
 

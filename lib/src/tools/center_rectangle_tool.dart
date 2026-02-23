@@ -74,14 +74,10 @@ class _CenterRectangleIcon extends StatelessWidget {
       width: 14,
       height: 14,
       decoration: BoxDecoration(
-        border: Border.all(color: ArcadiaColor.geometry.color),
+        border: Border.all(color: ArcadiaColor.geometry),
       ),
       child: Center(
-        child: Container(
-          width: 2,
-          height: 2,
-          color: ArcadiaColor.geometry.color,
-        ),
+        child: Container(width: 2, height: 2, color: ArcadiaColor.geometry),
       ),
     );
   }

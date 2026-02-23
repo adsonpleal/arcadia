@@ -40,7 +40,7 @@ class Line extends Geometry {
     final endPosition = toViewportPosition(end);
 
     final paint = Paint()
-      ..color = color.color
+      ..color = color
       // Lines are always rendered with a width of 1 logical pixel.
       // Regardless of zoom.
       ..strokeWidth = strokeWidth;

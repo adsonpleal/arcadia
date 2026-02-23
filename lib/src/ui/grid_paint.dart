@@ -52,7 +52,7 @@ class _GridPainter extends CustomPainter {
     final dyEnd = dyStart + size.height ~/ space + 2;
 
     final paint = Paint()
-      ..color = ArcadiaColor.grid.color
+      ..color = ArcadiaColor.grid
       ..style = .stroke
       ..strokeWidth = 1;
 

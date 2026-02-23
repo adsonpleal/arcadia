@@ -96,11 +96,7 @@ class _LineToolIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return Transform.rotate(
       angle: -pi / 4,
-      child: Container(
-        width: 20,
-        height: 1,
-        color: ArcadiaColor.geometry.color,
-      ),
+      child: Container(width: 20, height: 1, color: ArcadiaColor.geometry),
     );
   }
 }

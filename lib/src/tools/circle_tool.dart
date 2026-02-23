@@ -93,10 +93,8 @@ class _CircleToolIcon extends StatelessWidget {
     return Container(
       width: 16,
       height: 16,
-      decoration: ShapeDecoration(
-        shape: CircleBorder(
-          side: BorderSide(color: ArcadiaColor.geometry.color),
-        ),
+      decoration: const ShapeDecoration(
+        shape: CircleBorder(side: BorderSide(color: ArcadiaColor.geometry)),
       ),
     );
   }

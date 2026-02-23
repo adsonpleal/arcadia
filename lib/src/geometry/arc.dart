@@ -115,7 +115,7 @@ class Arc extends Geometry {
   @override
   void render(Canvas canvas, Offset viewportOffset, double zoom) {
     final paint = Paint()
-      ..color = color.color
+      ..color = color
       ..strokeWidth = strokeWidth
       ..style = .stroke;
     final rect = Rect.fromCircle(

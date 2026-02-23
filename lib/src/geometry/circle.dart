@@ -44,7 +44,7 @@ class Circle extends Geometry {
   void render(Canvas canvas, Offset viewportOffset, double zoom) {
     final viewportCenter = (center * zoom) + viewportOffset;
     final paint = Paint()
-      ..color = color.color
+      ..color = color
       ..strokeWidth = strokeWidth
       ..style = .stroke;
 
