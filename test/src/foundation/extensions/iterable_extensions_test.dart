@@ -2,7 +2,7 @@ import 'package:arcadia/src/foundation/extensions/iterable_extensions.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('IterableFirstWhereOrNullExtension', () {
+  group('IterableExtensions', () {
     test('returns the first matching element', () {
       final values = [1, 2, 3, 4];
 
