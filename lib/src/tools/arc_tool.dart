@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import '../constants/arcadia_colors.dart';
@@ -24,8 +23,7 @@ class ArcTool implements Tool {
   String get name => 'Arc';
 
   @override
-  ShortcutActivator get shortcut =>
-      const SingleActivator(LogicalKeyboardKey.keyA);
+  ShortcutActivator get shortcut => const SingleActivator(.keyA);
 
   @override
   ToolActionFactory get toolActionFactory => _ArcToolAction.new;
@@ -103,11 +101,11 @@ class _ArcToolIconPainter extends CustomPainter {
     final paint = Paint()
       ..strokeWidth = 1
       ..color = ArcadiaColors.geometry
-      ..style = PaintingStyle.stroke;
+      ..style = .stroke;
     const points = [Offset(-radius, 0), Offset(radius, 0), Offset(0, -radius)];
 
     canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
+      .fromCircle(center: center, radius: radius),
       pi,
       pi,
       false,
@@ -116,8 +114,8 @@ class _ArcToolIconPainter extends CustomPainter {
 
     for (final point in points) {
       canvas.drawRect(
-        Rect.fromCenter(center: center + point, width: 3, height: 3),
-        paint..style = PaintingStyle.fill,
+        .fromCenter(center: center + point, width: 3, height: 3),
+        paint..style = .fill,
       );
     }
   }

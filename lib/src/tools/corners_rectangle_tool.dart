@@ -1,4 +1,3 @@
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import '../constants/arcadia_colors.dart';
@@ -16,8 +15,7 @@ class CornersRectangleTool implements Tool {
   String get name => 'Corners rectangle';
 
   @override
-  ShortcutActivator get shortcut =>
-      const SingleActivator(LogicalKeyboardKey.keyT);
+  ShortcutActivator get shortcut => const SingleActivator(.keyT);
 
   @override
   ToolActionFactory get toolActionFactory => _CornersRectangleToolAction.new;

@@ -38,6 +38,7 @@ System flow:
   explicitly requested to change.
 - Preserve existing interaction behavior for selection, snapping, undo/redo,
   and tool preview/finalization flows unless the task explicitly changes them.
+- Prefer Dart dot shorthands whenever possible.
 
 ## Change Workflow
 

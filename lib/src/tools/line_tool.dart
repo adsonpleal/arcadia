@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../constants/arcadia_colors.dart';
 import '../geometry/line.dart';
@@ -20,8 +19,7 @@ class LineTool implements Tool {
   String get name => 'Line';
 
   @override
-  ShortcutActivator get shortcut =>
-      const SingleActivator(LogicalKeyboardKey.keyL);
+  ShortcutActivator get shortcut => const SingleActivator(.keyL);
 
   @override
   Widget get icon => const _LineToolIcon();
@@ -79,7 +77,7 @@ class _LineToolAction extends ToolAction {
         return cursor;
       }
     } else {
-      return Offset.zero;
+      return .zero;
     }
   }
 

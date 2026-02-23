@@ -22,7 +22,7 @@ class Toolbar extends StatelessWidget {
       alignment: Alignment.centerLeft,
       child: ListView.separated(
         padding: const EdgeInsets.all(8),
-        scrollDirection: Axis.horizontal,
+        scrollDirection: .horizontal,
         shrinkWrap: true,
         itemCount: tools.length,
         separatorBuilder: (context, index) => const SizedBox(width: 8),

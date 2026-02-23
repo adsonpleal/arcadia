@@ -9,7 +9,7 @@ void _testLine(
   String description, {
   required List<Line> lines,
   required String goldenName,
-  Offset panOffset = Offset.zero,
+  Offset panOffset = .zero,
   double zoom = 1,
 }) {
   testWidgets(description, (tester) async {

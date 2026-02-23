@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart' hide Viewport;
-import 'package:flutter/services.dart';
 
 import '../providers/viewport_notifier_provider.dart';
 import '../tools/tool.dart';
@@ -21,28 +20,20 @@ class ProjectPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isMacOS = Theme.of(context).platform == TargetPlatform.macOS;
+    final isMacOS = Theme.of(context).platform == .macOS;
     final numbersInput = [for (var i = 0; i <= 9; i++) '$i', '.'];
 
     return Shortcuts(
       shortcuts: {
         for (final tool in tools) tool.shortcut: _ToolIntent(tool),
-        const SingleActivator(LogicalKeyboardKey.escape): const _CancelIntent(),
+        const SingleActivator(.escape): const _CancelIntent(),
         for (final input in numbersInput)
           CharacterActivator(input): _ValueInputIntent(input),
-        const SingleActivator(LogicalKeyboardKey.backspace):
-            const _ValueInputIntent('back'),
-        SingleActivator(
-          LogicalKeyboardKey.keyZ,
-          meta: isMacOS,
-          control: !isMacOS,
-        ): const _UndoIntent(),
-        SingleActivator(
-          LogicalKeyboardKey.keyZ,
-          meta: isMacOS,
-          control: !isMacOS,
-          shift: true,
-        ): const _RedoIntent(),
+        const SingleActivator(.backspace): const _ValueInputIntent('back'),
+        SingleActivator(.keyZ, meta: isMacOS, control: !isMacOS):
+            const _UndoIntent(),
+        SingleActivator(.keyZ, meta: isMacOS, control: !isMacOS, shift: true):
+            const _RedoIntent(),
       },
       child: Actions(
         actions: {

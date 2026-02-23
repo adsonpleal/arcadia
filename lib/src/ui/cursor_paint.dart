@@ -98,7 +98,7 @@ class _CursorPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = ArcadiaColors.cursor
-      ..style = PaintingStyle.stroke
+      ..style = .stroke
       ..strokeWidth = 1;
 
     final cursorPath = Path()

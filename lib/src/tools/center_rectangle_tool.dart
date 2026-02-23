@@ -1,4 +1,3 @@
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import '../constants/arcadia_colors.dart';
@@ -16,8 +15,7 @@ class CenterRectangleTool implements Tool {
   String get name => 'Center rectangle';
 
   @override
-  ShortcutActivator get shortcut =>
-      const SingleActivator(LogicalKeyboardKey.keyR);
+  ShortcutActivator get shortcut => const SingleActivator(.keyR);
 
   @override
   ToolActionFactory get toolActionFactory => _CenterRectangleToolAction.new;

@@ -34,12 +34,12 @@ class Circle extends Geometry {
         Point(
           position: corner * radius + center,
           color: ArcadiaColors.snappingPoint,
-          shape: PointShape.square,
+          shape: .square,
         ),
       Point(
         position: center,
         color: ArcadiaColors.snappingPoint,
-        shape: PointShape.triangle,
+        shape: .triangle,
       ),
     ];
   }
@@ -50,7 +50,7 @@ class Circle extends Geometry {
     final paint = Paint()
       ..color = color
       ..strokeWidth = strokeWidth
-      ..style = PaintingStyle.stroke;
+      ..style = .stroke;
 
     canvas.drawCircle(viewportCenter, radius * zoom, paint);
   }

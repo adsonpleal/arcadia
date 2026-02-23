@@ -10,13 +10,9 @@ void main() {
         CustomPaint(
           painter: ViewportPainter(
             zoom: 1,
-            panOffset: Offset.zero,
+            panOffset: .zero,
             geometries: const [
-              Point(
-                position: Offset.zero,
-                color: Colors.red,
-                shape: PointShape.triangle,
-              ),
+              Point(position: .zero, color: Colors.red, shape: .triangle),
             ],
           ),
         ),
@@ -32,14 +28,10 @@ void main() {
       await tester.pumpWidget(
         CustomPaint(
           painter: ViewportPainter(
-            panOffset: Offset.zero,
+            panOffset: .zero,
             zoom: 1,
             geometries: const [
-              Point(
-                position: Offset.zero,
-                color: Colors.red,
-                shape: PointShape.square,
-              ),
+              Point(position: .zero, color: Colors.red, shape: .square),
             ],
           ),
         ),
@@ -58,11 +50,7 @@ void main() {
             zoom: 1,
             panOffset: const Offset(10, 10),
             geometries: [
-              const Point(
-                position: Offset.zero,
-                color: Colors.red,
-                shape: PointShape.square,
-              ),
+              const Point(position: .zero, color: Colors.red, shape: .square),
             ],
           ),
         ),
@@ -78,18 +66,18 @@ void main() {
       await tester.pumpWidget(
         CustomPaint(
           painter: ViewportPainter(
-            panOffset: Offset.zero,
+            panOffset: .zero,
             zoom: 1,
             geometries: const [
               Point(
                 position: Offset(0, -10),
                 color: Colors.red,
-                shape: PointShape.square,
+                shape: .square,
               ),
               Point(
                 position: Offset(0, 10),
                 color: Colors.blue,
-                shape: PointShape.square,
+                shape: .square,
               ),
             ],
           ),
@@ -109,17 +97,17 @@ void main() {
         CustomPaint(
           painter: ViewportPainter(
             zoom: 2,
-            panOffset: Offset.zero,
+            panOffset: .zero,
             geometries: const [
               Point(
                 position: Offset(0, -10),
                 color: Colors.red,
-                shape: PointShape.square,
+                shape: .square,
               ),
               Point(
                 position: Offset(0, 10),
                 color: Colors.blue,
-                shape: PointShape.square,
+                shape: .square,
               ),
             ],
           ),
@@ -143,7 +131,7 @@ void main() {
                 Point(
                   position: Offset((i % 5) * 10, (i ~/ 5) * 10),
                   color: [Colors.red, Colors.blue][i % 2],
-                  shape: PointShape.values[i % 2],
+                  shape: .values[i % 2],
                 ),
             ],
           ),

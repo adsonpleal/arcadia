@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import '../constants/arcadia_colors.dart';
@@ -19,8 +18,7 @@ class CircleTool implements Tool {
   String get name => 'Circle';
 
   @override
-  ShortcutActivator get shortcut =>
-      const SingleActivator(LogicalKeyboardKey.keyC);
+  ShortcutActivator get shortcut => const SingleActivator(.keyC);
 
   @override
   ToolActionFactory get toolActionFactory => _CircleToolAction.new;

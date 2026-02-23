@@ -19,6 +19,7 @@ const _lineC = Line(
   end: Offset(6, 5),
   color: ArcadiaColors.geometry,
 );
+const Offset _zeroOffset = .zero;
 
 void main() {
   group('ViewportState', () {
@@ -30,8 +31,8 @@ void main() {
       expect(state.snappingGeometries, isEmpty);
       expect(state.selectionGeometries, isEmpty);
       expect(state.zoom, 1.0);
-      expect(state.panOffset, Offset.zero);
-      expect(state.cursorPosition, Offset.zero);
+      expect(state.panOffset, _zeroOffset);
+      expect(state.cursorPosition, _zeroOffset);
       expect(state.selectedTool, isNull);
       expect(state.userInput, isEmpty);
     });

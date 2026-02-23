@@ -20,8 +20,8 @@ class ViewportState {
     this.snappingGeometries = const [],
     this.selectionGeometries = const [],
     this.zoom = 1.0,
-    this.panOffset = Offset.zero,
-    this.cursorPosition = Offset.zero,
+    this.panOffset = .zero,
+    this.cursorPosition = .zero,
     this.selectedTool,
     this.userInput = '',
   });

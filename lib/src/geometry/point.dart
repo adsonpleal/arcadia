@@ -49,7 +49,7 @@ class Point extends Geometry {
     final paint = Paint()..color = color;
 
     switch (shape) {
-      case PointShape.triangle:
+      case .triangle:
         final trianglePath = Path()
           ..moveTo(
             viewportPosition.dx - _pointSize / 2,
@@ -59,9 +59,9 @@ class Point extends Geometry {
           ..relativeLineTo(-_pointSize / 2, -_pointSize)
           ..close();
         canvas.drawPath(trianglePath, paint);
-      case PointShape.square:
+      case .square:
         canvas.drawRect(
-          viewportPosition - _pointOffset & const Size.square(_pointSize),
+          viewportPosition - _pointOffset & const .square(_pointSize),
           paint,
         );
     }

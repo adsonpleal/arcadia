@@ -11,7 +11,7 @@ void _testArc(
   String description, {
   required List<Geometry> geometries,
   required String goldenName,
-  Offset panOffset = Offset.zero,
+  Offset panOffset = .zero,
   double zoom = 1,
 }) {
   testWidgets(description, (tester) async {
@@ -35,19 +35,15 @@ void _testArc(
 void main() {
   group('Arc', () {
     final points = [
+      const Point(color: Colors.blue, shape: .square, position: Offset(14, 14)),
       const Point(
         color: Colors.blue,
-        shape: PointShape.square,
-        position: Offset(14, 14),
-      ),
-      const Point(
-        color: Colors.blue,
-        shape: PointShape.square,
+        shape: .square,
         position: Offset(-20, 20),
       ),
       const Point(
         color: Colors.blue,
-        shape: PointShape.square,
+        shape: .square,
         position: Offset(-40, 40),
       ),
     ];

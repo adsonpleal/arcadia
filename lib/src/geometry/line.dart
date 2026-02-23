@@ -25,20 +25,12 @@ class Line extends Geometry {
 
   @override
   List<Point> get snappingPoints => [
-    Point(
-      position: start,
-      color: ArcadiaColors.snappingPoint,
-      shape: PointShape.square,
-    ),
-    Point(
-      position: end,
-      color: ArcadiaColors.snappingPoint,
-      shape: PointShape.square,
-    ),
+    Point(position: start, color: ArcadiaColors.snappingPoint, shape: .square),
+    Point(position: end, color: ArcadiaColors.snappingPoint, shape: .square),
     Point(
       position: (start + end) / 2,
       color: ArcadiaColors.snappingPoint,
-      shape: PointShape.triangle,
+      shape: .triangle,
     ),
   ];
 

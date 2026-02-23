@@ -93,17 +93,17 @@ class Arc extends Geometry {
         Point(
           position: startSnapping,
           color: ArcadiaColors.snappingPoint,
-          shape: PointShape.square,
+          shape: .square,
         ),
         Point(
           position: endSnapping,
           color: ArcadiaColors.snappingPoint,
-          shape: PointShape.square,
+          shape: .square,
         ),
         Point(
           position: center,
           color: ArcadiaColors.snappingPoint,
-          shape: PointShape.triangle,
+          shape: .triangle,
         ),
       ],
     );
@@ -129,7 +129,7 @@ class Arc extends Geometry {
     final paint = Paint()
       ..color = color
       ..strokeWidth = strokeWidth
-      ..style = PaintingStyle.stroke;
+      ..style = .stroke;
     final rect = Rect.fromCircle(
       center: center * zoom + viewportOffset,
       radius: radius * zoom,

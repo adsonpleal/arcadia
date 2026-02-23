@@ -14,9 +14,9 @@ import '../tools/tool.dart';
 // it for now.
 
 const _origin = Point(
-  position: Offset.zero,
+  position: .zero,
   color: ArcadiaColors.snappingPoint,
-  shape: PointShape.triangle,
+  shape: .triangle,
 );
 
 /// A [ValueNotifier] that holds the [ViewportState].

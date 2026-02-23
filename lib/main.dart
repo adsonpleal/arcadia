@@ -15,7 +15,7 @@ class Arcadia extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.dark(),
+      theme: .dark(),
       home: const Scaffold(
         body: ViewportNotifierProvider(child: ProjectPage()),
       ),

@@ -53,7 +53,7 @@ class _GridPainter extends CustomPainter {
 
     final paint = Paint()
       ..color = ArcadiaColors.grid
-      ..style = PaintingStyle.stroke
+      ..style = .stroke
       ..strokeWidth = 1;
 
     for (var i = dxStart; i < dxEnd; i++) {
