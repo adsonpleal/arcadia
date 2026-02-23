@@ -10,10 +10,7 @@ import '../logic/viewport_notifier.dart';
 /// The provider for [ViewportNotifier]
 class ViewportNotifierProvider extends StatefulWidget {
   /// The default constructor for [ViewportNotifierProvider].
-  const ViewportNotifierProvider({
-    required this.child,
-    super.key,
-  });
+  const ViewportNotifierProvider({required this.child, super.key});
 
   /// The child widget, the [ViewportNotifierProvider] has no UI, so the [child]
   /// will be rendered without changes.
@@ -36,10 +33,7 @@ class _ViewportNotifierProviderState extends State<ViewportNotifierProvider> {
 
   @override
   Widget build(BuildContext context) {
-    return _ViewportInheritedNotifier(
-      notifier: notifier,
-      child: widget.child,
-    );
+    return _ViewportInheritedNotifier(notifier: notifier, child: widget.child);
   }
 }
 

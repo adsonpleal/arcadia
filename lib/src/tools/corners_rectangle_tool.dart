@@ -16,9 +16,8 @@ class CornersRectangleTool implements Tool {
   String get name => 'Corners rectangle';
 
   @override
-  ShortcutActivator get shortcut => const SingleActivator(
-        LogicalKeyboardKey.keyT,
-      );
+  ShortcutActivator get shortcut =>
+      const SingleActivator(LogicalKeyboardKey.keyT);
 
   @override
   ToolActionFactory get toolActionFactory => _CornersRectangleToolAction.new;
@@ -61,26 +60,10 @@ class _CornersRectangleToolAction extends ToolAction {
     final corner4 = Offset(corner1.dx, corner3.dy);
 
     return [
-      Line(
-        start: corner1,
-        end: corner2,
-        color: ArcadiaColors.geometry,
-      ),
-      Line(
-        start: corner2,
-        end: corner3,
-        color: ArcadiaColors.geometry,
-      ),
-      Line(
-        start: corner3,
-        end: corner4,
-        color: ArcadiaColors.geometry,
-      ),
-      Line(
-        start: corner4,
-        end: corner1,
-        color: ArcadiaColors.geometry,
-      ),
+      Line(start: corner1, end: corner2, color: ArcadiaColors.geometry),
+      Line(start: corner2, end: corner3, color: ArcadiaColors.geometry),
+      Line(start: corner3, end: corner4, color: ArcadiaColors.geometry),
+      Line(start: corner4, end: corner1, color: ArcadiaColors.geometry),
     ];
   }
 }
@@ -90,34 +73,20 @@ class _CornersRectangleIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final point = Container(
-      width: 2,
-      height: 2,
-      color: ArcadiaColors.geometry,
-    );
+    final point = Container(width: 2, height: 2, color: ArcadiaColors.geometry);
 
     return Stack(
       children: [
-        Positioned(
-          top: 0,
-          left: 0,
-          child: point,
-        ),
+        Positioned(top: 0, left: 0, child: point),
         Container(
           margin: const EdgeInsets.all(1),
           width: 14,
           height: 14,
           decoration: BoxDecoration(
-            border: Border.all(
-              color: ArcadiaColors.geometry,
-            ),
+            border: Border.all(color: ArcadiaColors.geometry),
           ),
         ),
-        Positioned(
-          bottom: 0,
-          right: 0,
-          child: point,
-        ),
+        Positioned(bottom: 0, right: 0, child: point),
       ],
     );
   }

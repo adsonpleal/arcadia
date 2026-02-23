@@ -47,24 +47,12 @@ class Viewport extends StatelessWidget {
           color: ArcadiaColors.viewportBackground,
           child: Stack(
             children: [
-              Positioned.fill(
-                child: GridPaint(),
-              ),
-              Positioned.fill(
-                child: SelectionPaint(),
-              ),
-              Positioned.fill(
-                child: ViewportPaint(),
-              ),
-              Positioned.fill(
-                child: SnappingViewportPaint(),
-              ),
-              Positioned.fill(
-                child: ToolViewportPaint(),
-              ),
-              Positioned.fill(
-                child: CursorPaint(),
-              ),
+              Positioned.fill(child: GridPaint()),
+              Positioned.fill(child: SelectionPaint()),
+              Positioned.fill(child: ViewportPaint()),
+              Positioned.fill(child: SnappingViewportPaint()),
+              Positioned.fill(child: ToolViewportPaint()),
+              Positioned.fill(child: CursorPaint()),
             ],
           ),
         ),

@@ -24,9 +24,8 @@ class ArcTool implements Tool {
   String get name => 'Arc';
 
   @override
-  ShortcutActivator get shortcut => const SingleActivator(
-        LogicalKeyboardKey.keyA,
-      );
+  ShortcutActivator get shortcut =>
+      const SingleActivator(LogicalKeyboardKey.keyA);
 
   @override
   ToolActionFactory get toolActionFactory => _ArcToolAction.new;
@@ -92,11 +91,7 @@ class _ArcToolIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.expand(
-      child: CustomPaint(
-        painter: _ArcToolIconPainter(),
-      ),
-    );
+    return SizedBox.expand(child: CustomPaint(painter: _ArcToolIconPainter()));
   }
 }
 
@@ -109,11 +104,7 @@ class _ArcToolIconPainter extends CustomPainter {
       ..strokeWidth = 1
       ..color = ArcadiaColors.geometry
       ..style = PaintingStyle.stroke;
-    const points = [
-      Offset(-radius, 0),
-      Offset(radius, 0),
-      Offset(0, -radius),
-    ];
+    const points = [Offset(-radius, 0), Offset(radius, 0), Offset(0, -radius)];
 
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),

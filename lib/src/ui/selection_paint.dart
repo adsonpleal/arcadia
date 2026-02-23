@@ -12,19 +12,14 @@ import 'viewport_painter.dart';
 /// This widget renders the selectionGeometries.
 class SelectionPaint extends StatelessWidget {
   /// The default [SelectionPaint] constructor.
-  const SelectionPaint({
-    super.key,
-  });
+  const SelectionPaint({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ViewportStateBuilder(
       // Only rebuild if zoom or panOffset or selectionGeometries change.
-      select: (state) => (
-        state.zoom,
-        state.panOffset,
-        state.selectionGeometries,
-      ),
+      select: (state) =>
+          (state.zoom, state.panOffset, state.selectionGeometries),
       builder: (context, value) {
         final (zoom, panOffset, selectionGeometries) = value;
 

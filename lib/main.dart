@@ -17,9 +17,7 @@ class Arcadia extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData.dark(),
       home: const Scaffold(
-        body: ViewportNotifierProvider(
-          child: ProjectPage(),
-        ),
+        body: ViewportNotifierProvider(child: ProjectPage()),
       ),
     );
   }

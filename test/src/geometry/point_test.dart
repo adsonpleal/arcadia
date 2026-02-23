@@ -102,36 +102,35 @@ void main() {
       );
     });
 
-    testWidgets(
-      'should change points distance when there is a zoom applied',
-      (tester) async {
-        await tester.pumpWidget(
-          CustomPaint(
-            painter: ViewportPainter(
-              zoom: 2,
-              panOffset: Offset.zero,
-              geometries: const [
-                Point(
-                  position: Offset(0, -10),
-                  color: Colors.red,
-                  shape: PointShape.square,
-                ),
-                Point(
-                  position: Offset(0, 10),
-                  color: Colors.blue,
-                  shape: PointShape.square,
-                ),
-              ],
-            ),
+    testWidgets('should change points distance when there is a zoom applied', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        CustomPaint(
+          painter: ViewportPainter(
+            zoom: 2,
+            panOffset: Offset.zero,
+            geometries: const [
+              Point(
+                position: Offset(0, -10),
+                color: Colors.red,
+                shape: PointShape.square,
+              ),
+              Point(
+                position: Offset(0, 10),
+                color: Colors.blue,
+                shape: PointShape.square,
+              ),
+            ],
           ),
-        );
+        ),
+      );
 
-        await expectLater(
-          find.byType(CustomPaint),
-          matchesGoldenFile('goldens/point/2xZoom.png'),
-        );
-      },
-    );
+      await expectLater(
+        find.byType(CustomPaint),
+        matchesGoldenFile('goldens/point/2xZoom.png'),
+      );
+    });
 
     testWidgets('should render multiple points', (tester) async {
       await tester.pumpWidget(

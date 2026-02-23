@@ -25,22 +25,22 @@ class Line extends Geometry {
 
   @override
   List<Point> get snappingPoints => [
-        Point(
-          position: start,
-          color: ArcadiaColors.snappingPoint,
-          shape: PointShape.square,
-        ),
-        Point(
-          position: end,
-          color: ArcadiaColors.snappingPoint,
-          shape: PointShape.square,
-        ),
-        Point(
-          position: (start + end) / 2,
-          color: ArcadiaColors.snappingPoint,
-          shape: PointShape.triangle,
-        ),
-      ];
+    Point(
+      position: start,
+      color: ArcadiaColors.snappingPoint,
+      shape: PointShape.square,
+    ),
+    Point(
+      position: end,
+      color: ArcadiaColors.snappingPoint,
+      shape: PointShape.square,
+    ),
+    Point(
+      position: (start + end) / 2,
+      color: ArcadiaColors.snappingPoint,
+      shape: PointShape.triangle,
+    ),
+  ];
 
   @override
   void render(Canvas canvas, Offset viewportOffset, double zoom) {
@@ -71,7 +71,8 @@ class Line extends Geometry {
       return false;
     }
 
-    final distance = ((end.dy - start.dy) * offset.dx -
+    final distance =
+        ((end.dy - start.dy) * offset.dx -
                 (end.dx - start.dx) * offset.dy +
                 end.dx * start.dy -
                 end.dy * start.dx)
@@ -97,9 +98,6 @@ extension on Offset {
     final cosTheta = cos(radians);
     final sinTheta = sin(radians);
 
-    return Offset(
-      dx * cosTheta - dy * sinTheta,
-      dx * sinTheta + dy * cosTheta,
-    );
+    return Offset(dx * cosTheta - dy * sinTheta, dx * sinTheta + dy * cosTheta);
   }
 }

@@ -12,7 +12,6 @@ import '../logic/viewport_notifier.dart';
 typedef ToolActionFactory = ToolAction Function();
 
 @immutable
-
 /// The interface of a Tool.
 abstract interface class Tool {
   /// The name of the tool.

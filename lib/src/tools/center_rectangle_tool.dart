@@ -16,9 +16,8 @@ class CenterRectangleTool implements Tool {
   String get name => 'Center rectangle';
 
   @override
-  ShortcutActivator get shortcut => const SingleActivator(
-        LogicalKeyboardKey.keyR,
-      );
+  ShortcutActivator get shortcut =>
+      const SingleActivator(LogicalKeyboardKey.keyR);
 
   @override
   ToolActionFactory get toolActionFactory => _CenterRectangleToolAction.new;
@@ -64,26 +63,10 @@ class _CenterRectangleToolAction extends ToolAction {
     final corner4 = Offset(cornerDelta.dx, cornerDelta.dy * -1) + center;
 
     return [
-      Line(
-        start: corner1,
-        end: corner2,
-        color: ArcadiaColors.geometry,
-      ),
-      Line(
-        start: corner2,
-        end: corner3,
-        color: ArcadiaColors.geometry,
-      ),
-      Line(
-        start: corner3,
-        end: corner4,
-        color: ArcadiaColors.geometry,
-      ),
-      Line(
-        start: corner4,
-        end: corner1,
-        color: ArcadiaColors.geometry,
-      ),
+      Line(start: corner1, end: corner2, color: ArcadiaColors.geometry),
+      Line(start: corner2, end: corner3, color: ArcadiaColors.geometry),
+      Line(start: corner3, end: corner4, color: ArcadiaColors.geometry),
+      Line(start: corner4, end: corner1, color: ArcadiaColors.geometry),
     ];
   }
 }
@@ -97,16 +80,10 @@ class _CenterRectangleIcon extends StatelessWidget {
       width: 14,
       height: 14,
       decoration: BoxDecoration(
-        border: Border.all(
-          color: ArcadiaColors.geometry,
-        ),
+        border: Border.all(color: ArcadiaColors.geometry),
       ),
       child: Center(
-        child: Container(
-          width: 2,
-          height: 2,
-          color: ArcadiaColors.geometry,
-        ),
+        child: Container(width: 2, height: 2, color: ArcadiaColors.geometry),
       ),
     );
   }

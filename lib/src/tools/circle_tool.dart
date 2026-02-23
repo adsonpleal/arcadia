@@ -19,9 +19,8 @@ class CircleTool implements Tool {
   String get name => 'Circle';
 
   @override
-  ShortcutActivator get shortcut => const SingleActivator(
-        LogicalKeyboardKey.keyC,
-      );
+  ShortcutActivator get shortcut =>
+      const SingleActivator(LogicalKeyboardKey.keyC);
 
   @override
   ToolActionFactory get toolActionFactory => _CircleToolAction.new;
@@ -65,11 +64,8 @@ class _CircleToolAction extends ToolAction {
 
       if (_fixedRadius case final fixedRadius?) {
         final angle = (cursor - center).direction;
-        endPoint = center +
-            Offset(
-              fixedRadius * cos(angle),
-              fixedRadius * sin(angle),
-            );
+        endPoint =
+            center + Offset(fixedRadius * cos(angle), fixedRadius * sin(angle));
       } else {
         endPoint = cursor;
       }
@@ -77,11 +73,7 @@ class _CircleToolAction extends ToolAction {
       clearToolGeometries();
       addToolGeometries([
         _getCurrentCircle(center),
-        Line(
-          start: center,
-          end: endPoint,
-          color: ArcadiaColors.geometry,
-        ),
+        Line(start: center, end: endPoint, color: ArcadiaColors.geometry),
       ]);
     }
   }
@@ -104,11 +96,7 @@ class _CircleToolIcon extends StatelessWidget {
       width: 16,
       height: 16,
       decoration: const ShapeDecoration(
-        shape: CircleBorder(
-          side: BorderSide(
-            color: ArcadiaColors.geometry,
-          ),
-        ),
+        shape: CircleBorder(side: BorderSide(color: ArcadiaColors.geometry)),
       ),
     );
   }

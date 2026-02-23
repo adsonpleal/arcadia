@@ -12,19 +12,13 @@ import 'viewport_painter.dart';
 /// This widget renders the geometries.
 class ViewportPaint extends StatelessWidget {
   /// The default [ViewportPaint] constructor.
-  const ViewportPaint({
-    super.key,
-  });
+  const ViewportPaint({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ViewportStateBuilder(
       // Only rebuild if zoom or panOffset or geometries change.
-      select: (state) => (
-        state.zoom,
-        state.panOffset,
-        state.geometries,
-      ),
+      select: (state) => (state.zoom, state.panOffset, state.geometries),
       builder: (context, value) {
         final (zoom, panOffset, geometries) = value;
 

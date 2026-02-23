@@ -51,9 +51,8 @@ class Arc extends Geometry {
     }
 
     /// sorted counterclockwise by their angles
-    final sortedPoints = [first, second, third]..sort(
-        (a, b) => angle(a).compareTo(angle(b)),
-      );
+    final sortedPoints = [first, second, third]
+      ..sort((a, b) => angle(a).compareTo(angle(b)));
     final [angleA, angleB, angleC] = sortedPoints.map(angle).toList();
     final firstArcLength = angleC - angleA;
     final secondArcLength = 2 * pi - angleB + angleA;

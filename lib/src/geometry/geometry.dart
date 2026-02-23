@@ -12,10 +12,7 @@ import 'point.dart';
 /// - And any other possible shape.
 abstract class Geometry {
   /// The default constructor for [Geometry].
-  const Geometry({
-    required this.color,
-    this.strokeWidth = 1,
-  });
+  const Geometry({required this.color, this.strokeWidth = 1});
 
   /// The geometry's color.
   final Color color;

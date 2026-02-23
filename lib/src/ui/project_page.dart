@@ -17,17 +17,12 @@ import 'viewport.dart';
 /// It contains the tools, viewport and toggles/actions.
 class ProjectPage extends StatelessWidget {
   /// The main [ProjectPage] constructor.
-  const ProjectPage({
-    super.key,
-  });
+  const ProjectPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final isMacOS = Theme.of(context).platform == TargetPlatform.macOS;
-    final numbersInput = [
-      for (var i = 0; i <= 9; i++) '$i',
-      '.',
-    ];
+    final numbersInput = [for (var i = 0; i <= 9; i++) '$i', '.'];
 
     return Shortcuts(
       shortcuts: {
@@ -98,9 +93,7 @@ class ProjectPage extends StatelessWidget {
               HorizontalSeparator(),
               Toolbar(),
               HorizontalSeparator(),
-              Expanded(
-                child: Viewport(),
-              ),
+              Expanded(child: Viewport()),
             ],
           ),
         ),

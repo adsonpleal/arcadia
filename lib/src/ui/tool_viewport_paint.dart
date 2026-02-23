@@ -10,18 +10,12 @@ import 'viewport_painter.dart';
 /// The paint for the tool geometries.
 class ToolViewportPaint extends StatelessWidget {
   /// The default constructor for [ToolViewportPaint].
-  const ToolViewportPaint({
-    super.key,
-  });
+  const ToolViewportPaint({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ViewportStateBuilder(
-      select: (state) => (
-        state.zoom,
-        state.panOffset,
-        state.toolGeometries,
-      ),
+      select: (state) => (state.zoom, state.panOffset, state.toolGeometries),
       builder: (context, value) {
         final (zoom, panOffset, toolGeometries) = value;
 

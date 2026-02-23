@@ -37,9 +37,7 @@ class Toolbar extends StatelessWidget {
 }
 
 class _ToolButton extends StatefulWidget {
-  const _ToolButton({
-    required this.tool,
-  });
+  const _ToolButton({required this.tool});
 
   final Tool tool;
 
@@ -82,16 +80,14 @@ class _ToolButtonState extends State<_ToolButton> {
                 color: selected
                     ? ArcadiaColors.selected
                     : hovering
-                        ? ArcadiaColors.hover
-                        : null,
+                    ? ArcadiaColors.hover
+                    : null,
                 shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(4)),
                   side: BorderSide(color: ArcadiaColors.geometry),
                 ),
               ),
-              child: Center(
-                child: widget.tool.icon,
-              ),
+              child: Center(child: widget.tool.icon),
             ),
           ),
         ),

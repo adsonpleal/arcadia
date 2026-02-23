@@ -90,9 +90,7 @@ const _cursorSize = 40.0;
 const _cursorHalfSize = _cursorSize / 2;
 
 class _CursorPainter extends CustomPainter {
-  _CursorPainter({
-    required this.viewportPosition,
-  });
+  _CursorPainter({required this.viewportPosition});
 
   final Offset viewportPosition;
 
@@ -107,10 +105,7 @@ class _CursorPainter extends CustomPainter {
       ..moveTo(viewportPosition.dx, viewportPosition.dy)
       ..relativeMoveTo(0, -_cursorHalfSize)
       ..relativeLineTo(0, _cursorSize)
-      ..relativeMoveTo(
-        -_cursorHalfSize,
-        -_cursorHalfSize,
-      )
+      ..relativeMoveTo(-_cursorHalfSize, -_cursorHalfSize)
       ..relativeLineTo(_cursorSize, 0);
 
     canvas.drawPath(cursorPath, paint);

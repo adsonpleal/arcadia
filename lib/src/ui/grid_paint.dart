@@ -17,18 +17,12 @@ class GridPaint extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewportStateBuilder(
-      select: (state) => (
-        state.panOffset,
-        state.zoom,
-      ),
+      select: (state) => (state.panOffset, state.zoom),
       builder: (context, state) {
         final (panOffset, zoom) = state;
 
         return CustomPaint(
-          painter: _GridPainter(
-            zoom: zoom,
-            panOffset: panOffset,
-          ),
+          painter: _GridPainter(zoom: zoom, panOffset: panOffset),
         );
       },
     );
@@ -39,21 +33,16 @@ const _gridSquareSize = 10;
 const _gridDistance = _gridSquareSize * unitVirtualPixelRatio;
 
 class _GridPainter extends CustomPainter {
-  _GridPainter({
-    required this.zoom,
-    required this.panOffset,
-  });
+  _GridPainter({required this.zoom, required this.panOffset});
 
   final double zoom;
   final Offset panOffset;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final distance = _gridDistance /
-        pow(
-          _gridSquareSize,
-          (log(zoom) / log(_gridSquareSize)).floor(),
-        );
+    final distance =
+        _gridDistance /
+        pow(_gridSquareSize, (log(zoom) / log(_gridSquareSize)).floor());
     final viewportMidpoint = Offset(size.width, size.height) / 2;
     final viewportOffset = viewportMidpoint + panOffset;
     final space = distance * zoom;
@@ -69,20 +58,12 @@ class _GridPainter extends CustomPainter {
 
     for (var i = dxStart; i < dxEnd; i++) {
       final dx = (i * distance * zoom) + viewportOffset.dx;
-      canvas.drawLine(
-        Offset(dx, 0),
-        Offset(dx, size.height),
-        paint,
-      );
+      canvas.drawLine(Offset(dx, 0), Offset(dx, size.height), paint);
     }
 
     for (var i = dyStart; i < dyEnd; i++) {
       final dy = (i * distance * zoom) + viewportOffset.dy;
-      canvas.drawLine(
-        Offset(0, dy),
-        Offset(size.width, dy),
-        paint,
-      );
+      canvas.drawLine(Offset(0, dy), Offset(size.width, dy), paint);
     }
   }
 
