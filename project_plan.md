@@ -21,7 +21,7 @@ This roadmap follows a capability ladder:
 
 ## NOW (Core Drafting Productivity)
 
-### 1) Zoom label
+### 1) [Zoom label](https://github.com/adsonpleal/arcadia/issues/41)
 - Goal: show current zoom level continuously.
 - Dependencies: existing zoom state.
 - Acceptance:
@@ -29,7 +29,7 @@ This roadmap follows a capability ladder:
   - Value updates on wheel/pinch zoom changes.
   - Display format is stable and readable (e.g., `100%`).
 
-### 2) Cursor position label
+### 2) [Cursor position label](https://github.com/adsonpleal/arcadia/issues/42)
 - Goal: show current cursor coordinates continuously in the viewport.
 - Dependencies: existing pointer-move state in the viewport interaction flow.
 - Acceptance:
@@ -37,7 +37,7 @@ This roadmap follows a capability ladder:
   - Values update continuously as the cursor moves.
   - Display format is stable and readable (for example, `X: 120.0, Y: 45.0`).
 
-### 3) Selection modes (Window, Crossing, and Lasso Crossing)
+### 3) [Selection modes (Window, Crossing, and Lasso Crossing)](https://github.com/adsonpleal/arcadia/issues/38)
 - Goal: make selection behavior match common CAD interaction patterns.
 - Dependencies: existing selection and hover pipeline.
 - Acceptance:
@@ -46,7 +46,7 @@ This roadmap follows a capability ladder:
   - Freehand lasso crossing lets users draw a smooth quadratic Bezier path with a closed preview.
   - Intersecting geometries are preview-highlighted while the lasso path is still being drawn.
 
-### 4) Project units configuration
+### 4) [Project units configuration](https://github.com/adsonpleal/arcadia/issues/43)
 - Goal: define drawing units (e.g., mm, cm, m, in).
 - Dependencies: none.
 - Acceptance:
@@ -54,7 +54,7 @@ This roadmap follows a capability ladder:
   - Unit is stored with project/session state.
   - Tools that display numeric values read current unit.
 
-### 5) Measure tool (length and area)
+### 5) [Measure tool (length and area)](https://github.com/adsonpleal/arcadia/issues/44)
 - Goal: inspect geometry sizes without editing.
 - Dependencies: project units.
 - Acceptance:
@@ -62,7 +62,7 @@ This roadmap follows a capability ladder:
   - Area measurement works for closed geometry.
   - Results show value + unit.
 
-### 6) Dimension tool (view/edit line length)
+### 6) [Dimension tool (view/edit line length)](https://github.com/adsonpleal/arcadia/issues/45)
 - Goal: create drafting dimensions and edit line length numerically.
 - Dependencies: project units, measure behavior patterns.
 - Acceptance:
@@ -70,7 +70,7 @@ This roadmap follows a capability ladder:
   - Editing a dimension value updates the line length.
   - Dimension graphics remain readable during zoom/pan.
 
-### 7) Layers (baseline)
+### 7) [Layers (baseline)](https://github.com/adsonpleal/arcadia/issues/27)
 - Goal: organize geometry by layer.
 - Dependencies: none.
 - Acceptance:
@@ -78,7 +78,7 @@ This roadmap follows a capability ladder:
   - User can toggle layer visibility.
   - New geometry is created on active layer.
 
-### 8) Rotate tool
+### 8) [Rotate tool](https://github.com/adsonpleal/arcadia/issues/46)
 - Goal: rotate selected geometry around a pivot.
 - Dependencies: selection flow.
 - Acceptance:
@@ -86,7 +86,7 @@ This roadmap follows a capability ladder:
   - Angle can be interactive and numeric.
   - Undo/redo works for rotations.
 
-### 9) Copy tool
+### 9) [Copy tool](https://github.com/adsonpleal/arcadia/issues/47)
 - Goal: duplicate selected geometry.
 - Dependencies: selection flow.
 - Acceptance:
@@ -94,7 +94,7 @@ This roadmap follows a capability ladder:
   - Copied entities preserve properties and layer.
   - Undo/redo works for copies.
 
-### 10) Transform tool (move/rotate/scale entry point)
+### 10) [Transform tool (move/rotate/scale entry point)](https://github.com/adsonpleal/arcadia/issues/48)
 - Goal: centralize common transformations.
 - Dependencies: rotate + copy foundations.
 - Acceptance:
@@ -102,7 +102,7 @@ This roadmap follows a capability ladder:
   - Preview is shown before finalizing.
   - Finalization behavior is consistent with existing tool flows.
 
-### 11) Offset tool
+### 11) [Offset tool](https://github.com/adsonpleal/arcadia/issues/19)
 - Goal: create parallel/offset geometry at a set distance.
 - Dependencies: units config.
 - Acceptance:
@@ -110,7 +110,7 @@ This roadmap follows a capability ladder:
   - Distance supports numeric entry.
   - Tool preview matches final geometry.
 
-### 12) Trim tool
+### 12) [Trim tool](https://github.com/adsonpleal/arcadia/issues/23)
 - Goal: remove geometry portions using cutting boundaries.
 - Dependencies: robust intersection checks.
 - Acceptance:
@@ -118,7 +118,7 @@ This roadmap follows a capability ladder:
   - No-op trims do not corrupt geometry lists.
   - Undo/redo stays correct.
 
-### 13) Fillet tool
+### 13) [Fillet tool](https://github.com/adsonpleal/arcadia/issues/49)
 - Goal: connect two edges with a radius arc.
 - Dependencies: trim/extend and intersection handling.
 - Acceptance:
@@ -128,7 +128,7 @@ This roadmap follows a capability ladder:
 
 ## NEXT (Speed, Repeatability, and Project Continuity)
 
-### 14) Mirror tool
+### 14) [Mirror tool](https://github.com/adsonpleal/arcadia/issues/50)
 - Goal: reflect geometry across an axis.
 - Dependencies: transform/copy patterns.
 - Acceptance:
@@ -136,7 +136,7 @@ This roadmap follows a capability ladder:
   - User can choose keep original vs replace.
   - Works with mixed geometry selections.
 
-### 15) Linear pattern tool
+### 15) [Linear pattern tool](https://github.com/adsonpleal/arcadia/issues/51)
 - Goal: array copies in a line with spacing/count.
 - Dependencies: copy workflow.
 - Acceptance:
@@ -144,7 +144,7 @@ This roadmap follows a capability ladder:
   - Preview shows full result before apply.
   - Pattern result is undoable in one step.
 
-### 16) Circular pattern tool
+### 16) [Circular pattern tool](https://github.com/adsonpleal/arcadia/issues/52)
 - Goal: array copies around a center.
 - Dependencies: rotate + copy workflows.
 - Acceptance:
@@ -152,7 +152,7 @@ This roadmap follows a capability ladder:
   - Supports full-circle and partial arrays.
   - Preview and final output are consistent.
 
-### 17) Text tool (single-line first)
+### 17) [Text tool (single-line first)](https://github.com/adsonpleal/arcadia/issues/53)
 - Goal: place editable annotation text.
 - Dependencies: none.
 - Acceptance:
@@ -160,7 +160,7 @@ This roadmap follows a capability ladder:
   - Text has size and rotation controls.
   - Text stays selectable and layer-aware.
 
-### 18) Local autosave/session restore
+### 18) [Local autosave/session restore](https://github.com/adsonpleal/arcadia/issues/54)
 - Goal: prevent work loss between app restarts.
 - Dependencies: project serialization baseline.
 - Acceptance:
@@ -168,7 +168,7 @@ This roadmap follows a capability ladder:
   - App startup restores latest unsaved session.
   - Corrupted autosave data fails safely.
 
-### 19) Save project file
+### 19) [Save project file](https://github.com/adsonpleal/arcadia/issues/55)
 - Goal: persist a named project file.
 - Dependencies: stable project schema.
 - Acceptance:
@@ -176,7 +176,7 @@ This roadmap follows a capability ladder:
   - Saved data includes geometry, layers, units, and view preferences.
   - Save errors surface actionable feedback.
 
-### 20) Load project file
+### 20) [Load project file](https://github.com/adsonpleal/arcadia/issues/56)
 - Goal: reopen saved projects.
 - Dependencies: save format.
 - Acceptance:
@@ -186,7 +186,7 @@ This roadmap follows a capability ladder:
 
 ## LATER (Output, Interop, and Advanced Editing)
 
-### 21) Export to PDF with printing sheet
+### 21) [Export to PDF with printing sheet](https://github.com/adsonpleal/arcadia/issues/57)
 - Goal: generate printable sheets from drawings.
 - Dependencies: save/load stability, layer visibility rules.
 - Acceptance:
@@ -194,7 +194,7 @@ This roadmap follows a capability ladder:
   - Page setup supports paper size/orientation/scale.
   - Output preserves linework clarity and annotation legibility.
 
-### 22) Advanced layers
+### 22) [Advanced layers](https://github.com/adsonpleal/arcadia/issues/58)
 - Goal: improve control for larger drawings.
 - Dependencies: baseline layers.
 - Acceptance:
@@ -202,7 +202,7 @@ This roadmap follows a capability ladder:
   - By-layer style controls are available (color/line style).
   - Selection/editing respects layer locks.
 
-### 23) Advanced dimensions
+### 23) [Advanced dimensions](https://github.com/adsonpleal/arcadia/issues/59)
 - Goal: improve drafting annotation quality.
 - Dependencies: base dimension tool.
 - Acceptance:
@@ -210,7 +210,7 @@ This roadmap follows a capability ladder:
   - Dimension values remain associative after geometry edits where possible.
   - Style changes can apply globally or per-dimension.
 
-### 24) Expanded snaps
+### 24) [Expanded snaps](https://github.com/adsonpleal/arcadia/issues/60)
 - Goal: increase placement precision.
 - Dependencies: current snapping architecture.
 - Acceptance:
@@ -218,7 +218,7 @@ This roadmap follows a capability ladder:
   - Snapping feedback is visible and unambiguous.
   - Snap priority and toggles are user-configurable.
 
-### 25) Properties inspector
+### 25) [Properties inspector](https://github.com/adsonpleal/arcadia/issues/61)
 - Goal: edit selected entity numerically.
 - Dependencies: stable geometry model APIs.
 - Acceptance:
@@ -226,7 +226,7 @@ This roadmap follows a capability ladder:
   - Numeric edits update geometry immediately or on apply.
   - Invalid input is validated with clear messaging.
 
-### 26) Blocks/components
+### 26) [Blocks/components](https://github.com/adsonpleal/arcadia/issues/62)
 - Goal: reuse grouped geometry efficiently.
 - Dependencies: save/load and transform stability.
 - Acceptance:
@@ -234,7 +234,7 @@ This roadmap follows a capability ladder:
   - Block instances can be inserted/copied/rotated/scaled.
   - Editing definition updates instances based on policy.
 
-### 27) Interoperability (DXF import/export candidate)
+### 27) [Interoperability (DXF import/export candidate)](https://github.com/adsonpleal/arcadia/issues/63)
 - Goal: exchange drawings with external CAD tools.
 - Dependencies: project schema maturity.
 - Acceptance:
