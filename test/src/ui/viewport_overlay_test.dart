@@ -18,6 +18,27 @@ void main() {
       expect(find.text('100%'), findsNothing);
     });
 
+    testWidgets('shows cursor position label with default value', (
+      tester,
+    ) async {
+      await _pumpOverlay(tester);
+
+      expect(find.text('X: 0.0, Y: 0.0'), findsOneWidget);
+    });
+
+    testWidgets('updates cursor position label with one decimal precision', (
+      tester,
+    ) async {
+      final notifier = await _pumpOverlay(tester);
+
+      notifier.value = notifier.value.copyWith(
+        cursorPosition: const Offset(3.25, -4),
+      );
+      await tester.pump();
+
+      expect(find.text('X: 3.3, Y: -4.0'), findsOneWidget);
+    });
+
     testWidgets('shows and hides typed user input label', (tester) async {
       final notifier = await _pumpOverlay(tester);
 
@@ -74,6 +95,7 @@ void main() {
 
       expect(builds, 1);
       expect(find.text('200%'), findsOneWidget);
+      expect(find.text('X: 3.0, Y: 4.0'), findsOneWidget);
       expect(find.text('20'), findsOneWidget);
     });
   });
