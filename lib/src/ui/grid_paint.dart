@@ -20,8 +20,10 @@ class GridPaint extends StatelessWidget {
       (state) => (state.panOffset, state.zoom),
     );
 
-    return CustomPaint(
-      painter: _GridPainter(zoom: zoom, panOffset: panOffset),
+    return RepaintBoundary(
+      child: CustomPaint(
+        painter: _GridPainter(zoom: zoom, panOffset: panOffset),
+      ),
     );
   }
 }
