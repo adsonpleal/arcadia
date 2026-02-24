@@ -7,10 +7,6 @@ import '../geometry/arc.dart';
 import '../geometry/line.dart';
 import 'tool.dart';
 
-// TODO: Add tests.
-// this file depends on both flutter and macro stuff, so we can't test
-// it for now.
-
 /// A tool that creates lines between three points.
 class ArcTool implements Tool {
   /// The default constructor for [ArcTool].

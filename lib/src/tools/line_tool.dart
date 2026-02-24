@@ -6,10 +6,6 @@ import '../constants/arcadia_color.dart';
 import '../geometry/line.dart';
 import 'tool.dart';
 
-// TODO: Add tests.
-// this file depends on both flutter and macro stuff, so we can't test
-// it for now.
-
 /// A tool that creates a line between two given points.
 class LineTool implements Tool {
   /// The default constructor for [LineTool].

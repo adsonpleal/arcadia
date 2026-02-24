@@ -4,10 +4,6 @@ import '../data/viewport_state.dart';
 import '../geometry/geometry.dart';
 import '../logic/viewport_notifier.dart';
 
-// TODO: Add tests.
-// this file depends on both flutter and macro stuff, so we can't test
-// it for now.
-
 /// A factory that creates a tool action.
 typedef ToolActionFactory = ToolAction Function();
 

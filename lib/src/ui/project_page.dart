@@ -7,10 +7,6 @@ import 'horizontal_separator.dart';
 import 'toolbar.dart';
 import 'viewport.dart';
 
-// TODO: Add tests.
-// this file depends on both flutter and macro stuff, so we can't test
-// it for now.
-
 /// The main project page.
 ///
 /// It contains the tools, viewport and toggles/actions.

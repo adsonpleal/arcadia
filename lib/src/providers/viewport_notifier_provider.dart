@@ -3,10 +3,6 @@ import 'package:flutter/widgets.dart';
 import '../data/viewport_state.dart';
 import '../logic/viewport_notifier.dart';
 
-// TODO: Add tests.
-// this file depends on both flutter and macro stuff, so we can't test
-// it for now.
-
 /// The provider for [ViewportNotifier]
 class ViewportNotifierProvider extends StatefulWidget {
   /// The default constructor for [ViewportNotifierProvider].
@@ -33,14 +29,18 @@ class _ViewportNotifierProviderState extends State<ViewportNotifierProvider> {
 
   @override
   Widget build(BuildContext context) {
-    return _ViewportInheritedNotifier(notifier: notifier, child: widget.child);
+    return ViewportInheritedNotifier(notifier: notifier, child: widget.child);
   }
 }
 
-class _ViewportInheritedNotifier extends InheritedNotifier<ViewportNotifier> {
-  const _ViewportInheritedNotifier({
+/// Inherited notifier wrapper exposed for test-only widget tree injection.
+@visibleForTesting
+class ViewportInheritedNotifier extends InheritedNotifier<ViewportNotifier> {
+  /// Creates a [ViewportInheritedNotifier] with a [ViewportNotifier].
+  const ViewportInheritedNotifier({
     required super.child,
     required super.notifier,
+    super.key,
   });
 }
 
@@ -52,7 +52,7 @@ extension ViewportNotifierBuildContextExtension on BuildContext {
   /// get the state. Use it only to perform actions.
   /// If you want to depend on the state itself, use [ViewportStateBuilder].
   ViewportNotifier get viewportNotifier {
-    return getInheritedWidgetOfExactType<_ViewportInheritedNotifier>()!
+    return getInheritedWidgetOfExactType<ViewportInheritedNotifier>()!
         .notifier!;
   }
 }

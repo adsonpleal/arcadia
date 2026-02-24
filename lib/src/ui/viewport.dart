@@ -10,10 +10,6 @@ import 'snapping_viewport_paint.dart';
 import 'tool_viewport_paint.dart';
 import 'viewport_paint.dart';
 
-// TODO: Add tests.
-// this file depends on both flutter and macro stuff, so we can't test
-// it for now.
-
 /// The viewport with the viewport painter and listener.
 class Viewport extends StatelessWidget {
   /// The default [Viewport] constructor.

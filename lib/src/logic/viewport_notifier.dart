@@ -8,10 +8,6 @@ import '../geometry/line.dart';
 import '../geometry/point.dart';
 import '../tools/tool.dart';
 
-// TODO: Add tests.
-// this file depends on both flutter and macro stuff, so we can't test
-// it for now.
-
 const _origin = Point(position: .zero, color: .snappingPoint, shape: .triangle);
 
 /// A [ValueNotifier] that holds the [ViewportState].

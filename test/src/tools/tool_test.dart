@@ -1,0 +1,52 @@
+import 'package:arcadia/src/geometry/line.dart';
+import 'package:arcadia/src/logic/viewport_notifier.dart';
+import 'package:arcadia/src/tools/tool.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  group('ToolAction', () {
+    test('defaults acceptValueInput to false', () {
+      final action = _NoopToolAction();
+
+      expect(action.acceptValueInput, isFalse);
+    });
+
+    test('delegates state mutation helpers to ViewportNotifier', () {
+      final notifier = ViewportNotifier();
+      final action = _NoopToolAction()..bind(notifier);
+      const geometry = Line(
+        start: Offset.zero,
+        end: Offset(10, 0),
+        color: .geometry,
+      );
+
+      notifier.value = notifier.value.copyWith(userInput: '42');
+
+      action
+        ..addGeometries(const [geometry])
+        ..addToolGeometries(const [geometry])
+        ..clearToolGeometries()
+        ..clearUserInput()
+        ..addSnapPoint(const Offset(5, 5));
+
+      expect(action.state.geometries, const [geometry]);
+      expect(action.state.toolGeometries, isEmpty);
+      expect(action.state.userInput, isEmpty);
+    });
+
+    test('default onValueTyped is a no-op', () {
+      final action = _NoopToolAction();
+
+      expect(() => action.onValueTyped(10), returnsNormally);
+      expect(() => action.onValueTyped(null), returnsNormally);
+    });
+  });
+}
+
+class _NoopToolAction extends ToolAction {
+  @override
+  void onClick() {}
+
+  @override
+  void onCursorPositionChange() {}
+}

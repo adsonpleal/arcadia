@@ -3,10 +3,6 @@ import 'package:flutter/material.dart';
 import '../providers/viewport_notifier_provider.dart';
 import 'viewport_painter.dart';
 
-// TODO: Add tests.
-// this file depends on both flutter and macro stuff, so we can't test
-// it for now.
-
 /// The paint of the viewport.
 ///
 /// This widget renders the geometries.

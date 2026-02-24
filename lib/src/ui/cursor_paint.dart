@@ -6,10 +6,6 @@ import '../constants/config.dart';
 import '../providers/viewport_notifier_provider.dart';
 import 'viewport_paint.dart';
 
-// TODO: Add tests.
-// this file depends on both flutter and macro stuff, so we can't test
-// it for now.
-
 /// The painter for the cursor.
 ///
 /// This is separated from [ViewportPaint] to avoid redrawing when there

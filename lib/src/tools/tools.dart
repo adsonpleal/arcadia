@@ -5,10 +5,6 @@ import 'corners_rectangle_tool.dart';
 import 'line_tool.dart';
 import 'tool.dart';
 
-// TODO: Add tests.
-// this file depends on both flutter and macro stuff, so we can't test
-// it for now.
-
 /// The tools that will be displayed in the toolbar.
 ///
 /// The order is important.

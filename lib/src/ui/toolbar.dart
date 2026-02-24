@@ -5,10 +5,6 @@ import '../providers/viewport_notifier_provider.dart';
 import '../tools/tool.dart';
 import '../tools/tools.dart';
 
-// TODO: Add tests.
-// this file depends on both flutter and macro stuff, so we can't test
-// it for now.
-
 /// The toolbar with all the available tools.
 class Toolbar extends StatelessWidget {
   /// The default constructor for [Toolbar].
