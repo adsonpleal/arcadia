@@ -42,7 +42,7 @@ void main() {
 Future<ViewportNotifier> _pumpCursor(WidgetTester tester) async {
   await tester.pumpWidget(
     const Directionality(
-      textDirection: TextDirection.ltr,
+      textDirection: .ltr,
       child: SizedBox(
         width: 400,
         height: 300,

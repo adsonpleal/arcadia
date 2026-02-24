@@ -48,19 +48,29 @@ System flow:
 - Preserve public API and naming unless explicitly requested otherwise.
 - Reuse existing patterns before introducing new abstractions.
 - Avoid broad refactors during feature/bug tasks unless explicitly requested.
+- Before completion, perform a style pass on changed Dart files and apply dot
+  shorthand wherever type context allows.
 
 ## Tooling and Verification
 
 - Use Dart MCP tools whenever possible for analysis, formatting, tests, and
   Dart/Flutter-aware operations.
 - Use shell fallbacks only when MCP does not cover the required action.
+- For style cleanups, use Dart LSP/code actions on changed files first. If a
+  dot shorthand code action is available, apply it.
+- If no code action is available, manually convert obvious cases to dot
+  shorthand in changed lines before final verification.
 
 Always verify before claiming completion:
 
 1. Run static analysis.
 2. Run relevant tests (or full suite when scope is broad/unclear).
-3. Run `dart format` after analysis/tests (prefer Dart MCP tooling).
-4. Run impacted golden tests when rendering output changes.
+3. Run Dart LSP code actions for changed Dart files and apply dot shorthand
+   actions when available.
+4. Confirm no avoidable non-dot shorthand remains in changed lines (quick grep
+   checks are acceptable).
+5. Run `dart format` after analysis/tests/style pass (prefer Dart MCP tooling).
+6. Run impacted golden tests when rendering output changes.
 
 Do not claim completion without command outcomes.
 
@@ -87,6 +97,8 @@ Every completion report must include:
 - files changed
 - behavior impact summary
 - verification commands executed with pass/fail outcomes
+- dot shorthand pass outcome (code action applied, manual conversions, or no
+  eligible changes)
 - known risks, constraints, or follow-ups
 
 ## Quick Command Reference

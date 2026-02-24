@@ -4,7 +4,6 @@ import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/logic/viewport_notifier.dart';
 import 'package:arcadia/src/tools/arc_tool.dart';
 import 'package:arcadia/src/tools/tool.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -14,7 +13,7 @@ void main() {
       const tool = ArcTool();
 
       expect(tool.name, 'Arc');
-      expect(tool.shortcut, const SingleActivator(LogicalKeyboardKey.keyA));
+      expect(tool.shortcut, const SingleActivator(.keyA));
       expect(tool.icon, isA<Widget>());
       expect(tool.toolActionFactory(), isA<ToolAction>());
     });
@@ -24,7 +23,7 @@ void main() {
       () {
         final notifier = ViewportNotifier()..selectTool(const ArcTool());
 
-        _moveCursor(notifier, Offset.zero);
+        _moveCursor(notifier, .zero);
         notifier.onCursorClick();
         _moveCursor(notifier, const Offset(10, 0));
 
@@ -49,6 +48,6 @@ void main() {
 void _moveCursor(ViewportNotifier notifier, Offset cursorPosition) {
   notifier.onCursorMove(
     viewportPosition: cursorPosition * unitVirtualPixelRatio,
-    viewportMidPoint: Offset.zero,
+    viewportMidPoint: .zero,
   );
 }

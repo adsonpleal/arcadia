@@ -7,11 +7,10 @@ import 'package:arcadia/src/geometry/point.dart';
 import 'package:arcadia/src/logic/viewport_notifier.dart';
 import 'package:arcadia/src/tools/line_tool.dart';
 import 'package:arcadia/src/tools/tool.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const _lineA = Line(start: Offset.zero, end: Offset(10, 0), color: .geometry);
+const _lineA = Line(start: .zero, end: Offset(10, 0), color: .geometry);
 const _lineB = Line(start: Offset(20, 0), end: Offset(30, 0), color: .geometry);
 const _lineC = Line(start: Offset(40, 0), end: Offset(50, 0), color: .geometry);
 
@@ -36,7 +35,7 @@ void main() {
     test('cancelToolAction resets selected tool, previews, and input', () {
       final notifier = ViewportNotifier()..selectTool(const LineTool());
 
-      _moveCursor(notifier, Offset.zero);
+      _moveCursor(notifier, .zero);
       notifier.onCursorClick();
       _moveCursor(notifier, const Offset(10, 0));
       notifier.onUserInput('5');
@@ -218,7 +217,7 @@ void _moveCursor(ViewportNotifier notifier, Offset cursorPosition) {
   notifier.onCursorMove(
     viewportPosition:
         (cursorPosition * unitVirtualPixelRatio * state.zoom) + state.panOffset,
-    viewportMidPoint: Offset.zero,
+    viewportMidPoint: .zero,
   );
 }
 
@@ -234,8 +233,7 @@ class _SpyTool implements Tool {
   String get name => 'Spy';
 
   @override
-  ShortcutActivator get shortcut =>
-      const SingleActivator(LogicalKeyboardKey.keyS);
+  ShortcutActivator get shortcut => const SingleActivator(.keyS);
 
   @override
   ToolActionFactory get toolActionFactory =>

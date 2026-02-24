@@ -124,7 +124,7 @@ Future<ViewportNotifier> _pumpWithProvider(
 }) async {
   await tester.pumpWidget(
     Directionality(
-      textDirection: TextDirection.ltr,
+      textDirection: .ltr,
       child: SizedBox(
         width: 300,
         height: 200,

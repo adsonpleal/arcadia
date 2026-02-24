@@ -12,7 +12,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart' hide Viewport;
 import 'package:flutter_test/flutter_test.dart';
 
-const _line = Line(start: Offset.zero, end: Offset(10, 0), color: .geometry);
+const _line = Line(start: .zero, end: Offset(10, 0), color: .geometry);
 
 void main() {
   group('Viewport', () {
@@ -43,7 +43,7 @@ void main() {
     ) async {
       final notifier = await _pumpViewport(tester);
       final center = tester.getCenter(find.byType(Viewport));
-      final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      final mouse = await tester.createGesture(kind: .mouse);
 
       await mouse.addPointer(location: center);
       await mouse.moveTo(center + const Offset(50, 25));
@@ -76,7 +76,7 @@ void main() {
       notifier.addGeometries(const [_line]);
       await tester.pump();
 
-      final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      final mouse = await tester.createGesture(kind: .mouse);
       await mouse.addPointer(location: clickPosition);
       await mouse.moveTo(clickPosition);
       await mouse.down(clickPosition);
@@ -93,7 +93,7 @@ void main() {
 Future<ViewportNotifier> _pumpViewport(WidgetTester tester) async {
   await tester.pumpWidget(
     const Directionality(
-      textDirection: TextDirection.ltr,
+      textDirection: .ltr,
       child: SizedBox(
         width: 200,
         height: 100,

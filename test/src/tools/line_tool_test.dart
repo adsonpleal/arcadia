@@ -3,7 +3,6 @@ import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/logic/viewport_notifier.dart';
 import 'package:arcadia/src/tools/line_tool.dart';
 import 'package:arcadia/src/tools/tool.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -13,7 +12,7 @@ void main() {
       const tool = LineTool();
 
       expect(tool.name, 'Line');
-      expect(tool.shortcut, const SingleActivator(LogicalKeyboardKey.keyL));
+      expect(tool.shortcut, const SingleActivator(.keyL));
       expect(tool.icon, isA<Widget>());
       expect(tool.toolActionFactory(), isA<ToolAction>());
     });
@@ -71,6 +70,6 @@ void main() {
 void _moveCursor(ViewportNotifier notifier, Offset cursorPosition) {
   notifier.onCursorMove(
     viewportPosition: cursorPosition * unitVirtualPixelRatio,
-    viewportMidPoint: Offset.zero,
+    viewportMidPoint: .zero,
   );
 }

@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const _lineA = Line(start: Offset.zero, end: Offset(1, 0), color: .geometry);
+const _lineA = Line(start: .zero, end: Offset(1, 0), color: .geometry);
 const _lineB = Line(start: Offset(2, 0), end: Offset(3, 0), color: .geometry);
 
 void main() {
@@ -17,11 +17,11 @@ void main() {
     ) async {
       final notifier = await _pumpProjectPage(tester);
 
-      await tester.sendKeyEvent(LogicalKeyboardKey.keyL);
+      await tester.sendKeyEvent(.keyL);
       await tester.pump();
       expect(notifier.value.selectedTool, const LineTool());
 
-      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.sendKeyEvent(.escape);
       await tester.pump();
       expect(notifier.value.selectedTool, isNull);
     });
@@ -31,11 +31,11 @@ void main() {
     ) async {
       final notifier = await _pumpProjectPage(tester);
 
-      await tester.sendKeyEvent(LogicalKeyboardKey.keyL);
-      await tester.sendKeyEvent(LogicalKeyboardKey.digit1);
-      await tester.sendKeyEvent(LogicalKeyboardKey.period);
-      await tester.sendKeyEvent(LogicalKeyboardKey.digit2);
-      await tester.sendKeyEvent(LogicalKeyboardKey.backspace);
+      await tester.sendKeyEvent(.keyL);
+      await tester.sendKeyEvent(.digit1);
+      await tester.sendKeyEvent(.period);
+      await tester.sendKeyEvent(.digit2);
+      await tester.sendKeyEvent(.backspace);
       await tester.pump();
 
       expect(notifier.value.userInput, '1.');
@@ -52,11 +52,11 @@ void main() {
       await tester.pump();
       expect(notifier.value.geometries, const [_lineA, _lineB]);
 
-      await _sendControlCombo(tester, LogicalKeyboardKey.keyZ);
+      await _sendControlCombo(tester, .keyZ);
       await tester.pump();
       expect(notifier.value.geometries, const [_lineA]);
 
-      await _sendControlCombo(tester, LogicalKeyboardKey.keyZ, withShift: true);
+      await _sendControlCombo(tester, .keyZ, withShift: true);
       await tester.pump();
       expect(notifier.value.geometries, const [_lineA, _lineB]);
     });
@@ -66,7 +66,7 @@ void main() {
 Future<ViewportNotifier> _pumpProjectPage(WidgetTester tester) async {
   await tester.pumpWidget(
     MaterialApp(
-      theme: ThemeData(platform: TargetPlatform.windows),
+      theme: ThemeData(platform: .windows),
       home: const Scaffold(
         body: ViewportNotifierProvider(child: ProjectPage()),
       ),
@@ -82,16 +82,16 @@ Future<void> _sendControlCombo(
   LogicalKeyboardKey key, {
   bool withShift = false,
 }) async {
-  await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
+  await tester.sendKeyDownEvent(.controlLeft);
   if (withShift) {
-    await tester.sendKeyDownEvent(LogicalKeyboardKey.shiftLeft);
+    await tester.sendKeyDownEvent(.shiftLeft);
   }
 
   await tester.sendKeyDownEvent(key);
   await tester.sendKeyUpEvent(key);
 
   if (withShift) {
-    await tester.sendKeyUpEvent(LogicalKeyboardKey.shiftLeft);
+    await tester.sendKeyUpEvent(.shiftLeft);
   }
-  await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
+  await tester.sendKeyUpEvent(.controlLeft);
 }

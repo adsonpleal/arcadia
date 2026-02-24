@@ -14,11 +14,7 @@ void main() {
     test('delegates state mutation helpers to ViewportNotifier', () {
       final notifier = ViewportNotifier();
       final action = _NoopToolAction()..bind(notifier);
-      const geometry = Line(
-        start: Offset.zero,
-        end: Offset(10, 0),
-        color: .geometry,
-      );
+      const geometry = Line(start: .zero, end: Offset(10, 0), color: .geometry);
 
       notifier.value = notifier.value.copyWith(userInput: '42');
 

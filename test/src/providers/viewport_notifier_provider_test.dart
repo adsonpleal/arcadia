@@ -13,7 +13,7 @@ void main() {
 
       await tester.pumpWidget(
         Directionality(
-          textDirection: TextDirection.ltr,
+          textDirection: .ltr,
           child: ViewportInheritedNotifier(
             notifier: notifier,
             child: Builder(
@@ -38,7 +38,7 @@ void main() {
 
         await tester.pumpWidget(
           Directionality(
-            textDirection: TextDirection.ltr,
+            textDirection: .ltr,
             child: ViewportInheritedNotifier(
               notifier: notifier,
               child: Builder(
@@ -79,7 +79,7 @@ void main() {
 
       await tester.pumpWidget(
         Directionality(
-          textDirection: TextDirection.ltr,
+          textDirection: .ltr,
           child: ViewportNotifierProvider(
             child: Builder(
               builder: (context) {
