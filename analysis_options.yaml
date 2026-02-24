@@ -6,6 +6,9 @@ analyzer:
     strict-inference: true
     strict-raw-types: true
 
+formatter:
+  trailing_commas: preserve
+
 linter:
   rules:
   - always_declare_return_types
