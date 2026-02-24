@@ -17,11 +17,13 @@ class SelectionPaint extends StatelessWidget {
       (state) => (state.zoom, state.panOffset, state.selectionGeometries),
     );
 
-    return CustomPaint(
-      painter: ViewportPainter(
-        zoom: zoom,
-        panOffset: panOffset,
-        geometries: selectionGeometries,
+    return RepaintBoundary(
+      child: CustomPaint(
+        painter: ViewportPainter(
+          zoom: zoom,
+          panOffset: panOffset,
+          geometries: selectionGeometries,
+        ),
       ),
     );
   }

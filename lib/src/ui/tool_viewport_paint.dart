@@ -14,11 +14,13 @@ class ToolViewportPaint extends StatelessWidget {
       (state) => (state.zoom, state.panOffset, state.toolGeometries),
     );
 
-    return CustomPaint(
-      painter: ViewportPainter(
-        zoom: zoom,
-        panOffset: panOffset,
-        geometries: toolGeometries,
+    return RepaintBoundary(
+      child: CustomPaint(
+        painter: ViewportPainter(
+          zoom: zoom,
+          panOffset: panOffset,
+          geometries: toolGeometries,
+        ),
       ),
     );
   }

@@ -14,11 +14,13 @@ class SnappingViewportPaint extends StatelessWidget {
       (state) => (state.zoom, state.panOffset, state.snappingGeometries),
     );
 
-    return CustomPaint(
-      painter: ViewportPainter(
-        zoom: zoom,
-        panOffset: panOffset,
-        geometries: snappingGeometries,
+    return RepaintBoundary(
+      child: CustomPaint(
+        painter: ViewportPainter(
+          zoom: zoom,
+          panOffset: panOffset,
+          geometries: snappingGeometries,
+        ),
       ),
     );
   }

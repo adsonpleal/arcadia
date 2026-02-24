@@ -34,8 +34,10 @@ class CursorPaint extends StatelessWidget {
           final viewportOffset = viewportMidpoint + panOffset;
           final viewportPosition = (cursorPosition * zoom) + viewportOffset;
 
-          return CustomPaint(
-            painter: _CursorPainter(viewportPosition: viewportPosition),
+          return RepaintBoundary(
+            child: CustomPaint(
+              painter: _CursorPainter(viewportPosition: viewportPosition),
+            ),
           );
         },
       ),
