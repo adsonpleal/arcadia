@@ -18,6 +18,7 @@ class ViewportOverlay extends StatelessWidget {
     return const Stack(
       children: [
         _ViewportZoomLabel(),
+        _ViewportCursorPositionLabel(),
         _ViewportCursorInputLabel(),
       ],
     );
@@ -104,6 +105,26 @@ class _ViewportCursorInputLabel extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+}
+
+class _ViewportCursorPositionLabel extends StatelessWidget {
+  const _ViewportCursorPositionLabel();
+
+  @override
+  Widget build(BuildContext context) {
+    final label = context.selectViewportState((state) {
+      final x = state.cursorPosition.dx.toStringAsFixed(1);
+      final y = state.cursorPosition.dy.toStringAsFixed(1);
+
+      return 'X: $x, Y: $y';
+    });
+
+    return Positioned(
+      right: _viewportOverlayOffset,
+      bottom: _viewportOverlayOffset,
+      child: _OverlayChip(text: label),
     );
   }
 }
