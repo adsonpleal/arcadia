@@ -86,6 +86,46 @@ void main() {
       expect(notifier.value.panOffset.dy, closeTo(5, 0.0001));
     });
 
+    test('onZoom clamps minimum zoom to 1%', () {
+      final notifier = ViewportNotifier();
+
+      notifier.onZoom(0.001);
+
+      expect(notifier.value.zoom, 0.01);
+    });
+
+    test('onZoom clamps maximum zoom to 1000%', () {
+      final notifier = ViewportNotifier();
+
+      notifier.onZoom(20);
+
+      expect(notifier.value.zoom, 10);
+    });
+
+    test('resetZoomToDefault keeps viewport center anchored', () {
+      final notifier = ViewportNotifier();
+      notifier.value = notifier.value.copyWith(
+        zoom: 2,
+        panOffset: const Offset(10, 20),
+        cursorPosition: const Offset(5, 6),
+      );
+
+      final before = notifier.value;
+      final beforeCenterPoint = -before.panOffset / before.zoom;
+
+      notifier.resetZoomToDefault();
+
+      expect(notifier.value.zoom, 1);
+      expect(notifier.value.panOffset.dx, closeTo(5, 0.0001));
+      expect(notifier.value.panOffset.dy, closeTo(10, 0.0001));
+      expect(notifier.value.cursorPosition, const Offset(5, 6));
+
+      final after = notifier.value;
+      final afterCenterPoint = -after.panOffset / after.zoom;
+      expect(afterCenterPoint.dx, closeTo(beforeCenterPoint.dx, 0.0001));
+      expect(afterCenterPoint.dy, closeTo(beforeCenterPoint.dy, 0.0001));
+    });
+
     test(
       'onCursorMove snaps to geometry snapping points when tool is active',
       () {

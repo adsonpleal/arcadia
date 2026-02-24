@@ -7,6 +7,7 @@ import 'package:arcadia/src/ui/selection_paint.dart';
 import 'package:arcadia/src/ui/snapping_viewport_paint.dart';
 import 'package:arcadia/src/ui/tool_viewport_paint.dart';
 import 'package:arcadia/src/ui/viewport.dart';
+import 'package:arcadia/src/ui/viewport_overlay.dart';
 import 'package:arcadia/src/ui/viewport_paint.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart' hide Viewport;
@@ -20,7 +21,7 @@ void main() {
       await _pumpViewport(tester);
 
       final stackFinder = find.byWidgetPredicate(
-        (widget) => widget is Stack && widget.children.length == 6,
+        (widget) => widget is Stack && widget.children.length == 7,
       );
       final stack = tester.widget<Stack>(stackFinder);
       final layerTypes = [
@@ -35,6 +36,7 @@ void main() {
         SnappingViewportPaint,
         ToolViewportPaint,
         CursorPaint,
+        ViewportOverlay,
       ]);
     });
 

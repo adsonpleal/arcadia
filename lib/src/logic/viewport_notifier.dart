@@ -9,6 +9,8 @@ import '../geometry/point.dart';
 import '../tools/tool.dart';
 
 const _origin = Point(position: .zero, color: .snappingPoint, shape: .triangle);
+const _minZoom = 0.01;
+const _maxZoom = 10.0;
 
 /// A [ValueNotifier] that holds the [ViewportState].
 ///
@@ -79,13 +81,24 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
   /// Applies the zoom scale to the current [ViewportState.zoom] state.
   void onZoom(double scale) {
     final ViewportState(:zoom, :panOffset, :cursorPosition) = value;
-    final newZoom = zoom * scale;
+    final newZoom = (zoom * scale).clamp(_minZoom, _maxZoom);
 
     value = value.copyWith(
       zoom: newZoom,
       panOffset:
           panOffset - cursorPosition * unitVirtualPixelRatio * (newZoom - zoom),
     );
+  }
+
+  /// Resets zoom to default while keeping the viewport center anchored.
+  void resetZoomToDefault() {
+    final ViewportState(:zoom, :panOffset) = value;
+
+    if (zoom == 1) {
+      return;
+    }
+
+    value = value.copyWith(zoom: 1, panOffset: panOffset / zoom);
   }
 
   /// Handle click action.
