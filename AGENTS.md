@@ -48,6 +48,7 @@ System flow:
 - Preserve public API and naming unless explicitly requested otherwise.
 - Reuse existing patterns before introducing new abstractions.
 - Avoid broad refactors during feature/bug tasks unless explicitly requested.
+- When opening a PR, include the related issue reference whenever applicable.
 - Before completion, perform a style pass on changed Dart files and apply dot
   shorthand wherever type context allows.
 
