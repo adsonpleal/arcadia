@@ -138,7 +138,6 @@ class _OverlayChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(4),
-      constraints: const BoxConstraints(maxWidth: 100),
       decoration: ShapeDecoration(
         color: ArcadiaColor.viewportBackground,
         shape: RoundedRectangleBorder(
