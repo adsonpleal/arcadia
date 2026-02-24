@@ -10,20 +10,16 @@ class SnappingViewportPaint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ViewportStateBuilder(
-      select: (state) =>
-          (state.zoom, state.panOffset, state.snappingGeometries),
-      builder: (context, value) {
-        final (zoom, panOffset, snappingGeometries) = value;
+    final (zoom, panOffset, snappingGeometries) = context.selectViewportState(
+      (state) => (state.zoom, state.panOffset, state.snappingGeometries),
+    );
 
-        return CustomPaint(
-          painter: ViewportPainter(
-            zoom: zoom,
-            panOffset: panOffset,
-            geometries: snappingGeometries,
-          ),
-        );
-      },
+    return CustomPaint(
+      painter: ViewportPainter(
+        zoom: zoom,
+        panOffset: panOffset,
+        geometries: snappingGeometries,
+      ),
     );
   }
 }

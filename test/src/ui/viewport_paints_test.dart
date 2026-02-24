@@ -1,6 +1,7 @@
 import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/logic/viewport_notifier.dart';
 import 'package:arcadia/src/providers/viewport_notifier_provider.dart';
+import 'package:arcadia/src/ui/grid_paint.dart';
 import 'package:arcadia/src/ui/selection_paint.dart';
 import 'package:arcadia/src/ui/snapping_viewport_paint.dart';
 import 'package:arcadia/src/ui/tool_viewport_paint.dart';
@@ -40,6 +41,31 @@ void main() {
       expect(painter.geometries.single, _geometry);
     });
 
+    testWidgets(
+      'ViewportPaint does not rebuild when unrelated state slices change',
+      (tester) async {
+        var builds = 0;
+        final notifier = await _pumpWithProvider(
+          tester,
+          child: _CountingViewportPaint(onBuild: () => builds++),
+          finder: find.byType(_CountingViewportPaint),
+        );
+
+        expect(builds, 1);
+
+        notifier.value = notifier.value.copyWith(
+          toolGeometries: const [_geometry],
+          snappingGeometries: const [_geometry],
+          selectionGeometries: const [_geometry],
+          cursorPosition: const Offset(9, 9),
+          userInput: '5',
+        );
+        await tester.pump();
+
+        expect(builds, 1);
+      },
+    );
+
     testWidgets('SelectionPaint reads selection geometries from state', (
       tester,
     ) async {
@@ -64,6 +90,31 @@ void main() {
       expect(painter.panOffset, const Offset(2, 3));
       expect(painter.geometries.single, _geometry);
     });
+
+    testWidgets(
+      'SelectionPaint does not rebuild when unrelated state slices change',
+      (tester) async {
+        var builds = 0;
+        final notifier = await _pumpWithProvider(
+          tester,
+          child: _CountingSelectionPaint(onBuild: () => builds++),
+          finder: find.byType(_CountingSelectionPaint),
+        );
+
+        expect(builds, 1);
+
+        notifier.value = notifier.value.copyWith(
+          geometries: const [_geometry],
+          toolGeometries: const [_geometry],
+          snappingGeometries: const [_geometry],
+          cursorPosition: const Offset(7, 8),
+          userInput: '2',
+        );
+        await tester.pump();
+
+        expect(builds, 1);
+      },
+    );
 
     testWidgets('SnappingViewportPaint reads snapping geometries from state', (
       tester,
@@ -90,6 +141,31 @@ void main() {
       expect(painter.geometries.single, _geometry);
     });
 
+    testWidgets(
+      'SnappingViewportPaint does not rebuild on unrelated state slices',
+      (tester) async {
+        var builds = 0;
+        final notifier = await _pumpWithProvider(
+          tester,
+          child: _CountingSnappingViewportPaint(onBuild: () => builds++),
+          finder: find.byType(_CountingSnappingViewportPaint),
+        );
+
+        expect(builds, 1);
+
+        notifier.value = notifier.value.copyWith(
+          geometries: const [_geometry],
+          toolGeometries: const [_geometry],
+          selectionGeometries: const [_geometry],
+          cursorPosition: const Offset(4, 5),
+          userInput: '3',
+        );
+        await tester.pump();
+
+        expect(builds, 1);
+      },
+    );
+
     testWidgets('ToolViewportPaint reads tool geometries from state', (
       tester,
     ) async {
@@ -114,6 +190,57 @@ void main() {
       expect(painter.panOffset, const Offset(1, 1));
       expect(painter.geometries.single, _geometry);
     });
+
+    testWidgets(
+      'ToolViewportPaint does not rebuild when unrelated state slices change',
+      (tester) async {
+        var builds = 0;
+        final notifier = await _pumpWithProvider(
+          tester,
+          child: _CountingToolViewportPaint(onBuild: () => builds++),
+          finder: find.byType(_CountingToolViewportPaint),
+        );
+
+        expect(builds, 1);
+
+        notifier.value = notifier.value.copyWith(
+          geometries: const [_geometry],
+          snappingGeometries: const [_geometry],
+          selectionGeometries: const [_geometry],
+          cursorPosition: const Offset(1, 2),
+          userInput: '9',
+        );
+        await tester.pump();
+
+        expect(builds, 1);
+      },
+    );
+
+    testWidgets(
+      'GridPaint does not rebuild when unrelated state slices change',
+      (tester) async {
+        var builds = 0;
+        final notifier = await _pumpWithProvider(
+          tester,
+          child: _CountingGridPaint(onBuild: () => builds++),
+          finder: find.byType(_CountingGridPaint),
+        );
+
+        expect(builds, 1);
+
+        notifier.value = notifier.value.copyWith(
+          geometries: const [_geometry],
+          toolGeometries: const [_geometry],
+          snappingGeometries: const [_geometry],
+          selectionGeometries: const [_geometry],
+          cursorPosition: const Offset(6, 6),
+          userInput: '11',
+        );
+        await tester.pump();
+
+        expect(builds, 1);
+      },
+    );
   });
 }
 
@@ -134,4 +261,64 @@ Future<ViewportNotifier> _pumpWithProvider(
   );
 
   return tester.element(finder).viewportNotifier;
+}
+
+class _CountingViewportPaint extends ViewportPaint {
+  const _CountingViewportPaint({required this.onBuild});
+
+  final VoidCallback onBuild;
+
+  @override
+  Widget build(BuildContext context) {
+    onBuild();
+    return super.build(context);
+  }
+}
+
+class _CountingSelectionPaint extends SelectionPaint {
+  const _CountingSelectionPaint({required this.onBuild});
+
+  final VoidCallback onBuild;
+
+  @override
+  Widget build(BuildContext context) {
+    onBuild();
+    return super.build(context);
+  }
+}
+
+class _CountingSnappingViewportPaint extends SnappingViewportPaint {
+  const _CountingSnappingViewportPaint({required this.onBuild});
+
+  final VoidCallback onBuild;
+
+  @override
+  Widget build(BuildContext context) {
+    onBuild();
+    return super.build(context);
+  }
+}
+
+class _CountingToolViewportPaint extends ToolViewportPaint {
+  const _CountingToolViewportPaint({required this.onBuild});
+
+  final VoidCallback onBuild;
+
+  @override
+  Widget build(BuildContext context) {
+    onBuild();
+    return super.build(context);
+  }
+}
+
+class _CountingGridPaint extends GridPaint {
+  const _CountingGridPaint({required this.onBuild});
+
+  final VoidCallback onBuild;
+
+  @override
+  Widget build(BuildContext context) {
+    onBuild();
+    return super.build(context);
+  }
 }

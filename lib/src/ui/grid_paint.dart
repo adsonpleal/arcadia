@@ -16,15 +16,12 @@ class GridPaint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ViewportStateBuilder(
-      select: (state) => (state.panOffset, state.zoom),
-      builder: (context, state) {
-        final (panOffset, zoom) = state;
+    final (panOffset, zoom) = context.selectViewportState(
+      (state) => (state.panOffset, state.zoom),
+    );
 
-        return CustomPaint(
-          painter: _GridPainter(zoom: zoom, panOffset: panOffset),
-        );
-      },
+    return CustomPaint(
+      painter: _GridPainter(zoom: zoom, panOffset: panOffset),
     );
   }
 }

@@ -20,61 +20,55 @@ class CursorPaint extends StatelessWidget {
       cursor: SystemMouseCursors.none,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          return ViewportStateBuilder(
-            select: (state) => (
-              state.cursorPosition * unitVirtualPixelRatio,
-              state.zoom,
-              state.panOffset,
-              state.userInput,
-            ),
-            builder: (context, value) {
-              final (cursorPosition, zoom, panOffset, userInput) = value;
-
-              final viewportMidpoint = Offset(
-                constraints.maxWidth / 2,
-                constraints.maxHeight / 2,
+          final (cursorPosition, zoom, panOffset, userInput) = context
+              .selectViewportState(
+                (state) => (
+                  state.cursorPosition * unitVirtualPixelRatio,
+                  state.zoom,
+                  state.panOffset,
+                  state.userInput,
+                ),
               );
-              final viewportOffset = viewportMidpoint + panOffset;
-              final viewportPosition = (cursorPosition * zoom) + viewportOffset;
 
-              return Stack(
-                children: [
-                  Positioned.fill(
-                    child: CustomPaint(
-                      painter: _CursorPainter(
-                        viewportPosition: viewportPosition,
+          final viewportMidpoint = Offset(
+            constraints.maxWidth / 2,
+            constraints.maxHeight / 2,
+          );
+          final viewportOffset = viewportMidpoint + panOffset;
+          final viewportPosition = (cursorPosition * zoom) + viewportOffset;
+
+          return Stack(
+            children: [
+              Positioned.fill(
+                child: CustomPaint(
+                  painter: _CursorPainter(viewportPosition: viewportPosition),
+                ),
+              ),
+              if (userInput != '')
+                Positioned(
+                  top: viewportPosition.dy - _cursorHalfSize,
+                  left: viewportPosition.dx + _cursorHalfSize + 4,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: _cursorSize),
+                    child: Center(
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        constraints: const BoxConstraints(maxWidth: 100),
+                        decoration: ShapeDecoration(
+                          color: ArcadiaColor.viewportBackground,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
+                            side: const BorderSide(
+                              color: ArcadiaColor.separator,
+                            ),
+                          ),
+                        ),
+                        child: Text(userInput),
                       ),
                     ),
                   ),
-                  if (userInput != '')
-                    Positioned(
-                      top: viewportPosition.dy - _cursorHalfSize,
-                      left: viewportPosition.dx + _cursorHalfSize + 4,
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(
-                          minHeight: _cursorSize,
-                        ),
-                        child: Center(
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            constraints: const BoxConstraints(maxWidth: 100),
-                            decoration: ShapeDecoration(
-                              color: ArcadiaColor.viewportBackground,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(4),
-                                side: const BorderSide(
-                                  color: ArcadiaColor.separator,
-                                ),
-                              ),
-                            ),
-                            child: Text(userInput),
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              );
-            },
+                ),
+            ],
           );
         },
       ),

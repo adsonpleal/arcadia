@@ -51,6 +51,9 @@ class _ToolButtonState extends State<_ToolButton> {
     // TODO handle shift, meta, alt and control.
     final shortcut = triggers?.map((key) => key.keyLabel).join('+');
     final tooltipMessage = '$toolName - $shortcut';
+    final selected = context.selectViewportState(
+      (state) => state.selectedTool == widget.tool,
+    );
 
     return Tooltip(
       message: tooltipMessage,
@@ -59,32 +62,29 @@ class _ToolButtonState extends State<_ToolButton> {
         cursor: SystemMouseCursors.click,
         onEnter: (_) => setState(() => hovering = true),
         onExit: (_) => setState(() => hovering = false),
-        child: ViewportStateBuilder(
-          select: (state) => state.selectedTool == widget.tool,
-          builder: (context, selected) => GestureDetector(
-            onTap: () {
-              if (selected) {
-                context.viewportNotifier.cancelToolAction();
-              } else {
-                context.viewportNotifier.selectTool(widget.tool);
-              }
-            },
-            child: Container(
-              width: 24,
-              height: 24,
-              decoration: ShapeDecoration(
-                color: selected
-                    ? ArcadiaColor.selected
-                    : hovering
-                    ? ArcadiaColor.hover
-                    : null,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(4)),
-                  side: BorderSide(color: ArcadiaColor.geometry),
-                ),
+        child: GestureDetector(
+          onTap: () {
+            if (selected) {
+              context.viewportNotifier.cancelToolAction();
+            } else {
+              context.viewportNotifier.selectTool(widget.tool);
+            }
+          },
+          child: Container(
+            width: 24,
+            height: 24,
+            decoration: ShapeDecoration(
+              color: selected
+                  ? ArcadiaColor.selected
+                  : hovering
+                  ? ArcadiaColor.hover
+                  : null,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(4)),
+                side: BorderSide(color: ArcadiaColor.geometry),
               ),
-              child: Center(child: widget.tool.icon),
             ),
+            child: Center(child: widget.tool.icon),
           ),
         ),
       ),

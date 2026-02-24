@@ -12,20 +12,17 @@ class ViewportPaint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ViewportStateBuilder(
-      // Only rebuild if zoom or panOffset or geometries change.
-      select: (state) => (state.zoom, state.panOffset, state.geometries),
-      builder: (context, value) {
-        final (zoom, panOffset, geometries) = value;
+    // Only rebuild if zoom or panOffset or geometries change.
+    final (zoom, panOffset, geometries) = context.selectViewportState(
+      (state) => (state.zoom, state.panOffset, state.geometries),
+    );
 
-        return CustomPaint(
-          painter: ViewportPainter(
-            zoom: zoom,
-            panOffset: panOffset,
-            geometries: geometries,
-          ),
-        );
-      },
+    return CustomPaint(
+      painter: ViewportPainter(
+        zoom: zoom,
+        panOffset: panOffset,
+        geometries: geometries,
+      ),
     );
   }
 }

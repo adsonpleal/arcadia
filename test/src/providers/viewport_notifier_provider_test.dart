@@ -30,7 +30,7 @@ void main() {
     });
 
     testWidgets(
-      'ViewportInheritedNotifier notifies dependents on notifier updates',
+      'ViewportInheritedNotifier does not rebuild on notifier value updates',
       (tester) async {
         final notifier = ViewportNotifier();
         var builds = 0;
@@ -48,7 +48,7 @@ void main() {
                       .dependOnInheritedWidgetOfExactType<
                         ViewportInheritedNotifier
                       >()!
-                      .notifier!
+                      .notifier
                       .value
                       .zoom;
                   return const SizedBox();
@@ -62,13 +62,13 @@ void main() {
 
         notifier.onPan(const Offset(10, 20));
         await tester.pump();
-        expect(builds, 2);
+        expect(builds, 1);
         expect(zoomFromWidget, 1);
 
         notifier.onZoom(2);
         await tester.pump();
-        expect(builds, 3);
-        expect(zoomFromWidget, 2);
+        expect(builds, 1);
+        expect(zoomFromWidget, 1);
       },
     );
 
@@ -92,6 +92,118 @@ void main() {
       );
 
       expect(notifierFromContext, isA<ViewportNotifier>());
+    });
+
+    testWidgets(
+      'selectViewportState rebuilds when selected value changes',
+      (tester) async {
+        var builds = 0;
+        late ViewportNotifier notifier;
+        late double zoomFromWidget;
+
+        await tester.pumpWidget(
+          Directionality(
+            textDirection: .ltr,
+            child: ViewportNotifierProvider(
+              child: Builder(
+                builder: (context) {
+                  builds++;
+                  notifier = context.viewportNotifier;
+                  zoomFromWidget = context.selectViewportState(
+                    (state) => state.zoom,
+                  );
+                  return const SizedBox();
+                },
+              ),
+            ),
+          ),
+        );
+
+        expect(builds, 1);
+        expect(zoomFromWidget, 1);
+
+        notifier.onZoom(2);
+        await tester.pump();
+
+        expect(builds, 2);
+        expect(zoomFromWidget, 2);
+      },
+    );
+
+    testWidgets(
+      'selectViewportState does not rebuild when unselected values change',
+      (tester) async {
+        var builds = 0;
+        late ViewportNotifier notifier;
+        late double zoomFromWidget;
+
+        await tester.pumpWidget(
+          Directionality(
+            textDirection: .ltr,
+            child: ViewportNotifierProvider(
+              child: Builder(
+                builder: (context) {
+                  builds++;
+                  notifier = context.viewportNotifier;
+                  zoomFromWidget = context.selectViewportState(
+                    (state) => state.zoom,
+                  );
+                  return const SizedBox();
+                },
+              ),
+            ),
+          ),
+        );
+
+        expect(builds, 1);
+        expect(zoomFromWidget, 1);
+
+        notifier.value = notifier.value.copyWith(
+          panOffset: const Offset(3, 4),
+          cursorPosition: const Offset(8, 9),
+          userInput: '12',
+        );
+        await tester.pump();
+
+        expect(builds, 1);
+        expect(zoomFromWidget, 1);
+      },
+    );
+
+    testWidgets('selectViewportState supports record mapping', (tester) async {
+      var builds = 0;
+      late ViewportNotifier notifier;
+      late (double zoom, Offset panOffset) valueFromWidget;
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: .ltr,
+          child: ViewportNotifierProvider(
+            child: Builder(
+              builder: (context) {
+                builds++;
+                notifier = context.viewportNotifier;
+                valueFromWidget = context.selectViewportState(
+                  (state) => (state.zoom, state.panOffset),
+                );
+                return const SizedBox();
+              },
+            ),
+          ),
+        ),
+      );
+
+      expect(builds, 1);
+      expect(valueFromWidget, (1.0, Offset.zero));
+
+      notifier.value = notifier.value.copyWith(
+        zoom: 1.5,
+        panOffset: const Offset(10, 20),
+      );
+      await tester.pump();
+
+      expect(builds, 2);
+      expect(valueFromWidget, (1.5, const Offset(10, 20)));
     });
   });
 }
