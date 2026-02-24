@@ -8,6 +8,7 @@ import 'grid_paint.dart';
 import 'selection_paint.dart';
 import 'snapping_viewport_paint.dart';
 import 'tool_viewport_paint.dart';
+import 'viewport_overlay.dart';
 import 'viewport_paint.dart';
 
 /// The viewport with the viewport painter and listener.
@@ -49,6 +50,7 @@ class Viewport extends StatelessWidget {
               Positioned.fill(child: SnappingViewportPaint()),
               Positioned.fill(child: ToolViewportPaint()),
               Positioned.fill(child: CursorPaint()),
+              Positioned.fill(child: ViewportOverlay()),
             ],
           ),
         ),

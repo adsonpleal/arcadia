@@ -17,30 +17,6 @@ void main() {
       expect(mouseRegion.cursor, SystemMouseCursors.none);
     });
 
-    testWidgets('shows typed user input next to cursor', (tester) async {
-      final notifier = await _pumpCursor(tester);
-
-      notifier.value = notifier.value.copyWith(
-        cursorPosition: const Offset(3, 4),
-        userInput: '12.5',
-      );
-      await tester.pump();
-
-      expect(find.text('12.5'), findsOneWidget);
-    });
-
-    testWidgets('hides typed user input when input is empty', (tester) async {
-      final notifier = await _pumpCursor(tester);
-
-      notifier.value = notifier.value.copyWith(userInput: '4');
-      await tester.pump();
-      expect(find.text('4'), findsOneWidget);
-
-      notifier.clearUserInput();
-      await tester.pump();
-      expect(find.text('4'), findsNothing);
-    });
-
     testWidgets(
       'does not rebuild when unrelated state slices change',
       (tester) async {
@@ -64,6 +40,7 @@ void main() {
 
         notifier.value = notifier.value.copyWith(
           selectedTool: const LineTool(),
+          userInput: '42',
         );
         await tester.pump();
 
