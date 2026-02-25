@@ -128,6 +128,7 @@ void main() {
 
       final mouse = await tester.createGesture(kind: .mouse);
       await mouse.addPointer(location: center);
+      await mouse.moveTo(center + const Offset(50, 50));
       await mouse.down(center + const Offset(50, 50));
       await mouse.moveTo(center);
       await mouse.up();

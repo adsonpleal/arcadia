@@ -161,27 +161,59 @@ void main() {
       expect(snapLine.color, ArcadiaColor.accentActive);
     });
 
-    test(
-      'onCursorClickUp toggles selected geometries when no tool is active',
-      () {
-        final notifier = ViewportNotifier()..addGeometries(const [_lineA]);
+    test('onCursorClickUp adds to selection when no tool is active', () {
+      final notifier = ViewportNotifier()
+        ..addGeometries(const [_lineA, _lineB]);
 
-        _moveCursor(notifier, const Offset(5, 0));
-        notifier.onCursorClickUp();
-        _moveCursor(notifier, const Offset(100, 100));
+      _moveCursor(notifier, const Offset(5, 0));
+      notifier.onCursorClickUp();
+      _moveCursor(notifier, const Offset(100, 100));
 
-        expect(notifier.value.selectionGeometries, hasLength(1));
-        final selected = notifier.value.selectionGeometries.single as Line;
-        expect(selected.color, ArcadiaColor.primaryActive);
-        expect(selected.strokeWidth, 5);
+      expect(notifier.value.selectionGeometries, hasLength(1));
+      final firstSelection = notifier.value.selectionGeometries.single as Line;
+      expect(firstSelection.start, _lineA.start);
+      expect(firstSelection.end, _lineA.end);
+      expect(firstSelection.color, ArcadiaColor.primaryActive);
+      expect(firstSelection.strokeWidth, 5);
 
-        _moveCursor(notifier, const Offset(5, 0));
-        notifier.onCursorClickUp();
-        _moveCursor(notifier, const Offset(100, 100));
+      _moveCursor(notifier, const Offset(25, 0));
+      notifier.onCursorClickUp();
+      _moveCursor(notifier, const Offset(100, 100));
 
-        expect(notifier.value.selectionGeometries, isEmpty);
-      },
-    );
+      expect(notifier.value.selectionGeometries, hasLength(2));
+      final selectedLines = notifier.value.selectionGeometries
+          .whereType<Line>();
+      expect(
+        selectedLines.any(
+          (line) => line.start == _lineA.start && line.end == _lineA.end,
+        ),
+        isTrue,
+      );
+      expect(
+        selectedLines.any(
+          (line) => line.start == _lineB.start && line.end == _lineB.end,
+        ),
+        isTrue,
+      );
+
+      _moveCursor(notifier, const Offset(100, 100));
+      notifier.onCursorClickUp();
+
+      expect(notifier.value.selectionGeometries, hasLength(2));
+    });
+
+    test('onCursorClickDown keeps the current selection', () {
+      final notifier = ViewportNotifier()..addGeometries(const [_lineA]);
+
+      _moveCursor(notifier, const Offset(5, 0));
+      notifier.onCursorClickUp();
+      _moveCursor(notifier, const Offset(100, 100));
+      expect(notifier.value.selectionGeometries, hasLength(1));
+
+      notifier.onCursorClickDown();
+
+      expect(notifier.value.selectionGeometries, hasLength(1));
+    });
 
     test('left-to-right drag uses window selection semantics', () {
       const insideLine = Line(
@@ -229,7 +261,7 @@ void main() {
       expect(notifier.value.selectionGeometries, hasLength(2));
     });
 
-    test('shift drag adds matches to existing selection', () {
+    test('drag adds matches to existing selection', () {
       const first = Line(
         start: Offset(1, 1),
         end: Offset(3, 1),
@@ -245,7 +277,7 @@ void main() {
       _moveCursor(notifier, const Offset(2, 1));
       notifier.onCursorClickUp();
 
-      _pointerDown(notifier, const Offset(18, 0), shiftPressed: true);
+      _pointerDown(notifier, const Offset(18, 0));
       _moveCursor(notifier, const Offset(24, 4));
       notifier.onCursorClickUp();
 
@@ -346,11 +378,10 @@ void _moveCursor(ViewportNotifier notifier, Offset cursorPosition) {
 
 void _pointerDown(
   ViewportNotifier notifier,
-  Offset cursorPosition, {
-  bool shiftPressed = false,
-}) {
+  Offset cursorPosition,
+) {
   _moveCursor(notifier, cursorPosition);
-  notifier.onCursorClickDown(shiftPressed: shiftPressed);
+  notifier.onCursorClickDown();
 }
 
 class _SpyTool implements Tool {

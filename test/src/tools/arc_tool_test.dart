@@ -24,17 +24,17 @@ void main() {
         final notifier = ViewportNotifier()..selectTool(const ArcTool());
 
         _moveCursor(notifier, .zero);
-        notifier.onCursorClick();
+        notifier.onCursorClickUp();
         _moveCursor(notifier, const Offset(10, 0));
 
         expect(notifier.value.toolGeometries.single, isA<Line>());
 
-        notifier.onCursorClick();
+        notifier.onCursorClickUp();
         _moveCursor(notifier, const Offset(0, 10));
 
         expect(notifier.value.toolGeometries.single, isA<Arc>());
 
-        notifier.onCursorClick();
+        notifier.onCursorClickUp();
 
         expect(notifier.value.geometries.single, isA<Arc>());
 

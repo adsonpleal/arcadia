@@ -15,7 +15,7 @@ void main() {
     const rect = Rect.fromLTRB(0, 0, 10, 10);
 
     test('window returns true when point is inside rect', () {
-      expect(point.matchesWindowSelection(rect), isTrue);
+      expect(point.containedIn(rect), isTrue);
     });
 
     test('crossing returns false when point is outside rect', () {
@@ -25,7 +25,7 @@ void main() {
         shape: .square,
       );
 
-      expect(outside.matchesCrossingSelection(rect), isFalse);
+      expect(outside.intersects(rect), isFalse);
     });
   });
 
@@ -39,13 +39,13 @@ void main() {
     test('window requires both endpoints inside rect', () {
       const rect = Rect.fromLTRB(0, 0, 10, 10);
 
-      expect(horizontal.matchesWindowSelection(rect), isFalse);
+      expect(horizontal.containedIn(rect), isFalse);
     });
 
     test('crossing matches when line intersects rect edge', () {
       const rect = Rect.fromLTRB(0, 0, 10, 10);
 
-      expect(horizontal.matchesCrossingSelection(rect), isTrue);
+      expect(horizontal.intersects(rect), isTrue);
     });
   });
 
@@ -55,13 +55,13 @@ void main() {
     test('window requires full circle containment', () {
       const tightRect = Rect.fromLTRB(8, 8, 12, 12);
 
-      expect(circle.matchesWindowSelection(tightRect), isFalse);
+      expect(circle.containedIn(tightRect), isFalse);
     });
 
     test('crossing matches when circle intersects rect boundary', () {
       const rect = Rect.fromLTRB(0, 0, 12, 12);
 
-      expect(circle.matchesCrossingSelection(rect), isTrue);
+      expect(circle.intersects(rect), isTrue);
     });
   });
 
@@ -76,13 +76,19 @@ void main() {
     test('window only matches when sampled arc points are contained', () {
       const rect = Rect.fromLTRB(4, 4, 16, 16);
 
-      expect(arc.matchesWindowSelection(rect), isFalse);
+      expect(arc.containedIn(rect), isFalse);
     });
 
     test('crossing matches when sampled arc intersects rectangle', () {
       const rect = Rect.fromLTRB(9, 0, 11, 20);
 
-      expect(arc.matchesCrossingSelection(rect), isTrue);
+      expect(arc.intersects(rect), isTrue);
+    });
+
+    test('window matches when rectangle fully contains arc', () {
+      const rect = Rect.fromLTRB(-1, -1, 21, 11);
+
+      expect(arc.containedIn(rect), isTrue);
     });
   });
 }

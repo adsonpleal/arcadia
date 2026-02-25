@@ -74,12 +74,12 @@ class Point extends Geometry {
   }
 
   @override
-  bool matchesWindowSelection(Rect rect) {
+  bool containedIn(Rect rect) {
     return rect.contains(position);
   }
 
   @override
-  bool matchesCrossingSelection(Rect rect) {
+  bool intersects(Rect rect) {
     return rect.contains(position);
   }
 

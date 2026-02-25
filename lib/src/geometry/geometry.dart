@@ -37,10 +37,10 @@ abstract class Geometry {
   bool contains(Offset offset, double tolerance);
 
   /// Returns whether this geometry is fully contained by [rect].
-  bool matchesWindowSelection(Rect rect);
+  bool containedIn(Rect rect);
 
   /// Returns whether this geometry is contained by or intersects [rect].
-  bool matchesCrossingSelection(Rect rect);
+  bool intersects(Rect rect);
 
   /// Creates a copy of this geometry, replacing its [color] or/and [strokeWidth].
   Geometry copyWith({double? strokeWidth, ArcadiaColor? color});

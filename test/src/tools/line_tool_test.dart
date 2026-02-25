@@ -21,14 +21,14 @@ void main() {
       final notifier = ViewportNotifier()..selectTool(const LineTool());
 
       _moveCursor(notifier, const Offset(10, 10));
-      notifier.onCursorClick();
+      notifier.onCursorClickUp();
       _moveCursor(notifier, const Offset(20, 10));
 
       final preview = notifier.value.toolGeometries.single as Line;
       expect(preview.start, const Offset(10, 10));
       expect(preview.end, const Offset(20, 10));
 
-      notifier.onCursorClick();
+      notifier.onCursorClickUp();
 
       final committed = notifier.value.geometries.single as Line;
       expect(committed.start, const Offset(10, 10));
@@ -45,13 +45,13 @@ void main() {
       final notifier = ViewportNotifier()..selectTool(const LineTool());
 
       _moveCursor(notifier, const Offset(10, 0));
-      notifier.onCursorClick();
+      notifier.onCursorClickUp();
       _moveCursor(notifier, const Offset(20, 0));
 
       notifier.onUserInput('5');
       expect(notifier.value.userInput, '5');
 
-      notifier.onCursorClick();
+      notifier.onCursorClickUp();
 
       final line = notifier.value.geometries.single as Line;
       expect(line.start, const Offset(10, 0));

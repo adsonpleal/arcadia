@@ -12,6 +12,7 @@ import '../tools/tool.dart';
 const _origin = Point(position: .zero, color: .accent, shape: .triangle);
 const _minZoom = 0.01;
 const _maxZoom = 10.0;
+const _selectionDragStartDistance = 0.1;
 
 enum _SelectionDragMode {
   window,
@@ -22,12 +23,12 @@ class _SelectionDragSession {
   _SelectionDragSession({
     required this.start,
     required this.current,
-    required this.additive,
+    required this.baselineSelection,
   });
 
   final Offset start;
   Offset current;
-  final bool additive;
+  final List<Geometry> baselineSelection;
 }
 
 /// A [ValueNotifier] that holds the [ViewportState].
@@ -48,7 +49,6 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
   final List<Offset> _lastSnaps = [];
 
   final List<Geometry> _selectedGeometries = [];
-  final List<Geometry> _previewSelectedGeometries = [];
 
   Geometry? _hoveringGeometry;
   _SelectionDragSession? _selectionDragSession;
@@ -124,23 +124,24 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
   }
 
   /// Handle click down action and initialize drag selection state.
-  void onCursorClickDown({bool shiftPressed = false}) {
+  void onCursorClickDown() {
     if (_toolAction != null) {
       return;
     }
 
     _clearSelectionDragPreview();
+    final baselineSelection = [..._selectedGeometries];
+    _hoveringGeometry = null;
     final cursorPosition = value.cursorPosition;
     _selectionDragSession = _SelectionDragSession(
       start: cursorPosition,
       current: cursorPosition,
-      additive: shiftPressed,
+      baselineSelection: baselineSelection,
     );
-    _previewSelectedGeometries.clear();
   }
 
   /// Handle click up action, finalizing either click or drag selection.
-  void onCursorClickUp({bool shiftPressed = false}) {
+  void onCursorClickUp() {
     if (_toolAction case final action?) {
       action.onClick();
       return;
@@ -151,9 +152,9 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
         final selectionRect = Rect.fromPoints(session.start, session.current);
         final mode = _resolvedRectSelectionMode(session);
         final matches = _matchingGeometriesForRect(selectionRect, mode: mode);
-        _applySelectionMatches(
+        _replaceSelectionWithMatches(
           matches,
-          additive: session.additive || shiftPressed,
+          baselineSelection: session.baselineSelection,
         );
         _hoveringGeometry = null;
         _clearSelectionDragPreview();
@@ -162,22 +163,24 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
       }
 
       _clearSelectionDragPreview();
+      _handleSingleSelection(baselineSelection: session.baselineSelection);
+      return;
     }
 
-    _handleSingleSelection();
+    _handleSingleSelection(baselineSelection: [..._selectedGeometries]);
   }
 
   /// Cancel active pointer interactions without changing persisted selection.
   void onCursorCancel() {
     if (_toolAction == null) {
+      if (_selectionDragSession case final session?) {
+        _selectedGeometries
+          ..clear()
+          ..addAll(session.baselineSelection);
+      }
       _clearSelectionDragPreview();
       _updateSelectedGeometries();
     }
-  }
-
-  /// Handle click action.
-  void onCursorClick() {
-    onCursorClickUp();
   }
 
   /// Handle cursor movement.
@@ -370,25 +373,26 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
 
     if (!_hasDragStarted(session)) {
       clearToolGeometries();
-      _previewSelectedGeometries.clear();
       return;
     }
 
     final selectionRect = Rect.fromPoints(session.start, session.current);
     final mode = _resolvedRectSelectionMode(session);
-    final previewGeometries = _selectionPreviewGeometries(
-      selectionRect,
-      mode: mode,
+    final previewGeometries = rectangleLinesFromRect(
+      rect: selectionRect,
+      color: .accentActive,
+      dashed: mode == _SelectionDragMode.crossing,
     );
     value = value.copyWith(toolGeometries: previewGeometries);
-    _previewSelectedGeometries
-      ..clear()
-      ..addAll(_matchingGeometriesForRect(selectionRect, mode: mode));
+    _replaceSelectionWithMatches(
+      _matchingGeometriesForRect(selectionRect, mode: mode),
+      baselineSelection: session.baselineSelection,
+    );
   }
 
   bool _hasDragStarted(_SelectionDragSession session) {
     return (session.current - session.start).distance >=
-        selectionDragStartDistance;
+        _selectionDragStartDistance;
   }
 
   List<Geometry> _matchingGeometriesForRect(
@@ -398,26 +402,15 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
     return [
       for (final geometry in value.geometries)
         if (switch (mode) {
-          _SelectionDragMode.window => geometry.matchesWindowSelection(
+          _SelectionDragMode.window => geometry.containedIn(
             selectionRect,
           ),
-          _SelectionDragMode.crossing => geometry.matchesCrossingSelection(
+          _SelectionDragMode.crossing => geometry.intersects(
             selectionRect,
           ),
         })
           geometry,
     ];
-  }
-
-  List<Geometry> _selectionPreviewGeometries(
-    Rect selectionRect, {
-    required _SelectionDragMode mode,
-  }) {
-    return rectangleLinesFromRect(
-      rect: selectionRect,
-      color: .accentActive,
-      dashed: mode == _SelectionDragMode.crossing,
-    );
   }
 
   _SelectionDragMode _resolvedRectSelectionMode(_SelectionDragSession session) {
@@ -426,16 +419,13 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
         : _SelectionDragMode.crossing;
   }
 
-  void _applySelectionMatches(
+  void _replaceSelectionWithMatches(
     List<Geometry> matches, {
-    required bool additive,
+    required List<Geometry> baselineSelection,
   }) {
-    if (!additive) {
-      _selectedGeometries
-        ..clear()
-        ..addAll(matches);
-      return;
-    }
+    _selectedGeometries
+      ..clear()
+      ..addAll(baselineSelection);
 
     for (final geometry in matches) {
       if (!_selectedGeometries.contains(geometry)) {
@@ -446,20 +436,21 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
 
   void _clearSelectionDragPreview() {
     _selectionDragSession = null;
-    _previewSelectedGeometries.clear();
     clearToolGeometries();
   }
 
-  void _handleSingleSelection() {
+  void _handleSingleSelection({required List<Geometry> baselineSelection}) {
     final selected = _geometryBellowCursor();
-    if (selected != null) {
-      if (_selectedGeometries.contains(selected)) {
-        _selectedGeometries.remove(selected);
-      } else {
-        _selectedGeometries.add(selected);
-      }
-      _updateSelectedGeometries();
+    _selectedGeometries
+      ..clear()
+      ..addAll(baselineSelection);
+
+    if (selected case final geometry?
+        when !_selectedGeometries.contains(geometry)) {
+      _selectedGeometries.add(geometry);
     }
+    _hoveringGeometry = null;
+    _updateSelectedGeometries();
   }
 
   void _addLastSnap(Offset offset) {
@@ -475,12 +466,8 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
   void _updateSelectedGeometries() {
     value = value.copyWith(
       selectionGeometries: [
-        for (final geometry in _previewSelectedGeometries)
-          if (!_selectedGeometries.contains(geometry))
-            geometry.copyWith(strokeWidth: 5, color: .accentMuted),
         if (_hoveringGeometry case final hovering?
-            when !_previewSelectedGeometries.contains(hovering) &&
-                !_selectedGeometries.contains(hovering))
+            when !_selectedGeometries.contains(hovering))
           hovering.copyWith(strokeWidth: 5, color: .accentMuted),
         for (final geometry in _selectedGeometries)
           geometry.copyWith(strokeWidth: 5, color: .primaryActive),
@@ -499,7 +486,6 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
 
   void _clearSelectedGeometries() {
     _selectedGeometries.clear();
-    _previewSelectedGeometries.clear();
     _hoveringGeometry = null;
     _updateSelectedGeometries();
   }

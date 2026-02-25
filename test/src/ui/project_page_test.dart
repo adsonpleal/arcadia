@@ -60,6 +60,26 @@ void main() {
       await tester.pump();
       expect(notifier.value.geometries, const [_lineA, _lineB]);
     });
+
+    testWidgets('escape clears selection when no tool is active', (
+      tester,
+    ) async {
+      final notifier = await _pumpProjectPage(tester);
+      notifier
+        ..addGeometries(const [_lineA])
+        ..value = notifier.value.copyWith(
+          cursorPosition: const Offset(0.5, 0),
+        )
+        ..onCursorClickUp();
+      await tester.pump();
+      expect(notifier.value.selectionGeometries, hasLength(1));
+
+      await tester.sendKeyEvent(.escape);
+      await tester.pump();
+
+      expect(notifier.value.selectedTool, isNull);
+      expect(notifier.value.selectionGeometries, isEmpty);
+    });
   });
 }
 

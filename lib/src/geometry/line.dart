@@ -4,9 +4,9 @@ import 'dart:ui';
 import 'package:flutter/painting.dart';
 
 import '../constants/arcadia_color.dart';
+import '../foundation/geometry/selection_math.dart';
 import 'geometry.dart';
 import 'point.dart';
-import 'selection_math.dart';
 
 const _dashSize = 5.0;
 
@@ -95,12 +95,12 @@ class Line extends Geometry {
   }
 
   @override
-  bool matchesWindowSelection(Rect rect) {
+  bool containedIn(Rect rect) {
     return rect.contains(start) && rect.contains(end);
   }
 
   @override
-  bool matchesCrossingSelection(Rect rect) {
+  bool intersects(Rect rect) {
     if (rect.contains(start) || rect.contains(end)) {
       return true;
     }

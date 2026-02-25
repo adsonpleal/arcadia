@@ -1,5 +1,4 @@
 import 'package:flutter/gestures.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import '../constants/arcadia_color.dart';
@@ -19,15 +18,11 @@ class Viewport extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isShiftPressed() {
-      final keys = HardwareKeyboard.instance.logicalKeysPressed;
-      return keys.contains(LogicalKeyboardKey.shiftLeft) ||
-          keys.contains(LogicalKeyboardKey.shiftRight);
-    }
+    final notifier = context.viewportNotifier;
 
     void onPointerMovement(PointerEvent event) {
       if (context.size case final size?) {
-        context.viewportNotifier.onCursorMove(
+        notifier.onCursorMove(
           viewportPosition: event.localPosition,
           viewportMidPoint: Offset(size.width, size.height) / 2,
         );
@@ -38,30 +33,20 @@ class Viewport extends StatelessWidget {
       onPointerSignal: (event) {
         switch (event) {
           case PointerScrollEvent(scrollDelta: final scrollDelta):
-            context.viewportNotifier.onPan(-scrollDelta);
+            notifier.onPan(-scrollDelta);
           case PointerScaleEvent(scale: final scale):
-            context.viewportNotifier.onZoom(scale);
+            notifier.onZoom(scale);
         }
       },
       onPointerMove: onPointerMovement,
       onPointerHover: onPointerMovement,
-      onPointerDown: (event) {
-        if (context.size case final size?) {
-          context.viewportNotifier.onCursorMove(
-            viewportPosition: event.localPosition,
-            viewportMidPoint: Offset(size.width, size.height) / 2,
-          );
-          context.viewportNotifier.onCursorClickDown(
-            shiftPressed: isShiftPressed(),
-          );
-        }
+      onPointerDown: (_) {
+        notifier.onCursorClickDown();
       },
       onPointerUp: (_) {
-        context.viewportNotifier.onCursorClickUp(
-          shiftPressed: isShiftPressed(),
-        );
+        notifier.onCursorClickUp();
       },
-      onPointerCancel: (_) => context.viewportNotifier.onCursorCancel(),
+      onPointerCancel: (_) => notifier.onCursorCancel(),
       child: const ClipRRect(
         child: ColoredBox(
           color: ArcadiaColor.background,
