@@ -164,28 +164,6 @@ class Arc extends Geometry {
     return false;
   }
 
-  @override
-  bool matchesLassoCrossingSelection(List<Offset> closedLassoPath) {
-    final points = _sampleArcPoints();
-    if (points.any(
-      (point) => isPointInsideClosedPolygon(point, closedLassoPath),
-    )) {
-      return true;
-    }
-
-    for (var index = 0; index < points.length - 1; index++) {
-      if (segmentIntersectsPolygon(
-        points[index],
-        points[index + 1],
-        closedLassoPath,
-      )) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
   List<Offset> _sampleArcPoints({int segments = 24}) {
     return [
       for (var i = 0; i <= segments; i++)

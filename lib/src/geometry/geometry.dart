@@ -42,10 +42,6 @@ abstract class Geometry {
   /// Returns whether this geometry is contained by or intersects [rect].
   bool matchesCrossingSelection(Rect rect);
 
-  /// Returns whether this geometry is contained by or intersects the closed
-  /// [closedLassoPath].
-  bool matchesLassoCrossingSelection(List<Offset> closedLassoPath);
-
   /// Creates a copy of this geometry, replacing its [color] or/and [strokeWidth].
   Geometry copyWith({double? strokeWidth, ArcadiaColor? color});
 }

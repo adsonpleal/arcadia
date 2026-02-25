@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import '../constants/arcadia_color.dart';
 import 'geometry.dart';
-import 'selection_math.dart';
 
 /// The shape of a point.
 ///
@@ -82,11 +81,6 @@ class Point extends Geometry {
   @override
   bool matchesCrossingSelection(Rect rect) {
     return rect.contains(position);
-  }
-
-  @override
-  bool matchesLassoCrossingSelection(List<Offset> closedLassoPath) {
-    return isPointInsideClosedPolygon(position, closedLassoPath);
   }
 
   @override

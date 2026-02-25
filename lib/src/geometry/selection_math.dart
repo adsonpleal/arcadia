@@ -3,24 +3,6 @@ import 'dart:ui';
 
 const _epsilon = 1e-9;
 
-/// Returns all edges from [points], including the closing edge.
-List<(Offset, Offset)> closedEdges(List<Offset> points) {
-  if (points.length < 2) {
-    return const [];
-  }
-
-  final edges = <(Offset, Offset)>[];
-  for (var i = 0; i < points.length - 1; i++) {
-    edges.add((points[i], points[i + 1]));
-  }
-
-  if (points.first != points.last) {
-    edges.add((points.last, points.first));
-  }
-
-  return edges;
-}
-
 /// Returns the four boundary edges for [rect].
 List<(Offset, Offset)> rectEdges(Rect rect) {
   return [
@@ -29,42 +11,6 @@ List<(Offset, Offset)> rectEdges(Rect rect) {
     (rect.bottomRight, rect.bottomLeft),
     (rect.bottomLeft, rect.topLeft),
   ];
-}
-
-/// Returns true when [point] is inside the closed [polygon] boundary.
-bool isPointInsideClosedPolygon(Offset point, List<Offset> polygon) {
-  if (polygon.length < 3) {
-    return false;
-  }
-
-  for (final (a, b) in closedEdges(polygon)) {
-    if (_isCollinear(a, b, point) && _onSegment(a, point, b)) {
-      return true;
-    }
-  }
-
-  var inside = false;
-  for (var i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-    final first = polygon[i];
-    final second = polygon[j];
-    final spansY = (first.dy > point.dy) != (second.dy > point.dy);
-
-    if (!spansY) {
-      continue;
-    }
-
-    final xCross =
-        (second.dx - first.dx) *
-            (point.dy - first.dy) /
-            (second.dy - first.dy) +
-        first.dx;
-
-    if (point.dx < xCross) {
-      inside = !inside;
-    }
-  }
-
-  return inside;
 }
 
 double _orientation(Offset a, Offset b, Offset c) {
@@ -126,30 +72,6 @@ bool segmentIntersectsRect(Offset segmentStart, Offset segmentEnd, Rect rect) {
   }
 
   for (final (a, b) in rectEdges(rect)) {
-    if (segmentsIntersect(segmentStart, segmentEnd, a, b)) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-/// Returns true when [segmentStart]-[segmentEnd] intersects [closedPolygon].
-bool segmentIntersectsPolygon(
-  Offset segmentStart,
-  Offset segmentEnd,
-  List<Offset> closedPolygon,
-) {
-  if (closedPolygon.length < 3) {
-    return false;
-  }
-
-  if (isPointInsideClosedPolygon(segmentStart, closedPolygon) ||
-      isPointInsideClosedPolygon(segmentEnd, closedPolygon)) {
-    return true;
-  }
-
-  for (final (a, b) in closedEdges(closedPolygon)) {
     if (segmentsIntersect(segmentStart, segmentEnd, a, b)) {
       return true;
     }

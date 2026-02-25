@@ -2,7 +2,6 @@
 
 import 'package:arcadia/src/constants/arcadia_color.dart';
 import 'package:arcadia/src/constants/config.dart';
-import 'package:arcadia/src/geometry/lasso_preview.dart';
 import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/geometry/point.dart';
 import 'package:arcadia/src/logic/viewport_notifier.dart';
@@ -22,7 +21,7 @@ void main() {
 
       notifier.addGeometries(const [_lineA]);
       _moveCursor(notifier, const Offset(5, 0));
-      notifier.onCursorClick();
+      notifier.onCursorClickUp();
       _moveCursor(notifier, const Offset(100, 100));
       notifier.addToolGeometries(const [_lineB]);
 
@@ -37,7 +36,7 @@ void main() {
       final notifier = ViewportNotifier()..selectTool(const LineTool());
 
       _moveCursor(notifier, .zero);
-      notifier.onCursorClick();
+      notifier.onCursorClickUp();
       _moveCursor(notifier, const Offset(10, 0));
       notifier.onUserInput('5');
 
@@ -163,12 +162,12 @@ void main() {
     });
 
     test(
-      'onCursorClick toggles selected geometries when no tool is active',
+      'onCursorClickUp toggles selected geometries when no tool is active',
       () {
         final notifier = ViewportNotifier()..addGeometries(const [_lineA]);
 
         _moveCursor(notifier, const Offset(5, 0));
-        notifier.onCursorClick();
+        notifier.onCursorClickUp();
         _moveCursor(notifier, const Offset(100, 100));
 
         expect(notifier.value.selectionGeometries, hasLength(1));
@@ -177,7 +176,7 @@ void main() {
         expect(selected.strokeWidth, 5);
 
         _moveCursor(notifier, const Offset(5, 0));
-        notifier.onCursorClick();
+        notifier.onCursorClickUp();
         _moveCursor(notifier, const Offset(100, 100));
 
         expect(notifier.value.selectionGeometries, isEmpty);
@@ -200,7 +199,7 @@ void main() {
 
       _pointerDown(notifier, .zero);
       _moveCursor(notifier, const Offset(10, 10));
-      notifier.onPointerUp();
+      notifier.onCursorClickUp();
 
       expect(notifier.value.selectionGeometries, hasLength(1));
       final selected = notifier.value.selectionGeometries.single as Line;
@@ -225,38 +224,10 @@ void main() {
 
       _pointerDown(notifier, const Offset(10, 10));
       _moveCursor(notifier, .zero);
-      notifier.onPointerUp();
+      notifier.onCursorClickUp();
 
       expect(notifier.value.selectionGeometries, hasLength(2));
     });
-
-    test(
-      'alt+drag lasso previews and highlights intersections while drawing',
-      () {
-        const target = Line(
-          start: Offset(2, 2),
-          end: Offset(8, 2),
-          color: .primary,
-        );
-        final notifier = ViewportNotifier()..addGeometries(const [target]);
-
-        _pointerDown(notifier, .zero, altPressed: true);
-        _moveCursor(notifier, const Offset(10, 0));
-        _moveCursor(notifier, const Offset(10, 10));
-        _moveCursor(notifier, const Offset(0, 10));
-
-        expect(notifier.value.toolGeometries.single, isA<LassoPreview>());
-        expect(notifier.value.selectionGeometries, hasLength(1));
-        final preview = notifier.value.selectionGeometries.single as Line;
-        expect(preview.color, ArcadiaColor.accentMuted);
-
-        notifier.onPointerUp();
-
-        expect(notifier.value.selectionGeometries, hasLength(1));
-        final selected = notifier.value.selectionGeometries.single as Line;
-        expect(selected.color, ArcadiaColor.primaryActive);
-      },
-    );
 
     test('shift drag adds matches to existing selection', () {
       const first = Line(
@@ -272,11 +243,11 @@ void main() {
       final notifier = ViewportNotifier()..addGeometries(const [first, second]);
 
       _moveCursor(notifier, const Offset(2, 1));
-      notifier.onCursorClick();
+      notifier.onCursorClickUp();
 
       _pointerDown(notifier, const Offset(18, 0), shiftPressed: true);
       _moveCursor(notifier, const Offset(24, 4));
-      notifier.onPointerUp();
+      notifier.onCursorClickUp();
 
       expect(notifier.value.selectionGeometries, hasLength(2));
     });
@@ -289,7 +260,7 @@ void main() {
 
       _pointerDown(notifier, .zero);
       _moveCursor(notifier, const Offset(10, 10));
-      notifier.onPointerUp();
+      notifier.onCursorClickUp();
 
       expect(action.clickCalls, 1);
       expect(notifier.value.selectionGeometries, isEmpty);
@@ -315,7 +286,7 @@ void main() {
         ..addGeometries(const [_lineA, _lineB]);
 
       _moveCursor(notifier, const Offset(5, 0));
-      notifier.onCursorClick();
+      notifier.onCursorClickUp();
       _moveCursor(notifier, const Offset(100, 100));
 
       notifier.onUserInput('back');
@@ -353,11 +324,11 @@ void main() {
       },
     );
 
-    test('onCursorClick delegates to active tool action', () {
+    test('onCursorClickUp delegates to active tool action', () {
       final action = _SpyToolAction();
       final notifier = ViewportNotifier()..selectTool(_SpyTool(action));
 
-      notifier.onCursorClick();
+      notifier.onCursorClickUp();
 
       expect(action.clickCalls, 1);
     });
@@ -376,17 +347,10 @@ void _moveCursor(ViewportNotifier notifier, Offset cursorPosition) {
 void _pointerDown(
   ViewportNotifier notifier,
   Offset cursorPosition, {
-  bool altPressed = false,
   bool shiftPressed = false,
 }) {
-  final state = notifier.value;
-  notifier.onPointerDown(
-    viewportPosition:
-        (cursorPosition * unitVirtualPixelRatio * state.zoom) + state.panOffset,
-    viewportMidPoint: .zero,
-    altPressed: altPressed,
-    shiftPressed: shiftPressed,
-  );
+  _moveCursor(notifier, cursorPosition);
+  notifier.onCursorClickDown(shiftPressed: shiftPressed);
 }
 
 class _SpyTool implements Tool {

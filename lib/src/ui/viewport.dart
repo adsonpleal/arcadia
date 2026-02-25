@@ -19,12 +19,6 @@ class Viewport extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isAltPressed() {
-      final keys = HardwareKeyboard.instance.logicalKeysPressed;
-      return keys.contains(LogicalKeyboardKey.altLeft) ||
-          keys.contains(LogicalKeyboardKey.altRight);
-    }
-
     bool isShiftPressed() {
       final keys = HardwareKeyboard.instance.logicalKeysPressed;
       return keys.contains(LogicalKeyboardKey.shiftLeft) ||
@@ -53,18 +47,21 @@ class Viewport extends StatelessWidget {
       onPointerHover: onPointerMovement,
       onPointerDown: (event) {
         if (context.size case final size?) {
-          context.viewportNotifier.onPointerDown(
+          context.viewportNotifier.onCursorMove(
             viewportPosition: event.localPosition,
             viewportMidPoint: Offset(size.width, size.height) / 2,
-            altPressed: isAltPressed(),
+          );
+          context.viewportNotifier.onCursorClickDown(
             shiftPressed: isShiftPressed(),
           );
         }
       },
       onPointerUp: (_) {
-        context.viewportNotifier.onPointerUp(shiftPressed: isShiftPressed());
+        context.viewportNotifier.onCursorClickUp(
+          shiftPressed: isShiftPressed(),
+        );
       },
-      onPointerCancel: (_) => context.viewportNotifier.onPointerCancel(),
+      onPointerCancel: (_) => context.viewportNotifier.onCursorCancel(),
       child: const ClipRRect(
         child: ColoredBox(
           color: ArcadiaColor.background,

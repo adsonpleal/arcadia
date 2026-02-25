@@ -13,25 +13,19 @@ void main() {
       shape: .square,
     );
     const rect = Rect.fromLTRB(0, 0, 10, 10);
-    const lasso = [
-      Offset.zero,
-      Offset(10, 0),
-      Offset(10, 10),
-      Offset(0, 10),
-    ];
 
     test('window returns true when point is inside rect', () {
       expect(point.matchesWindowSelection(rect), isTrue);
     });
 
-    test('lasso crossing returns false when point is outside polygon', () {
+    test('crossing returns false when point is outside rect', () {
       const outside = Point(
         position: Offset(20, 20),
         color: .primary,
         shape: .square,
       );
 
-      expect(outside.matchesLassoCrossingSelection(lasso), isFalse);
+      expect(outside.matchesCrossingSelection(rect), isFalse);
     });
   });
 
@@ -53,17 +47,6 @@ void main() {
 
       expect(horizontal.matchesCrossingSelection(rect), isTrue);
     });
-
-    test('lasso crossing matches when line intersects polygon edge', () {
-      const lasso = [
-        Offset.zero,
-        Offset(10, 0),
-        Offset(10, 10),
-        Offset(0, 10),
-      ];
-
-      expect(horizontal.matchesLassoCrossingSelection(lasso), isTrue);
-    });
   });
 
   group('Circle selection matching', () {
@@ -79,17 +62,6 @@ void main() {
       const rect = Rect.fromLTRB(0, 0, 12, 12);
 
       expect(circle.matchesCrossingSelection(rect), isTrue);
-    });
-
-    test('lasso crossing matches when circle intersects lasso boundary', () {
-      const lasso = [
-        Offset.zero,
-        Offset(8, 0),
-        Offset(8, 20),
-        Offset(0, 20),
-      ];
-
-      expect(circle.matchesLassoCrossingSelection(lasso), isTrue);
     });
   });
 
@@ -111,17 +83,6 @@ void main() {
       const rect = Rect.fromLTRB(9, 0, 11, 20);
 
       expect(arc.matchesCrossingSelection(rect), isTrue);
-    });
-
-    test('lasso crossing matches when sampled arc intersects polygon', () {
-      const lasso = [
-        Offset(8, -1),
-        Offset(12, -1),
-        Offset(12, 20),
-        Offset(8, 20),
-      ];
-
-      expect(arc.matchesLassoCrossingSelection(lasso), isTrue);
     });
   });
 }
