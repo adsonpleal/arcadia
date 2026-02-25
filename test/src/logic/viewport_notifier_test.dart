@@ -23,7 +23,7 @@ void main() {
       expect(notifier.value.selectedTool, const SelectionTool());
     });
 
-    test('selectTool clears selection and tool geometries', () {
+    test('selectTool clears tool geometries', () {
       final notifier = ViewportNotifier();
 
       notifier.addGeometries(const [_lineA]);
@@ -35,8 +35,25 @@ void main() {
       notifier.selectTool(const LineTool());
 
       expect(notifier.value.selectedTool, const LineTool());
-      expect(notifier.value.selectionGeometries, isEmpty);
       expect(notifier.value.toolGeometries, isEmpty);
+    });
+
+    test('selectTool reselecting same tool resets preview and input', () {
+      final notifier = ViewportNotifier()..selectTool(const LineTool());
+
+      _moveCursor(notifier, .zero);
+      notifier.onCursorClickUp();
+      _moveCursor(notifier, const Offset(10, 0));
+      notifier.onUserInput('5');
+
+      expect(notifier.value.toolGeometries, isNotEmpty);
+      expect(notifier.value.userInput, '5');
+
+      notifier.selectTool(const LineTool());
+
+      expect(notifier.value.selectedTool, const LineTool());
+      expect(notifier.value.toolGeometries, isEmpty);
+      expect(notifier.value.userInput, isEmpty);
     });
 
     test('cancelToolAction resets selected tool, previews, and input', () {
@@ -54,7 +71,6 @@ void main() {
 
       expect(notifier.value.selectedTool, const SelectionTool());
       expect(notifier.value.toolGeometries, isEmpty);
-      expect(notifier.value.selectionGeometries, isEmpty);
       expect(notifier.value.userInput, isEmpty);
     });
 
@@ -168,7 +184,7 @@ void main() {
       expect(snapLine.color, ArcadiaColor.accentActive);
     });
 
-    test('onCursorClickUp adds to selection when no tool is active', () {
+    test('onCursorClickUp adds to selection tool geometries', () {
       final notifier = ViewportNotifier()
         ..addGeometries(const [_lineA, _lineB]);
 
@@ -176,8 +192,7 @@ void main() {
       notifier.onCursorClickUp();
       _moveCursor(notifier, const Offset(100, 100));
 
-      expect(notifier.value.selectionGeometries, hasLength(1));
-      final firstSelection = notifier.value.selectionGeometries.single as Line;
+      final firstSelection = _selectedLines(notifier).single;
       expect(firstSelection.start, _lineA.start);
       expect(firstSelection.end, _lineA.end);
       expect(firstSelection.color, ArcadiaColor.primaryActive);
@@ -187,9 +202,8 @@ void main() {
       notifier.onCursorClickUp();
       _moveCursor(notifier, const Offset(100, 100));
 
-      expect(notifier.value.selectionGeometries, hasLength(2));
-      final selectedLines = notifier.value.selectionGeometries
-          .whereType<Line>();
+      final selectedLines = _selectedLines(notifier);
+      expect(selectedLines, hasLength(2));
       expect(
         selectedLines.any(
           (line) => line.start == _lineA.start && line.end == _lineA.end,
@@ -206,7 +220,7 @@ void main() {
       _moveCursor(notifier, const Offset(100, 100));
       notifier.onCursorClickUp();
 
-      expect(notifier.value.selectionGeometries, hasLength(2));
+      expect(_selectedLines(notifier), hasLength(2));
     });
 
     test('onCursorClickDown keeps the current selection', () {
@@ -215,11 +229,33 @@ void main() {
       _moveCursor(notifier, const Offset(5, 0));
       notifier.onCursorClickUp();
       _moveCursor(notifier, const Offset(100, 100));
-      expect(notifier.value.selectionGeometries, hasLength(1));
+      expect(_selectedLines(notifier), hasLength(1));
 
       notifier.onCursorClickDown();
 
-      expect(notifier.value.selectionGeometries, hasLength(1));
+      expect(_selectedLines(notifier), hasLength(1));
+    });
+
+    test('selection prioritizes top-most geometry on overlap', () {
+      const bottom = Line(
+        start: .zero,
+        end: Offset(10, 0),
+        color: .primary,
+      );
+      const top = Line(
+        start: Offset(5, -5),
+        end: Offset(5, 5),
+        color: .primary,
+      );
+      final notifier = ViewportNotifier()..addGeometries(const [bottom, top]);
+
+      _moveCursor(notifier, const Offset(5, 0));
+      notifier.onCursorClickUp();
+      _moveCursor(notifier, const Offset(100, 100));
+
+      final selected = _selectedLines(notifier).single;
+      expect(selected.start, top.start);
+      expect(selected.end, top.end);
     });
 
     test('left-to-right drag uses window selection semantics', () {
@@ -240,8 +276,7 @@ void main() {
       _moveCursor(notifier, const Offset(10, 10));
       notifier.onCursorClickUp();
 
-      expect(notifier.value.selectionGeometries, hasLength(1));
-      final selected = notifier.value.selectionGeometries.single as Line;
+      final selected = _selectedLines(notifier).single;
       expect(selected.start, insideLine.start);
       expect(selected.end, insideLine.end);
       expect(selected.color, ArcadiaColor.primaryActive);
@@ -265,7 +300,7 @@ void main() {
       _moveCursor(notifier, .zero);
       notifier.onCursorClickUp();
 
-      expect(notifier.value.selectionGeometries, hasLength(2));
+      expect(_selectedLines(notifier), hasLength(2));
     });
 
     test('drag adds matches to existing selection', () {
@@ -288,7 +323,19 @@ void main() {
       _moveCursor(notifier, const Offset(24, 4));
       notifier.onCursorClickUp();
 
-      expect(notifier.value.selectionGeometries, hasLength(2));
+      expect(_selectedLines(notifier), hasLength(2));
+    });
+
+    test('drag threshold is based on viewport pixels', () {
+      final notifier = ViewportNotifier()..addGeometries(const [_lineA]);
+      notifier.value = notifier.value.copyWith(zoom: 10);
+
+      _pointerDown(notifier, const Offset(5, 0));
+      _moveCursor(notifier, const Offset(5.05, 0));
+      notifier.onCursorClickUp();
+      _moveCursor(notifier, const Offset(100, 100));
+
+      expect(_selectedLines(notifier), isEmpty);
     });
 
     test('active tool keeps priority and does not start drag selection', () {
@@ -303,11 +350,11 @@ void main() {
 
       expect(action.clickDownCalls, 1);
       expect(action.clickUpCalls, 1);
-      expect(notifier.value.selectionGeometries, isEmpty);
+      expect(_selectedLines(notifier), isEmpty);
     });
 
     test(
-      'onUserInput handles numbers, dot dedupe, and backspace for tools',
+      'onUserInput handles numbers, dot dedupe, and delete for tools',
       () {
         final notifier = ViewportNotifier()..selectTool(const LineTool());
 
@@ -315,24 +362,45 @@ void main() {
         notifier.onUserInput('.');
         notifier.onUserInput('.');
         notifier.onUserInput('2');
-        notifier.onUserInput('back');
+        notifier.onUserInput(deleteCharacter);
 
         expect(notifier.value.userInput, '1.');
       },
     );
 
-    test('onUserInput backspace deletes selected geometries when no tool', () {
-      final notifier = ViewportNotifier()
-        ..addGeometries(const [_lineA, _lineB]);
+    test(
+      'onUserInput deleteCharacter deletes selected selection',
+      () {
+        final notifier = ViewportNotifier()
+          ..addGeometries(const [_lineA, _lineB]);
 
-      _moveCursor(notifier, const Offset(5, 0));
-      notifier.onCursorClickUp();
-      _moveCursor(notifier, const Offset(100, 100));
+        _moveCursor(notifier, const Offset(5, 0));
+        notifier.onCursorClickUp();
+        _moveCursor(notifier, const Offset(100, 100));
 
-      notifier.onUserInput('back');
+        notifier.onUserInput(deleteCharacter);
 
-      expect(notifier.value.geometries, const [_lineB]);
-      expect(notifier.value.selectionGeometries, isEmpty);
+        expect(notifier.value.geometries, const [_lineB]);
+        expect(_selectedLines(notifier), isEmpty);
+      },
+    );
+
+    test('onUserInput deleteCharacter with no selection does not add undo', () {
+      final notifier = ViewportNotifier()..addGeometries(const [_lineA]);
+
+      notifier.onUserInput(deleteCharacter);
+      notifier.undo();
+
+      expect(notifier.value.geometries, isEmpty);
+    });
+
+    test('onUserInput deleteCharacter delegates to tool onDelete', () {
+      final action = _DeleteSpyToolAction();
+      final notifier = ViewportNotifier()..selectTool(_SpyTool(action));
+
+      notifier.onUserInput(deleteCharacter);
+
+      expect(action.deleteCalls, 1);
     });
 
     test(
@@ -406,7 +474,7 @@ void _pointerDown(
 class _SpyTool implements Tool {
   const _SpyTool(this.action);
 
-  final _SpyToolAction action;
+  final ToolAction action;
 
   @override
   Widget get icon => const SizedBox.shrink();
@@ -444,4 +512,25 @@ class _SpyToolAction extends ToolAction {
   void onCursorPositionChange() {
     cursorPositionChangeCalls++;
   }
+}
+
+class _DeleteSpyToolAction extends ToolAction {
+  int deleteCalls = 0;
+
+  @override
+  void onClickUp() {}
+
+  @override
+  void onCursorPositionChange() {}
+
+  @override
+  void onDelete() {
+    deleteCalls++;
+  }
+}
+
+List<Line> _selectedLines(ViewportNotifier notifier) {
+  return notifier.value.toolGeometries.whereType<Line>().where((line) {
+    return line.color == ArcadiaColor.primaryActive;
+  }).toList();
 }

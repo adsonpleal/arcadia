@@ -3,9 +3,8 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 
 import '../geometry/geometry.dart';
+import '../tools/selection_tool.dart';
 import '../tools/tool.dart';
-
-const _undefined = Object();
 
 /// The state of the viewport.
 ///
@@ -21,7 +20,7 @@ class ViewportState {
     this.zoom = 1.0,
     this.panOffset = .zero,
     this.cursorPosition = .zero,
-    this.selectedTool,
+    this.selectedTool = const SelectionTool(),
     this.userInput = '',
   });
 
@@ -52,7 +51,7 @@ class ViewportState {
   final Offset cursorPosition;
 
   /// The selected tool.
-  final Tool? selectedTool;
+  final Tool selectedTool;
 
   /// Whether or not show value picker;
   final String userInput;
@@ -68,7 +67,7 @@ class ViewportState {
     double? zoom,
     Offset? panOffset,
     Offset? cursorPosition,
-    Object? selectedTool = _undefined,
+    Tool? selectedTool,
     String? userInput,
   }) {
     return ViewportState(
@@ -78,9 +77,7 @@ class ViewportState {
       zoom: zoom ?? this.zoom,
       panOffset: panOffset ?? this.panOffset,
       cursorPosition: cursorPosition ?? this.cursorPosition,
-      selectedTool: identical(selectedTool, _undefined)
-          ? this.selectedTool
-          : selectedTool as Tool?,
+      selectedTool: selectedTool ?? this.selectedTool,
       userInput: userInput ?? this.userInput,
     );
   }

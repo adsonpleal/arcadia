@@ -1,6 +1,8 @@
 import 'package:arcadia/src/data/viewport_state.dart';
 import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/tools/line_tool.dart';
+import 'package:arcadia/src/tools/selection_tool.dart';
+import 'package:arcadia/src/tools/tool.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const _lineA = Line(start: Offset(1, 2), end: Offset(3, 4), color: .primary);
@@ -16,11 +18,10 @@ void main() {
       expect(state.geometries, isEmpty);
       expect(state.toolGeometries, isEmpty);
       expect(state.snappingGeometries, isEmpty);
-      expect(state.selectionGeometries, isEmpty);
       expect(state.zoom, 1.0);
       expect(state.panOffset, _zeroOffset);
       expect(state.cursorPosition, _zeroOffset);
-      expect(state.selectedTool, isNull);
+      expect(state.selectedTool, const SelectionTool());
       expect(state.userInput, isEmpty);
     });
 
@@ -29,7 +30,6 @@ void main() {
         geometries: [_lineA],
         toolGeometries: [_lineB],
         snappingGeometries: [_lineC],
-        selectionGeometries: [_lineA],
         zoom: 1.5,
         panOffset: Offset(10, 20),
         cursorPosition: Offset(30, 40),
@@ -41,22 +41,19 @@ void main() {
         geometries: const [_lineB, _lineC],
         toolGeometries: const [_lineA],
         snappingGeometries: const [_lineA, _lineB],
-        selectionGeometries: const [_lineC],
         zoom: 2.5,
         panOffset: const Offset(20, 30),
-        cursorPosition: const Offset(40, 50),
-        selectedTool: null,
+        selectedTool: const SelectionTool(),
         userInput: '200',
       );
 
       expect(updated.geometries, const [_lineB, _lineC]);
       expect(updated.toolGeometries, const [_lineA]);
       expect(updated.snappingGeometries, const [_lineA, _lineB]);
-      expect(updated.selectionGeometries, const [_lineC]);
       expect(updated.zoom, 2.5);
       expect(updated.panOffset, const Offset(20, 30));
-      expect(updated.cursorPosition, const Offset(40, 50));
-      expect(updated.selectedTool, isNull);
+      expect(updated.cursorPosition, const Offset(30, 40));
+      expect(updated.selectedTool, const SelectionTool());
       expect(updated.userInput, '200');
     });
 
@@ -65,7 +62,6 @@ void main() {
         geometries: [_lineA],
         toolGeometries: [_lineB],
         snappingGeometries: [_lineC],
-        selectionGeometries: [_lineA],
         zoom: 1.25,
         panOffset: Offset(1, 2),
         cursorPosition: Offset(3, 4),
@@ -78,12 +74,14 @@ void main() {
       expect(copied, equals(initial));
     });
 
-    test('copyWith can explicitly clear selectedTool', () {
+    test('copyWith keeps selectedTool when null is provided', () {
       const initial = ViewportState(selectedTool: LineTool());
+      // ignore: prefer_const_declarations
+      final Tool? selectedTool = null;
 
-      final cleared = initial.copyWith(selectedTool: null);
+      final cleared = initial.copyWith(selectedTool: selectedTool);
 
-      expect(cleared.selectedTool, isNull);
+      expect(cleared.selectedTool, const LineTool());
     });
 
     test('copyWith preserves selectedTool when omitted', () {
@@ -99,18 +97,15 @@ void main() {
       final geometries = [_lineA, _lineB];
       final toolGeometries = [_lineC];
       final snappingGeometries = [_lineB, _lineC];
-      final selectionGeometries = [_lineA];
       final first = ViewportState(
         geometries: geometries,
         toolGeometries: toolGeometries,
         snappingGeometries: snappingGeometries,
-        selectionGeometries: selectionGeometries,
       );
       final second = ViewportState(
         geometries: [...geometries],
         toolGeometries: [...toolGeometries],
         snappingGeometries: [...snappingGeometries],
-        selectionGeometries: [...selectionGeometries],
       );
 
       expect(first, equals(second));
@@ -121,12 +116,10 @@ void main() {
       final geometries = [_lineA, _lineB];
       final toolGeometries = [_lineC];
       final snappingGeometries = [_lineB, _lineC];
-      final selectionGeometries = [_lineA];
       final state = ViewportState(
         geometries: geometries,
         toolGeometries: toolGeometries,
         snappingGeometries: snappingGeometries,
-        selectionGeometries: selectionGeometries,
         zoom: 2,
         panOffset: const Offset(1, 2),
         cursorPosition: const Offset(3, 4),
@@ -138,7 +131,6 @@ void main() {
         Object.hashAll(state.geometries),
         Object.hashAll(state.toolGeometries),
         Object.hashAll(state.snappingGeometries),
-        Object.hashAll(state.selectionGeometries),
         state.zoom,
         state.panOffset,
         state.cursorPosition,
@@ -171,7 +163,6 @@ void main() {
         geometries: [_lineA],
         toolGeometries: [_lineB],
         snappingGeometries: [_lineC],
-        selectionGeometries: [_lineA],
       );
 
       expect(base, isNot(equals(base.copyWith(geometries: const [_lineB]))));
@@ -182,10 +173,6 @@ void main() {
       expect(
         base,
         isNot(equals(base.copyWith(snappingGeometries: const [_lineA]))),
-      );
-      expect(
-        base,
-        isNot(equals(base.copyWith(selectionGeometries: const [_lineB]))),
       );
     });
   });

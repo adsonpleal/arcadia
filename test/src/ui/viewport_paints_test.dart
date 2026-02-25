@@ -2,7 +2,6 @@ import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/logic/viewport_notifier.dart';
 import 'package:arcadia/src/providers/viewport_notifier_provider.dart';
 import 'package:arcadia/src/ui/grid_paint.dart';
-import 'package:arcadia/src/ui/selection_paint.dart';
 import 'package:arcadia/src/ui/snapping_viewport_paint.dart';
 import 'package:arcadia/src/ui/tool_viewport_paint.dart';
 import 'package:arcadia/src/ui/viewport_paint.dart';
@@ -56,59 +55,8 @@ void main() {
         notifier.value = notifier.value.copyWith(
           toolGeometries: const [_geometry],
           snappingGeometries: const [_geometry],
-          selectionGeometries: const [_geometry],
           cursorPosition: const Offset(9, 9),
           userInput: '5',
-        );
-        await tester.pump();
-
-        expect(builds, 1);
-      },
-    );
-
-    testWidgets('SelectionPaint reads selection geometries from state', (
-      tester,
-    ) async {
-      final notifier = await _pumpWithProvider(
-        tester,
-        child: const SelectionPaint(),
-        finder: find.byType(SelectionPaint),
-      );
-
-      notifier.value = notifier.value.copyWith(
-        zoom: 1.5,
-        panOffset: const Offset(2, 3),
-        selectionGeometries: const [_geometry],
-      );
-      await tester.pump();
-
-      final painter =
-          tester.widget<CustomPaint>(find.byType(CustomPaint)).painter!
-              as ViewportPainter;
-
-      expect(painter.zoom, 1.5);
-      expect(painter.panOffset, const Offset(2, 3));
-      expect(painter.geometries.single, _geometry);
-    });
-
-    testWidgets(
-      'SelectionPaint does not rebuild when unrelated state slices change',
-      (tester) async {
-        var builds = 0;
-        final notifier = await _pumpWithProvider(
-          tester,
-          child: _CountingSelectionPaint(onBuild: () => builds++),
-          finder: find.byType(_CountingSelectionPaint),
-        );
-
-        expect(builds, 1);
-
-        notifier.value = notifier.value.copyWith(
-          geometries: const [_geometry],
-          toolGeometries: const [_geometry],
-          snappingGeometries: const [_geometry],
-          cursorPosition: const Offset(7, 8),
-          userInput: '2',
         );
         await tester.pump();
 
@@ -156,7 +104,6 @@ void main() {
         notifier.value = notifier.value.copyWith(
           geometries: const [_geometry],
           toolGeometries: const [_geometry],
-          selectionGeometries: const [_geometry],
           cursorPosition: const Offset(4, 5),
           userInput: '3',
         );
@@ -206,7 +153,6 @@ void main() {
         notifier.value = notifier.value.copyWith(
           geometries: const [_geometry],
           snappingGeometries: const [_geometry],
-          selectionGeometries: const [_geometry],
           cursorPosition: const Offset(1, 2),
           userInput: '9',
         );
@@ -232,7 +178,6 @@ void main() {
           geometries: const [_geometry],
           toolGeometries: const [_geometry],
           snappingGeometries: const [_geometry],
-          selectionGeometries: const [_geometry],
           cursorPosition: const Offset(6, 6),
           userInput: '11',
         );
@@ -265,18 +210,6 @@ Future<ViewportNotifier> _pumpWithProvider(
 
 class _CountingViewportPaint extends ViewportPaint {
   const _CountingViewportPaint({required this.onBuild});
-
-  final VoidCallback onBuild;
-
-  @override
-  Widget build(BuildContext context) {
-    onBuild();
-    return super.build(context);
-  }
-}
-
-class _CountingSelectionPaint extends SelectionPaint {
-  const _CountingSelectionPaint({required this.onBuild});
 
   final VoidCallback onBuild;
 

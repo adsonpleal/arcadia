@@ -1,9 +1,9 @@
+import 'package:arcadia/src/constants/arcadia_color.dart';
 import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/logic/viewport_notifier.dart';
 import 'package:arcadia/src/providers/viewport_notifier_provider.dart';
 import 'package:arcadia/src/ui/cursor_paint.dart';
 import 'package:arcadia/src/ui/grid_paint.dart';
-import 'package:arcadia/src/ui/selection_paint.dart';
 import 'package:arcadia/src/ui/snapping_viewport_paint.dart';
 import 'package:arcadia/src/ui/tool_viewport_paint.dart';
 import 'package:arcadia/src/ui/viewport.dart';
@@ -31,7 +31,7 @@ void main() {
       await _pumpViewport(tester);
 
       final stackFinder = find.byWidgetPredicate(
-        (widget) => widget is Stack && widget.children.length == 7,
+        (widget) => widget is Stack && widget.children.length == 6,
       );
       final stack = tester.widget<Stack>(stackFinder);
       final layerTypes = [
@@ -41,7 +41,6 @@ void main() {
 
       expect(layerTypes, [
         GridPaint,
-        SelectionPaint,
         ViewportPaint,
         SnappingViewportPaint,
         ToolViewportPaint,
@@ -95,7 +94,18 @@ void main() {
       await mouse.up();
       await tester.pump();
 
-      expect(notifier.value.selectionGeometries, isNotEmpty);
+      expect(
+        notifier.value.toolGeometries.whereType<Line>(),
+        contains(
+          isA<Line>()
+              .having((line) => line.start, 'start', _line.start)
+              .having(
+                (line) => line.end,
+                'end',
+                _line.end,
+              ),
+        ),
+      );
 
       await mouse.removePointer();
     });
@@ -113,7 +123,12 @@ void main() {
       await mouse.up();
       await tester.pump();
 
-      expect(notifier.value.selectionGeometries, hasLength(1));
+      expect(
+        notifier.value.toolGeometries.whereType<Line>().where((line) {
+          return line.color == ArcadiaColor.primaryActive;
+        }),
+        hasLength(1),
+      );
 
       await mouse.removePointer();
     });
@@ -134,7 +149,12 @@ void main() {
       await mouse.up();
       await tester.pump();
 
-      expect(notifier.value.selectionGeometries, hasLength(2));
+      expect(
+        notifier.value.toolGeometries.whereType<Line>().where((line) {
+          return line.color == ArcadiaColor.primaryActive;
+        }),
+        hasLength(2),
+      );
 
       await mouse.removePointer();
     });

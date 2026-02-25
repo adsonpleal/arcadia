@@ -66,7 +66,6 @@ void main() {
           geometries: const [_line],
           toolGeometries: const [_line],
           snappingGeometries: const [_line],
-          selectionGeometries: const [_line],
           cursorPosition: const Offset(6, 7),
           userInput: '2',
         );

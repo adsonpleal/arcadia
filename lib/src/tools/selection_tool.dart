@@ -6,6 +6,8 @@ import '../foundation/geometry/rectangle_generation.dart';
 import '../geometry/geometry.dart';
 import 'tool.dart';
 
+const _selectionDragStartDistanceInPixels = 1.0;
+
 /// The default selection tool.
 class SelectionTool implements Tool {
   /// The default constructor for [SelectionTool].
@@ -23,8 +25,6 @@ class SelectionTool implements Tool {
   @override
   ToolActionFactory get toolActionFactory => _SelectionToolAction.new;
 }
-
-const _selectionDragStartDistance = 0.1;
 
 enum _SelectionDragMode {
   window,
@@ -54,25 +54,8 @@ class _SelectionToolAction extends ToolAction {
   Geometry? _hoveringGeometry;
   _SelectionDragSession? _selectionDragSession;
 
-  Geometry? _geometryBelowCursor() {
-    final tolerance = selectionTolerance / state.zoom;
-    for (final geometry in state.geometries) {
-      if (geometry.contains(state.cursorPosition, tolerance)) {
-        return geometry;
-      }
-    }
-    return null;
-  }
-
-  /// Clear selected and hovering geometries.
-  void clearSelectedGeometries() {
-    _selectedGeometries.clear();
-    _updateToolGeometries();
-  }
-
   @override
   void onClickDown() {
-    clearToolGeometries();
     final cursorPosition = state.cursorPosition;
     _selectionDragSession = _SelectionDragSession(
       start: cursorPosition,
@@ -84,6 +67,10 @@ class _SelectionToolAction extends ToolAction {
 
   @override
   void onDelete() {
+    if (_selectedGeometries.isEmpty) {
+      return;
+    }
+
     deleteGeometries(_selectedGeometries);
     _selectedGeometries = [];
     _hoveringGeometry = null;
@@ -128,18 +115,19 @@ class _SelectionToolAction extends ToolAction {
     session.current = state.cursorPosition;
 
     if (!_hasDragStarted(session)) {
-      clearToolGeometries();
       _selectedGeometries = session.baselineSelection;
       return;
     }
 
-    clearToolGeometries();
     _selectedGeometries = _selectionWithMatches(session);
   }
 
   bool _hasDragStarted(_SelectionDragSession session) {
-    return (session.current - session.start).distance >=
-        _selectionDragStartDistance;
+    final dragDistanceInPixels =
+        (session.current - session.start).distance *
+        state.zoom *
+        unitVirtualPixelRatio;
+    return dragDistanceInPixels >= _selectionDragStartDistanceInPixels;
   }
 
   List<Geometry> _matchingGeometriesForRect(
@@ -196,6 +184,16 @@ class _SelectionToolAction extends ToolAction {
           dashed: session.mode == _SelectionDragMode.crossing,
         ),
     ]);
+  }
+
+  Geometry? _geometryBelowCursor() {
+    final tolerance = selectionTolerance / state.zoom;
+    for (final geometry in state.geometries.reversed) {
+      if (geometry.contains(state.cursorPosition, tolerance)) {
+        return geometry;
+      }
+    }
+    return null;
   }
 }
 

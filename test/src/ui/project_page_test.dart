@@ -64,7 +64,7 @@ void main() {
       expect(notifier.value.geometries, const [_lineA, _lineB]);
     });
 
-    testWidgets('escape clears selection and switches to selection tool', (
+    testWidgets('escape clears tool preview and switches to selection tool', (
       tester,
     ) async {
       final notifier = await _pumpProjectPage(tester);
@@ -75,13 +75,13 @@ void main() {
         )
         ..onCursorClickUp();
       await tester.pump();
-      expect(notifier.value.selectionGeometries, hasLength(1));
+      expect(notifier.value.toolGeometries, isNotEmpty);
 
       await tester.sendKeyEvent(.escape);
       await tester.pump();
 
       expect(notifier.value.selectedTool, const SelectionTool());
-      expect(notifier.value.selectionGeometries, isEmpty);
+      expect(notifier.value.toolGeometries, isEmpty);
     });
   });
 }

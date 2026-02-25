@@ -17,11 +17,10 @@ const _maxZoom = 10.0;
 ///
 /// This notifier holds all the necessary logic to
 /// display and control the viewport.
-class ViewportNotifier extends ValueNotifier<ViewportState>{
+class ViewportNotifier extends ValueNotifier<ViewportState> {
   /// The default constructor for [ViewportNotifier]
-  ViewportNotifier()
-    : super(const ViewportState(selectedTool: SelectionTool())) {
-    _toolAction = const SelectionTool().toolActionFactory()..bind(this);
+  ViewportNotifier() : super(const ViewportState()) {
+    _toolAction = value.selectedTool.toolActionFactory()..bind(this);
   }
 
   late ToolAction _toolAction;
