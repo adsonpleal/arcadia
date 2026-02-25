@@ -1,4 +1,5 @@
 import 'package:flutter/gestures.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import '../constants/arcadia_color.dart';
@@ -18,6 +19,18 @@ class Viewport extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isAltPressed() {
+      final keys = HardwareKeyboard.instance.logicalKeysPressed;
+      return keys.contains(LogicalKeyboardKey.altLeft) ||
+          keys.contains(LogicalKeyboardKey.altRight);
+    }
+
+    bool isShiftPressed() {
+      final keys = HardwareKeyboard.instance.logicalKeysPressed;
+      return keys.contains(LogicalKeyboardKey.shiftLeft) ||
+          keys.contains(LogicalKeyboardKey.shiftRight);
+    }
+
     void onPointerMovement(PointerEvent event) {
       if (context.size case final size?) {
         context.viewportNotifier.onCursorMove(
@@ -38,7 +51,20 @@ class Viewport extends StatelessWidget {
       },
       onPointerMove: onPointerMovement,
       onPointerHover: onPointerMovement,
-      onPointerUp: (event) => context.viewportNotifier.onCursorClick(),
+      onPointerDown: (event) {
+        if (context.size case final size?) {
+          context.viewportNotifier.onPointerDown(
+            viewportPosition: event.localPosition,
+            viewportMidPoint: Offset(size.width, size.height) / 2,
+            altPressed: isAltPressed(),
+            shiftPressed: isShiftPressed(),
+          );
+        }
+      },
+      onPointerUp: (_) {
+        context.viewportNotifier.onPointerUp(shiftPressed: isShiftPressed());
+      },
+      onPointerCancel: (_) => context.viewportNotifier.onPointerCancel(),
       child: const ClipRRect(
         child: ColoredBox(
           color: ArcadiaColor.background,

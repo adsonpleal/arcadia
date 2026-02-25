@@ -14,6 +14,12 @@ import 'package:flutter/widgets.dart' hide Viewport;
 import 'package:flutter_test/flutter_test.dart';
 
 const _line = Line(start: .zero, end: Offset(10, 0), color: .primary);
+const _insideLine = Line(start: Offset(1, 1), end: Offset(3, 3), color: .primary);
+const _crossingLine = Line(
+  start: Offset(1, 1),
+  end: Offset(20, 1),
+  color: .primary,
+);
 
 void main() {
   group('Viewport', () {
@@ -86,6 +92,42 @@ void main() {
       await tester.pump();
 
       expect(notifier.value.selectionGeometries, isNotEmpty);
+
+      await mouse.removePointer();
+    });
+
+    testWidgets('left-to-right drag applies window selection', (tester) async {
+      final notifier = await _pumpViewport(tester);
+      final center = tester.getCenter(find.byType(Viewport));
+      notifier.addGeometries(const [_insideLine, _crossingLine]);
+      await tester.pump();
+
+      final mouse = await tester.createGesture(kind: .mouse);
+      await mouse.addPointer(location: center);
+      await mouse.down(center);
+      await mouse.moveTo(center + const Offset(50, 50));
+      await mouse.up();
+      await tester.pump();
+
+      expect(notifier.value.selectionGeometries, hasLength(1));
+
+      await mouse.removePointer();
+    });
+
+    testWidgets('right-to-left drag applies crossing selection', (tester) async {
+      final notifier = await _pumpViewport(tester);
+      final center = tester.getCenter(find.byType(Viewport));
+      notifier.addGeometries(const [_insideLine, _crossingLine]);
+      await tester.pump();
+
+      final mouse = await tester.createGesture(kind: .mouse);
+      await mouse.addPointer(location: center);
+      await mouse.down(center + const Offset(50, 50));
+      await mouse.moveTo(center);
+      await mouse.up();
+      await tester.pump();
+
+      expect(notifier.value.selectionGeometries, hasLength(2));
 
       await mouse.removePointer();
     });
