@@ -1,8 +1,10 @@
+import 'dart:math';
 import 'dart:ui';
 
 import '../constants/arcadia_color.dart';
 import 'geometry.dart';
 import 'point.dart';
+import 'selection_math.dart';
 
 const _cornerPoints = [
   Offset(0, 1),
@@ -60,17 +62,62 @@ class Circle extends Geometry {
 
   @override
   bool matchesWindowSelection(Rect rect) {
-    return false;
+    return _samplePerimeterPoints().every(rect.contains);
   }
 
   @override
   bool matchesCrossingSelection(Rect rect) {
+    if (matchesWindowSelection(rect)) {
+      return true;
+    }
+
+    final points = _samplePerimeterPoints();
+    if (points.any(rect.contains)) {
+      return true;
+    }
+
+    for (var index = 0; index < points.length - 1; index++) {
+      if (segmentIntersectsRect(points[index], points[index + 1], rect)) {
+        return true;
+      }
+    }
+
     return false;
   }
 
   @override
   bool matchesLassoCrossingSelection(List<Offset> closedLassoPath) {
+    final points = _samplePerimeterPoints();
+    if (points.every((point) => isPointInsideClosedPolygon(point, closedLassoPath))) {
+      return true;
+    }
+
+    if (points.any((point) => isPointInsideClosedPolygon(point, closedLassoPath))) {
+      return true;
+    }
+
+    for (var index = 0; index < points.length - 1; index++) {
+      if (segmentIntersectsPolygon(
+        points[index],
+        points[index + 1],
+        closedLassoPath,
+      )) {
+        return true;
+      }
+    }
+
     return false;
+  }
+
+  List<Offset> _samplePerimeterPoints({int segments = 48}) {
+    return [
+      for (var i = 0; i <= segments; i++)
+        center +
+            Offset(
+              radius * cos(2 * pi * i / segments),
+              radius * sin(2 * pi * i / segments),
+            ),
+    ];
   }
 
   @override

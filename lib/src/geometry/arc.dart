@@ -4,6 +4,7 @@ import 'dart:ui';
 import '../constants/arcadia_color.dart';
 import 'geometry.dart';
 import 'point.dart';
+import 'selection_math.dart';
 
 /// An Arc geometry, as a segment of a circle.
 class Arc extends Geometry {
@@ -144,17 +145,54 @@ class Arc extends Geometry {
 
   @override
   bool matchesWindowSelection(Rect rect) {
-    return false;
+    return _sampleArcPoints().every(rect.contains);
   }
 
   @override
   bool matchesCrossingSelection(Rect rect) {
+    final points = _sampleArcPoints();
+    if (points.any(rect.contains)) {
+      return true;
+    }
+
+    for (var index = 0; index < points.length - 1; index++) {
+      if (segmentIntersectsRect(points[index], points[index + 1], rect)) {
+        return true;
+      }
+    }
+
     return false;
   }
 
   @override
   bool matchesLassoCrossingSelection(List<Offset> closedLassoPath) {
+    final points = _sampleArcPoints();
+    if (points.any((point) => isPointInsideClosedPolygon(point, closedLassoPath))) {
+      return true;
+    }
+
+    for (var index = 0; index < points.length - 1; index++) {
+      if (segmentIntersectsPolygon(
+        points[index],
+        points[index + 1],
+        closedLassoPath,
+      )) {
+        return true;
+      }
+    }
+
     return false;
+  }
+
+  List<Offset> _sampleArcPoints({int segments = 24}) {
+    return [
+      for (var i = 0; i <= segments; i++)
+        center +
+            Offset.fromDirection(
+              startAngle + sweepAngle * (i / segments),
+              radius,
+            ),
+    ];
   }
 
   @override

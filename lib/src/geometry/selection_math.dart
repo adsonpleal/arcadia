@@ -109,3 +109,42 @@ bool segmentsIntersect(
 
   return false;
 }
+
+/// Returns true when [segmentStart]-[segmentEnd] intersects [rect].
+bool segmentIntersectsRect(Offset segmentStart, Offset segmentEnd, Rect rect) {
+  if (rect.contains(segmentStart) || rect.contains(segmentEnd)) {
+    return true;
+  }
+
+  for (final (a, b) in rectEdges(rect)) {
+    if (segmentsIntersect(segmentStart, segmentEnd, a, b)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/// Returns true when [segmentStart]-[segmentEnd] intersects [closedPolygon].
+bool segmentIntersectsPolygon(
+  Offset segmentStart,
+  Offset segmentEnd,
+  List<Offset> closedPolygon,
+) {
+  if (closedPolygon.length < 3) {
+    return false;
+  }
+
+  if (isPointInsideClosedPolygon(segmentStart, closedPolygon) ||
+      isPointInsideClosedPolygon(segmentEnd, closedPolygon)) {
+    return true;
+  }
+
+  for (final (a, b) in closedEdges(closedPolygon)) {
+    if (segmentsIntersect(segmentStart, segmentEnd, a, b)) {
+      return true;
+    }
+  }
+
+  return false;
+}
