@@ -43,7 +43,7 @@ class _CornersRectangleToolAction extends ToolAction {
       clearToolGeometries();
       addToolGeometries([
         ..._getLines(corner1),
-        Line(start: corner1, end: state.cursorPosition, color: .geometry),
+        Line(start: corner1, end: state.cursorPosition, color: .primary),
       ]);
     }
   }
@@ -54,10 +54,10 @@ class _CornersRectangleToolAction extends ToolAction {
     final corner4 = Offset(corner1.dx, corner3.dy);
 
     return [
-      Line(start: corner1, end: corner2, color: .geometry),
-      Line(start: corner2, end: corner3, color: .geometry),
-      Line(start: corner3, end: corner4, color: .geometry),
-      Line(start: corner4, end: corner1, color: .geometry),
+      Line(start: corner1, end: corner2, color: .primary),
+      Line(start: corner2, end: corner3, color: .primary),
+      Line(start: corner3, end: corner4, color: .primary),
+      Line(start: corner4, end: corner1, color: .primary),
     ];
   }
 }
@@ -67,7 +67,7 @@ class _CornersRectangleIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final point = Container(width: 2, height: 2, color: ArcadiaColor.geometry);
+    final point = Container(width: 2, height: 2, color: ArcadiaColor.primary);
 
     return Stack(
       children: [
@@ -77,7 +77,7 @@ class _CornersRectangleIcon extends StatelessWidget {
           width: 14,
           height: 14,
           decoration: BoxDecoration(
-            border: Border.all(color: ArcadiaColor.geometry),
+            border: Border.all(color: ArcadiaColor.primary),
           ),
         ),
         Positioned(bottom: 0, right: 0, child: point),

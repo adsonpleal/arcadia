@@ -10,9 +10,9 @@ import 'package:arcadia/src/tools/tool.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const _lineA = Line(start: .zero, end: Offset(10, 0), color: .geometry);
-const _lineB = Line(start: Offset(20, 0), end: Offset(30, 0), color: .geometry);
-const _lineC = Line(start: Offset(40, 0), end: Offset(50, 0), color: .geometry);
+const _lineA = Line(start: .zero, end: Offset(10, 0), color: .primary);
+const _lineB = Line(start: Offset(20, 0), end: Offset(30, 0), color: .primary);
+const _lineC = Line(start: Offset(40, 0), end: Offset(50, 0), color: .primary);
 
 void main() {
   group('ViewportNotifier', () {
@@ -158,7 +158,7 @@ void main() {
       expect(snapLine.start, const Offset(2, 3));
       expect(snapLine.end.dx, closeTo(2, 0.0001));
       expect(snapLine.end.dy, closeTo(10, 0.0001));
-      expect(snapLine.color, ArcadiaColor.snappingLine);
+      expect(snapLine.color, ArcadiaColor.accentActive);
     });
 
     test(
@@ -172,7 +172,7 @@ void main() {
 
         expect(notifier.value.selectionGeometries, hasLength(1));
         final selected = notifier.value.selectionGeometries.single as Line;
-        expect(selected.color, ArcadiaColor.selectedGeometry);
+        expect(selected.color, ArcadiaColor.primaryActive);
         expect(selected.strokeWidth, 5);
 
         _moveCursor(notifier, const Offset(5, 0));

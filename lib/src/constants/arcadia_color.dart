@@ -10,39 +10,39 @@ class ArcadiaColor extends Color {
   /// Default constructor for [ArcadiaColor].
   const ArcadiaColor(super.value);
 
-  /// Viewport's default background color.
-  static const viewportBackground = _C(0xFF252825);
+  /// Primary app background color.
+  static const background = _C(0xFF252825);
 
-  /// Component default background color.
-  static const componentBackground = _C(0xFF433F3F);
+  /// Surface color for elevated components.
+  static const surface = _C(0xFF433F3F);
 
-  /// The color of the cursor pointer.
-  static const cursor = _C(0xFF0F9224);
+  /// Positive emphasis color.
+  static const positive = _C(0xFF0F9224);
 
-  /// The default color of geometries in the viewport.
-  static const geometry = _C(0xFFFFFFFF);
+  /// Primary foreground color.
+  static const primary = _C(0xFFFFFFFF);
 
-  /// The default color of geometries in the viewport.
-  static const grid = _C(0x22FFFFFF);
+  /// Secondary foreground color.
+  static const secondary = _C(0x22FFFFFF);
 
-  /// The default separator color.
-  static const separator = _C(0xFF696565);
+  /// Border and separator color.
+  static const border = _C(0xFF696565);
 
   /// The default hover color.
   static const hover = _C(0xFF565353);
 
-  /// The default selected color.
-  static const selected = _C(0xFF696565);
+  /// Active state color.
+  static const active = _C(0xFF696565);
 
-  /// The default snapping point color.
-  static const snappingPoint = _C(0xFFF76902);
+  /// Accent color.
+  static const accent = _C(0xFFF76902);
 
-  /// The default color for snapping lines.
-  static const snappingLine = _C(0xFFF50BDE);
+  /// Active accent color.
+  static const accentActive = _C(0xFFF50BDE);
 
-  /// The default hovering color for geometries.
-  static const hoveringGeometry = _C(0x99FF5A13);
+  /// Muted accent overlay.
+  static const accentMuted = _C(0x99FF5A13);
 
-  /// The default selected color for geometries.
-  static const selectedGeometry = _C(0x99706DF6);
+  /// Active primary overlay.
+  static const primaryActive = _C(0x99706DF6);
 }

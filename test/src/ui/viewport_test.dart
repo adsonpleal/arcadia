@@ -13,7 +13,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart' hide Viewport;
 import 'package:flutter_test/flutter_test.dart';
 
-const _line = Line(start: .zero, end: Offset(10, 0), color: .geometry);
+const _line = Line(start: .zero, end: Offset(10, 0), color: .primary);
 
 void main() {
   group('Viewport', () {

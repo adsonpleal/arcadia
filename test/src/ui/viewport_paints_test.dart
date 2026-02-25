@@ -13,7 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 const _geometry = Line(
   start: Offset(1, 2),
   end: Offset(3, 4),
-  color: .geometry,
+  color: .primary,
 );
 
 void main() {

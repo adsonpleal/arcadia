@@ -33,10 +33,10 @@ class Circle extends Geometry {
       for (final corner in _cornerPoints)
         Point(
           position: corner * radius + center,
-          color: .snappingPoint,
+          color: .accent,
           shape: .square,
         ),
-      Point(position: center, color: .snappingPoint, shape: .triangle),
+      Point(position: center, color: .accent, shape: .triangle),
     ];
   }
 

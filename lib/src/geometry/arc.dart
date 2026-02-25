@@ -90,9 +90,9 @@ class Arc extends Geometry {
       sweepAngle: arcLength,
       color: color,
       snappingPoints: [
-        Point(position: startSnapping, color: .snappingPoint, shape: .square),
-        Point(position: endSnapping, color: .snappingPoint, shape: .square),
-        Point(position: center, color: .snappingPoint, shape: .triangle),
+        Point(position: startSnapping, color: .accent, shape: .square),
+        Point(position: endSnapping, color: .accent, shape: .square),
+        Point(position: center, color: .accent, shape: .triangle),
       ],
     );
   }

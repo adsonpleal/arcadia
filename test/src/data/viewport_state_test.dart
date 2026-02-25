@@ -3,9 +3,9 @@ import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/tools/line_tool.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const _lineA = Line(start: Offset(1, 2), end: Offset(3, 4), color: .geometry);
-const _lineB = Line(start: Offset(5, 6), end: Offset(7, 8), color: .geometry);
-const _lineC = Line(start: Offset(8, 7), end: Offset(6, 5), color: .geometry);
+const _lineA = Line(start: Offset(1, 2), end: Offset(3, 4), color: .primary);
+const _lineB = Line(start: Offset(5, 6), end: Offset(7, 8), color: .primary);
+const _lineC = Line(start: Offset(8, 7), end: Offset(6, 5), color: .primary);
 const Offset _zeroOffset = .zero;
 
 void main() {

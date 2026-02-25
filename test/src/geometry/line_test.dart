@@ -35,7 +35,7 @@ void main() {
     _testLine(
       'should render a line between two points',
       lines: const [
-        Line(start: Offset(-50, 0), end: Offset(50, 0), color: .geometry),
+        Line(start: Offset(-50, 0), end: Offset(50, 0), color: .primary),
       ],
       goldenName: 'betweenPoints',
     );
@@ -44,7 +44,7 @@ void main() {
       'should render a line between two points with zoom',
       zoom: 2,
       lines: const [
-        Line(start: Offset(-50, 0), end: Offset(50, 0), color: .geometry),
+        Line(start: Offset(-50, 0), end: Offset(50, 0), color: .primary),
       ],
       goldenName: 'betweenPointsZoom',
     );
@@ -54,17 +54,17 @@ void main() {
         for (var i = 0; i < 33; i++)
           switch (i % 3) {
             0 => Line(
-              color: .snappingPoint,
+              color: .accent,
               start: Offset(-50, 10 * i / 3 - 50),
               end: Offset(50, 10 * i / 3 - 50),
             ),
             1 => Line(
-              color: .snappingLine,
+              color: .accentActive,
               start: Offset(10 * (i - 1) / 3 - 50, -50),
               end: Offset(10 * (i - 1) / 3 - 50, 50),
             ),
             _ => Line(
-              color: .geometry,
+              color: .primary,
               start: const Offset(-50, 50) + const Offset(5, 5) * (i - 2) / 3,
               end: const Offset(50, -50) + const Offset(5, 5) * (i - 2) / 3,
             ),

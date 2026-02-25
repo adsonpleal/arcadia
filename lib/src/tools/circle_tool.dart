@@ -71,7 +71,7 @@ class _CircleToolAction extends ToolAction {
       clearToolGeometries();
       addToolGeometries([
         _getCurrentCircle(center),
-        Line(start: center, end: endPoint, color: .geometry),
+        Line(start: center, end: endPoint, color: .primary),
       ]);
     }
   }
@@ -79,7 +79,7 @@ class _CircleToolAction extends ToolAction {
   Circle _getCurrentCircle(Offset center) {
     return Circle(
       center: center,
-      color: .geometry,
+      color: .primary,
       radius: _fixedRadius ?? (state.cursorPosition - center).distance,
     );
   }
@@ -94,7 +94,7 @@ class _CircleToolIcon extends StatelessWidget {
       width: 16,
       height: 16,
       decoration: const ShapeDecoration(
-        shape: CircleBorder(side: BorderSide(color: ArcadiaColor.geometry)),
+        shape: CircleBorder(side: BorderSide(color: ArcadiaColor.primary)),
       ),
     );
   }

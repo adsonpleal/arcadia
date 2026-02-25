@@ -36,17 +36,17 @@ void main() {
   group('Arc', () {
     final points = [
       const Point(
-        color: .snappingLine,
+        color: .accentActive,
         shape: .square,
         position: Offset(14, 14),
       ),
       const Point(
-        color: .snappingLine,
+        color: .accentActive,
         shape: .square,
         position: Offset(-20, 20),
       ),
       const Point(
-        color: .snappingLine,
+        color: .accentActive,
         shape: .square,
         position: Offset(-40, 40),
       ),
@@ -56,7 +56,7 @@ void main() {
       first: points[0].position,
       second: points[1].position,
       third: points[2].position,
-      color: .snappingPoint,
+      color: .accent,
     );
 
     _testArc(

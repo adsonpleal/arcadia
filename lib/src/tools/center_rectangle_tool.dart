@@ -43,7 +43,7 @@ class _CenterRectangleToolAction extends ToolAction {
       clearToolGeometries();
       addToolGeometries([
         ..._getLines(center),
-        Line(start: center, end: state.cursorPosition, color: .geometry),
+        Line(start: center, end: state.cursorPosition, color: .primary),
       ]);
     }
   }
@@ -57,10 +57,10 @@ class _CenterRectangleToolAction extends ToolAction {
     final corner4 = Offset(cornerDelta.dx, cornerDelta.dy * -1) + center;
 
     return [
-      Line(start: corner1, end: corner2, color: .geometry),
-      Line(start: corner2, end: corner3, color: .geometry),
-      Line(start: corner3, end: corner4, color: .geometry),
-      Line(start: corner4, end: corner1, color: .geometry),
+      Line(start: corner1, end: corner2, color: .primary),
+      Line(start: corner2, end: corner3, color: .primary),
+      Line(start: corner3, end: corner4, color: .primary),
+      Line(start: corner4, end: corner1, color: .primary),
     ];
   }
 }
@@ -74,10 +74,10 @@ class _CenterRectangleIcon extends StatelessWidget {
       width: 14,
       height: 14,
       decoration: BoxDecoration(
-        border: Border.all(color: ArcadiaColor.geometry),
+        border: Border.all(color: ArcadiaColor.primary),
       ),
       child: Center(
-        child: Container(width: 2, height: 2, color: ArcadiaColor.geometry),
+        child: Container(width: 2, height: 2, color: ArcadiaColor.primary),
       ),
     );
   }

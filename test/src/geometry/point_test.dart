@@ -13,7 +13,7 @@ void main() {
             zoom: 1,
             panOffset: .zero,
             geometries: const [
-              Point(position: .zero, color: .snappingPoint, shape: .triangle),
+              Point(position: .zero, color: .accent, shape: .triangle),
             ],
           ),
         ),
@@ -32,7 +32,7 @@ void main() {
             panOffset: .zero,
             zoom: 1,
             geometries: const [
-              Point(position: .zero, color: .snappingPoint, shape: .square),
+              Point(position: .zero, color: .accent, shape: .square),
             ],
           ),
         ),
@@ -53,7 +53,7 @@ void main() {
             geometries: [
               const Point(
                 position: .zero,
-                color: .snappingPoint,
+                color: .accent,
                 shape: .square,
               ),
             ],
@@ -76,12 +76,12 @@ void main() {
             geometries: const [
               Point(
                 position: Offset(0, -10),
-                color: .snappingPoint,
+                color: .accent,
                 shape: .square,
               ),
               Point(
                 position: Offset(0, 10),
-                color: .snappingLine,
+                color: .accentActive,
                 shape: .square,
               ),
             ],
@@ -106,12 +106,12 @@ void main() {
             geometries: const [
               Point(
                 position: Offset(0, -10),
-                color: .snappingPoint,
+                color: .accent,
                 shape: .square,
               ),
               Point(
                 position: Offset(0, 10),
-                color: .snappingLine,
+                color: .accentActive,
                 shape: .square,
               ),
             ],
@@ -135,7 +135,7 @@ void main() {
               for (var i = 0; i < 25; i++)
                 Point(
                   position: Offset((i % 5) * 10, (i ~/ 5) * 10),
-                  color: <ArcadiaColor>[.snappingPoint, .snappingLine][i % 2],
+                  color: <ArcadiaColor>[.accent, .accentActive][i % 2],
                   shape: .values[i % 2],
                 ),
             ],

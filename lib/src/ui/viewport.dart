@@ -41,7 +41,7 @@ class Viewport extends StatelessWidget {
       onPointerUp: (event) => context.viewportNotifier.onCursorClick(),
       child: const ClipRRect(
         child: ColoredBox(
-          color: ArcadiaColor.viewportBackground,
+          color: ArcadiaColor.background,
           child: Stack(
             children: [
               Positioned.fill(child: GridPaint()),

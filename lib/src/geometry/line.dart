@@ -25,9 +25,9 @@ class Line extends Geometry {
 
   @override
   List<Point> get snappingPoints => [
-    Point(position: start, color: .snappingPoint, shape: .square),
-    Point(position: end, color: .snappingPoint, shape: .square),
-    Point(position: (start + end) / 2, color: .snappingPoint, shape: .triangle),
+    Point(position: start, color: .accent, shape: .square),
+    Point(position: end, color: .accent, shape: .square),
+    Point(position: (start + end) / 2, color: .accent, shape: .triangle),
   ];
 
   @override

@@ -139,10 +139,10 @@ class _OverlayChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: ShapeDecoration(
-        color: ArcadiaColor.viewportBackground,
+        color: ArcadiaColor.background,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(4),
-          side: const BorderSide(color: ArcadiaColor.separator),
+          side: const BorderSide(color: ArcadiaColor.border),
         ),
       ),
       child: Text(text),

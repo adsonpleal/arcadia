@@ -6,7 +6,7 @@ import 'package:arcadia/src/ui/toolbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const _line = Line(start: Offset(1, 2), end: Offset(3, 4), color: .geometry);
+const _line = Line(start: Offset(1, 2), end: Offset(3, 4), color: .primary);
 
 void main() {
   group('Toolbar', () {

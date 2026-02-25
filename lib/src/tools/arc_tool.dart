@@ -46,7 +46,7 @@ class _ArcToolAction extends ToolAction {
         first: firstPoint!,
         second: secondPoint!,
         third: state.cursorPosition,
-        color: .geometry,
+        color: .primary,
       ),
     ]);
 
@@ -60,7 +60,7 @@ class _ArcToolAction extends ToolAction {
     if (firstPoint != null) {
       if (secondPoint == null) {
         addToolGeometries([
-          Line(start: firstPoint!, end: state.cursorPosition, color: .geometry),
+          Line(start: firstPoint!, end: state.cursorPosition, color: .primary),
         ]);
       } else {
         addToolGeometries([
@@ -68,7 +68,7 @@ class _ArcToolAction extends ToolAction {
             first: firstPoint!,
             second: secondPoint!,
             third: state.cursorPosition,
-            color: .geometry,
+            color: .primary,
           ),
         ]);
       }
@@ -92,7 +92,7 @@ class _ArcToolIconPainter extends CustomPainter {
     const radius = 7.0;
     final paint = Paint()
       ..strokeWidth = 1
-      ..color = ArcadiaColor.geometry
+      ..color = ArcadiaColor.primary
       ..style = .stroke;
     const points = [Offset(-radius, 0), Offset(radius, 0), Offset(0, -radius)];
 

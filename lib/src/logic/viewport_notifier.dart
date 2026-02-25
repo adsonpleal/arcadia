@@ -8,7 +8,7 @@ import '../geometry/line.dart';
 import '../geometry/point.dart';
 import '../tools/tool.dart';
 
-const _origin = Point(position: .zero, color: .snappingPoint, shape: .triangle);
+const _origin = Point(position: .zero, color: .accent, shape: .triangle);
 const _minZoom = 0.01;
 const _maxZoom = 10.0;
 
@@ -198,7 +198,7 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
             snappingGeometries: [
               for (final offset in snappedLines)
                 Line(
-                  color: .snappingLine,
+                  color: .accentActive,
                   start: offset,
                   end: orthoCursorPosition,
                 ),
@@ -306,9 +306,9 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
     value = value.copyWith(
       selectionGeometries: [
         if (_hoveringGeometry case final hovering?)
-          hovering.copyWith(strokeWidth: 5, color: .hoveringGeometry),
+          hovering.copyWith(strokeWidth: 5, color: .accentMuted),
         for (final geometry in _selectedGeometries)
-          geometry.copyWith(strokeWidth: 5, color: .selectedGeometry),
+          geometry.copyWith(strokeWidth: 5, color: .primaryActive),
       ],
     );
   }

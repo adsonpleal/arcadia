@@ -41,7 +41,7 @@ class _LineToolAction extends ToolAction {
   void onClick() {
     if (_firstPoint case final point?) {
       final endPoint = _getEndPoint();
-      addGeometries([Line(color: .geometry, start: point, end: endPoint)]);
+      addGeometries([Line(color: .primary, start: point, end: endPoint)]);
       _firstPoint = endPoint;
     } else {
       _firstPoint = state.cursorPosition;
@@ -79,7 +79,7 @@ class _LineToolAction extends ToolAction {
     if (_firstPoint case final point?) {
       clearToolGeometries();
       addToolGeometries([
-        Line(color: .geometry, start: point, end: _getEndPoint()),
+        Line(color: .primary, start: point, end: _getEndPoint()),
       ]);
     }
   }
@@ -92,7 +92,7 @@ class _LineToolIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return Transform.rotate(
       angle: -pi / 4,
-      child: Container(width: 20, height: 1, color: ArcadiaColor.geometry),
+      child: Container(width: 20, height: 1, color: ArcadiaColor.primary),
     );
   }
 }

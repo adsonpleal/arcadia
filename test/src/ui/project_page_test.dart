@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const _lineA = Line(start: .zero, end: Offset(1, 0), color: .geometry);
-const _lineB = Line(start: Offset(2, 0), end: Offset(3, 0), color: .geometry);
+const _lineA = Line(start: .zero, end: Offset(1, 0), color: .primary);
+const _lineB = Line(start: Offset(2, 0), end: Offset(3, 0), color: .primary);
 
 void main() {
   group('ProjectPage', () {

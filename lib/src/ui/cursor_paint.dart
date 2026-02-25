@@ -56,7 +56,7 @@ class _CursorPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = ArcadiaColor.cursor
+      ..color = ArcadiaColor.positive
       ..style = .stroke
       ..strokeWidth = 1;
 
