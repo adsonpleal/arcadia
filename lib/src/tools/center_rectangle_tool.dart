@@ -27,7 +27,7 @@ class _CenterRectangleToolAction extends ToolAction {
   Offset? _center;
 
   @override
-  void onClick() {
+  void onClickUp() {
     if (_center case final center?) {
       addGeometries(_getLines(center));
       clearToolGeometries();

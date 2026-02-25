@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide Viewport;
 
 import '../providers/viewport_notifier_provider.dart';
+import '../tools/selection_tool.dart';
 import '../tools/tool.dart';
 import '../tools/tools.dart';
 import 'horizontal_separator.dart';
@@ -40,7 +41,7 @@ class ProjectPage extends StatelessWidget {
               final tool = intent.tool;
 
               if (tool == selectedTool) {
-                notifier.cancelToolAction();
+                notifier.selectTool(const SelectionTool());
               } else {
                 notifier.selectTool(tool);
               }

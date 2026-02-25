@@ -63,11 +63,40 @@ abstract class ToolAction {
     _viewportNotifier.addSnapPoint(offset);
   }
 
+  /// Get selected geometries.
+  List<Geometry> get selectedGeometries => _viewportNotifier.selectedGeometries;
+
+  /// Return the geometry currently below the cursor.
+  Geometry? geometryBelowCursor() => _viewportNotifier.geometryBelowCursor();
+
+  /// Set selected geometries and optional hovering geometry.
+  void setSelectedGeometries(
+    List<Geometry> geometries, {
+    Geometry? hoveringGeometry,
+  }) {
+    _viewportNotifier.setSelectedGeometries(
+      geometries,
+      hoveringGeometry: hoveringGeometry,
+    );
+  }
+
   /// Triggered on cursor position change.
   void onCursorPositionChange();
 
-  /// Triggered on cursor click.
-  void onClick();
+  /// Triggered on cursor click down.
+  ///
+  /// This has a body just for convenience, there is no implementation in
+  /// the [ToolAction] class.
+  void onClickDown() {}
+
+  /// Triggered on cursor click up.
+  void onClickUp();
+
+  /// Triggered when a pointer interaction is canceled.
+  ///
+  /// This has a body just for convenience, there is no implementation in
+  /// the [ToolAction] class.
+  void onCancel() {}
 
   /// Triggered whenever the user types a value.
   ///

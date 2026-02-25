@@ -6,6 +6,7 @@ import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/geometry/point.dart';
 import 'package:arcadia/src/logic/viewport_notifier.dart';
 import 'package:arcadia/src/tools/line_tool.dart';
+import 'package:arcadia/src/tools/selection_tool.dart';
 import 'package:arcadia/src/tools/tool.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,7 +17,13 @@ const _lineC = Line(start: Offset(40, 0), end: Offset(50, 0), color: .primary);
 
 void main() {
   group('ViewportNotifier', () {
-    test('selectTool clears selection and tool geometries', () {
+    test('starts with selection tool selected', () {
+      final notifier = ViewportNotifier();
+
+      expect(notifier.value.selectedTool, const SelectionTool());
+    });
+
+    test('selectTool keeps selection and clears tool geometries', () {
       final notifier = ViewportNotifier();
 
       notifier.addGeometries(const [_lineA]);
@@ -28,7 +35,7 @@ void main() {
       notifier.selectTool(const LineTool());
 
       expect(notifier.value.selectedTool, const LineTool());
-      expect(notifier.value.selectionGeometries, isEmpty);
+      expect(notifier.value.selectionGeometries, hasLength(1));
       expect(notifier.value.toolGeometries, isEmpty);
     });
 
@@ -45,7 +52,7 @@ void main() {
 
       notifier.cancelToolAction();
 
-      expect(notifier.value.selectedTool, isNull);
+      expect(notifier.value.selectedTool, const SelectionTool());
       expect(notifier.value.toolGeometries, isEmpty);
       expect(notifier.value.selectionGeometries, isEmpty);
       expect(notifier.value.userInput, isEmpty);
@@ -294,7 +301,8 @@ void main() {
       _moveCursor(notifier, const Offset(10, 10));
       notifier.onCursorClickUp();
 
-      expect(action.clickCalls, 1);
+      expect(action.clickDownCalls, 1);
+      expect(action.clickUpCalls, 1);
       expect(notifier.value.selectionGeometries, isEmpty);
     });
 
@@ -356,13 +364,24 @@ void main() {
       },
     );
 
+    test('onCursorClickDown delegates to active tool action', () {
+      final action = _SpyToolAction();
+      final notifier = ViewportNotifier()..selectTool(_SpyTool(action));
+
+      notifier.onCursorClickDown();
+
+      expect(action.clickDownCalls, 1);
+      expect(action.clickUpCalls, 0);
+    });
+
     test('onCursorClickUp delegates to active tool action', () {
       final action = _SpyToolAction();
       final notifier = ViewportNotifier()..selectTool(_SpyTool(action));
 
       notifier.onCursorClickUp();
 
-      expect(action.clickCalls, 1);
+      expect(action.clickDownCalls, 0);
+      expect(action.clickUpCalls, 1);
     });
   });
 }
@@ -404,15 +423,21 @@ class _SpyTool implements Tool {
 }
 
 class _SpyToolAction extends ToolAction {
-  int clickCalls = 0;
+  int clickDownCalls = 0;
+  int clickUpCalls = 0;
   int cursorPositionChangeCalls = 0;
 
   @override
   bool get acceptValueInput => true;
 
   @override
-  void onClick() {
-    clickCalls++;
+  void onClickDown() {
+    clickDownCalls++;
+  }
+
+  @override
+  void onClickUp() {
+    clickUpCalls++;
   }
 
   @override

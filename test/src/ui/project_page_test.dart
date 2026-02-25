@@ -2,6 +2,7 @@ import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/logic/viewport_notifier.dart';
 import 'package:arcadia/src/providers/viewport_notifier_provider.dart';
 import 'package:arcadia/src/tools/line_tool.dart';
+import 'package:arcadia/src/tools/selection_tool.dart';
 import 'package:arcadia/src/ui/project_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,13 +18,15 @@ void main() {
     ) async {
       final notifier = await _pumpProjectPage(tester);
 
+      expect(notifier.value.selectedTool, const SelectionTool());
+
       await tester.sendKeyEvent(.keyL);
       await tester.pump();
       expect(notifier.value.selectedTool, const LineTool());
 
       await tester.sendKeyEvent(.escape);
       await tester.pump();
-      expect(notifier.value.selectedTool, isNull);
+      expect(notifier.value.selectedTool, const SelectionTool());
     });
 
     testWidgets('keyboard value input updates active tool input', (
@@ -61,7 +64,7 @@ void main() {
       expect(notifier.value.geometries, const [_lineA, _lineB]);
     });
 
-    testWidgets('escape clears selection when no tool is active', (
+    testWidgets('escape clears selection and switches to selection tool', (
       tester,
     ) async {
       final notifier = await _pumpProjectPage(tester);
@@ -77,7 +80,7 @@ void main() {
       await tester.sendKeyEvent(.escape);
       await tester.pump();
 
-      expect(notifier.value.selectedTool, isNull);
+      expect(notifier.value.selectedTool, const SelectionTool());
       expect(notifier.value.selectionGeometries, isEmpty);
     });
   });

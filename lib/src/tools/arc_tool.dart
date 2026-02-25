@@ -30,7 +30,7 @@ class _ArcToolAction extends ToolAction {
   Offset? secondPoint;
 
   @override
-  void onClick() {
+  void onClickUp() {
     if (firstPoint == null) {
       firstPoint = state.cursorPosition;
       return;
