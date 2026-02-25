@@ -1,9 +1,11 @@
+import 'dart:math';
 import 'dart:ui';
 
 import '../constants/arcadia_color.dart';
 import 'geometry.dart';
 import 'point.dart';
 
+const _circleSampleSegments = 1000;
 const _cornerPoints = [
   Offset(0, 1),
   Offset(0, -1),
@@ -56,6 +58,27 @@ class Circle extends Geometry {
     final distance = ((offset - center).distance - radius).abs();
 
     return distance <= tolerance;
+  }
+
+  @override
+  bool containedIn(Rect rect) {
+    return _samplePerimeterPoints().every(rect.contains);
+  }
+
+  @override
+  bool intersects(Rect rect) {
+    return _samplePerimeterPoints().any(rect.contains);
+  }
+
+  List<Offset> _samplePerimeterPoints() {
+    return [
+      for (var i = 0; i <= _circleSampleSegments; i++)
+        center +
+            Offset(
+              radius * cos(2 * pi * i / _circleSampleSegments),
+              radius * sin(2 * pi * i / _circleSampleSegments),
+            ),
+    ];
   }
 
   @override

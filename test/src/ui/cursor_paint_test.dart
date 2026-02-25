@@ -32,7 +32,6 @@ void main() {
           geometries: const [_line],
           toolGeometries: const [_line],
           snappingGeometries: const [_line],
-          selectionGeometries: const [_line],
         );
         await tester.pump();
 

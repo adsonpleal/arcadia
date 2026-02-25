@@ -27,7 +27,7 @@ class _CornersRectangleToolAction extends ToolAction {
   Offset? _corner1;
 
   @override
-  void onClick() {
+  void onClickUp() {
     if (_corner1 case final corner1?) {
       addGeometries(_getLines(corner1));
       clearToolGeometries();

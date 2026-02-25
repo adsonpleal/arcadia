@@ -48,6 +48,11 @@ abstract class ToolAction {
     _viewportNotifier.addToolGeometries(geometries);
   }
 
+  /// Delete geometries from [ViewportState].
+  void deleteGeometries(List<Geometry> geometries) {
+    _viewportNotifier.deleteGeometries(geometries);
+  }
+
   /// Add geometries to [ViewportState].
   void addGeometries(List<Geometry> geometries) {
     _viewportNotifier.addGeometries(geometries);
@@ -66,8 +71,20 @@ abstract class ToolAction {
   /// Triggered on cursor position change.
   void onCursorPositionChange();
 
-  /// Triggered on cursor click.
-  void onClick();
+  /// Triggered on cursor click down.
+  ///
+  /// This has a body just for convenience, there is no implementation in
+  /// the [ToolAction] class.
+  void onClickDown() {}
+
+  /// Triggered on cursor click up.
+  void onClickUp();
+
+  /// Triggered when a pointer interaction is canceled.
+  ///
+  /// This has a body just for convenience, there is no implementation in
+  /// the [ToolAction] class.
+  void onCancel() {}
 
   /// Triggered whenever the user types a value.
   ///
@@ -78,4 +95,14 @@ abstract class ToolAction {
   /// If you want to use this you must override [acceptValueInput] setting
   /// it to true.
   void onValueTyped(double? value) {}
+
+  /// Triggered when the user presses the delete key.
+  ///
+  /// You don't need to call super for this override.
+  /// This has a body just for convenience, there is no implementation in
+  /// the [Tool] class.
+  ///
+  /// This is called when the user presses the delete key and the tool does
+  /// not accept value input.
+  void onDelete() {}
 }

@@ -6,6 +6,7 @@ import '../foundation/extensions/iterable_extensions.dart';
 import '../geometry/geometry.dart';
 import '../geometry/line.dart';
 import '../geometry/point.dart';
+import '../tools/selection_tool.dart';
 import '../tools/tool.dart';
 
 const _origin = Point(position: .zero, color: .accent, shape: .triangle);
@@ -18,9 +19,11 @@ const _maxZoom = 10.0;
 /// display and control the viewport.
 class ViewportNotifier extends ValueNotifier<ViewportState> {
   /// The default constructor for [ViewportNotifier]
-  ViewportNotifier() : super(const ViewportState());
+  ViewportNotifier() : super(const ViewportState()) {
+    _toolAction = value.selectedTool.toolActionFactory()..bind(this);
+  }
 
-  ToolAction? _toolAction;
+  late ToolAction _toolAction;
 
   // We need to save this to a variable to avoid computing the
   // snapping points on every cursor position change.
@@ -29,42 +32,31 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
   /// Saves the last three snaps for right angle snapping.
   final List<Offset> _lastSnaps = [];
 
-  final List<Geometry> _selectedGeometries = [];
-
-  Geometry? _hoveringGeometry;
-
   final List<List<Geometry>> _undoStack = [];
   final List<List<Geometry>> _redoStack = [];
 
   /// Select the given tool and start performing its action.
   void selectTool(Tool tool) {
-    _clearSelectedGeometries();
     clearToolGeometries();
+    _lastSnaps.clear();
     _toolAction = tool.toolActionFactory()..bind(this);
-    value = value.copyWith(selectedTool: tool);
+    value = value.copyWith(selectedTool: tool, userInput: '');
   }
 
   /// Cancel the selected tool action and deselect the current tool.
   void cancelToolAction() {
-    clearToolGeometries();
-    _toolAction = null;
-    value = value.copyWith(selectedTool: null, userInput: '');
-    _lastSnaps.clear();
-    _clearSelectedGeometries();
+    selectTool(const SelectionTool());
   }
 
-  /// Delete the selected geometries
-  void deleteSelectedGeometries() {
-    if (_selectedGeometries.isNotEmpty) {
-      _undoStack.add(value.geometries);
-      value = value.copyWith(
-        geometries: [
-          for (final geometry in value.geometries)
-            if (!_selectedGeometries.contains(geometry)) geometry,
-        ],
-      );
-      _clearSelectedGeometries();
-    }
+  /// Delete the given geometries
+  void deleteGeometries(List<Geometry> geometries) {
+    _undoStack.add(value.geometries);
+    value = value.copyWith(
+      geometries: [
+        for (final geometry in value.geometries)
+          if (!geometries.contains(geometry)) geometry,
+      ],
+    );
   }
 
   /// Applies the pan delta to the current [ViewportState.panOffset] state.
@@ -75,7 +67,7 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
       panOffset: panOffset + delta,
       cursorPosition: cursorPosition - delta / zoom / unitVirtualPixelRatio,
     );
-    _toolAction?.onCursorPositionChange();
+    _toolAction.onCursorPositionChange();
   }
 
   /// Applies the zoom scale to the current [ViewportState.zoom] state.
@@ -101,21 +93,19 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
     value = value.copyWith(zoom: 1, panOffset: panOffset / zoom);
   }
 
-  /// Handle click action.
-  void onCursorClick() {
-    if (_toolAction case final action?) {
-      action.onClick();
-    } else {
-      final selected = _geometryBellowCursor();
-      if (selected != null) {
-        if (_selectedGeometries.contains(selected)) {
-          _selectedGeometries.remove(selected);
-        } else {
-          _selectedGeometries.add(selected);
-        }
-        _updateSelectedGeometries();
-      }
-    }
+  /// Handle click down action.
+  void onCursorClickDown() {
+    _toolAction.onClickDown();
+  }
+
+  /// Handle click up action.
+  void onCursorClickUp() {
+    _toolAction.onClickUp();
+  }
+
+  /// Cancel active pointer interactions.
+  void onCursorCancel() {
+    _toolAction.onCancel();
   }
 
   /// Handle cursor movement.
@@ -136,8 +126,8 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
       );
     }
 
-    // only perform snapping if there is a selected tool.
-    if (_toolAction != null) {
+    // only perform snapping for non-selection tools.
+    if (value.selectedTool is! SelectionTool) {
       final snappingPoint = _snappingPoints.firstWhereOrNull(
         (point) => point.contains(newCursorPosition, 5 / zoom),
       );
@@ -210,11 +200,9 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
       }
     } else {
       applyDefaultCursorMovement();
-      _hoveringGeometry = _geometryBellowCursor();
-      _updateSelectedGeometries();
     }
 
-    _toolAction?.onCursorPositionChange();
+    _toolAction.onCursorPositionChange();
   }
 
   /// Add geometries to state.
@@ -242,9 +230,9 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
 
   /// Called when a user types a value.
   void onUserInput(String input) {
-    if (_toolAction case final tool? when tool.acceptValueInput) {
+    if (_toolAction.acceptValueInput) {
       var userInput = value.userInput;
-      if (input == 'back') {
+      if (input == deleteCharacter) {
         if (userInput != '') {
           userInput = userInput.substring(0, userInput.length - 1);
         }
@@ -256,12 +244,11 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
         userInput = '$userInput$input';
       }
 
-      tool.onValueTyped(double.tryParse(userInput));
+      _toolAction.onValueTyped(double.tryParse(userInput));
       value = value.copyWith(userInput: userInput);
     } else {
-      // TODO: improve the back logic
-      if (input == 'back') {
-        deleteSelectedGeometries();
+      if (input == deleteCharacter) {
+        _toolAction.onDelete();
       }
     }
   }
@@ -300,31 +287,5 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
         _lastSnaps.add(offset);
       }
     }
-  }
-
-  void _updateSelectedGeometries() {
-    value = value.copyWith(
-      selectionGeometries: [
-        if (_hoveringGeometry case final hovering?)
-          hovering.copyWith(strokeWidth: 5, color: .accentMuted),
-        for (final geometry in _selectedGeometries)
-          geometry.copyWith(strokeWidth: 5, color: .primaryActive),
-      ],
-    );
-  }
-
-  Geometry? _geometryBellowCursor() {
-    return value.geometries.firstWhereOrNull(
-      (geometry) => geometry.contains(
-        value.cursorPosition,
-        selectionTolerance / value.zoom,
-      ),
-    );
-  }
-
-  void _clearSelectedGeometries() {
-    _selectedGeometries.clear();
-    _hoveringGeometry = null;
-    _updateSelectedGeometries();
   }
 }

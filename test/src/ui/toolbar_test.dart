@@ -1,6 +1,7 @@
 import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/providers/viewport_notifier_provider.dart';
 import 'package:arcadia/src/tools/line_tool.dart';
+import 'package:arcadia/src/tools/selection_tool.dart';
 import 'package:arcadia/src/tools/tools.dart';
 import 'package:arcadia/src/ui/toolbar.dart';
 import 'package:flutter/material.dart';
@@ -16,27 +17,30 @@ void main() {
       expect(find.byType(Tooltip), findsNWidgets(tools.length));
 
       final firstTooltip = tester.widget<Tooltip>(find.byType(Tooltip).first);
-      expect(firstTooltip.message, contains('Line'));
-      expect(firstTooltip.message, contains('L'));
+      expect(firstTooltip.message, contains('Selection'));
+      expect(firstTooltip.message, contains('V'));
     });
 
-    testWidgets('tapping a tool toggles selection in notifier', (tester) async {
+    testWidgets('tapping selected tool switches back to selection', (
+      tester,
+    ) async {
       await _pumpToolbar(tester);
       final notifier = tester.element(find.byType(Toolbar)).viewportNotifier;
-      final firstButton = find
-          .descendant(
-            of: find.byType(Toolbar),
-            matching: find.byType(GestureDetector),
-          )
-          .first;
+      final buttons = find.descendant(
+        of: find.byType(Toolbar),
+        matching: find.byType(GestureDetector),
+      );
+      final lineButton = buttons.at(1);
 
-      await tester.tap(firstButton);
+      expect(notifier.value.selectedTool, const SelectionTool());
+
+      await tester.tap(lineButton);
       await tester.pump();
       expect(notifier.value.selectedTool, const LineTool());
 
-      await tester.tap(firstButton);
+      await tester.tap(lineButton);
       await tester.pump();
-      expect(notifier.value.selectedTool, isNull);
+      expect(notifier.value.selectedTool, const SelectionTool());
     });
 
     testWidgets(
@@ -62,7 +66,6 @@ void main() {
           geometries: const [_line],
           toolGeometries: const [_line],
           snappingGeometries: const [_line],
-          selectionGeometries: const [_line],
           cursorPosition: const Offset(6, 7),
           userInput: '2',
         );

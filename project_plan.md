@@ -37,14 +37,12 @@ This roadmap follows a capability ladder:
   - Values update continuously as the cursor moves.
   - Display format is stable and readable (for example, `X: 120.0, Y: 45.0`).
 
-### 3) [Selection modes (Window, Crossing, and Lasso Crossing)](https://github.com/adsonpleal/arcadia/issues/38)
+### 3) [Selection modes (Window and Crossing)](https://github.com/adsonpleal/arcadia/issues/38)
 - Goal: make selection behavior match common CAD interaction patterns.
 - Dependencies: existing selection and hover pipeline.
 - Acceptance:
   - Window selection (left-to-right rectangle) selects only fully contained geometries.
   - Crossing selection (right-to-left rectangle) selects contained and intersecting geometries.
-  - Freehand lasso crossing lets users draw a smooth quadratic Bezier path with a closed preview.
-  - Intersecting geometries are preview-highlighted while the lasso path is still being drawn.
 
 ### 4) [Project units configuration](https://github.com/adsonpleal/arcadia/issues/43)
 - Goal: define drawing units (e.g., mm, cm, m, in).
@@ -241,6 +239,14 @@ This roadmap follows a capability ladder:
   - Export supports a documented subset first.
   - Import validates unsupported entities safely.
   - Round-trip tests cover supported primitives.
+
+### 28) [Lasso selection tool (crossing)](https://github.com/adsonpleal/arcadia/issues/67)
+- Goal: add freehand lasso selection as a dedicated follow-up feature.
+- Dependencies: window and crossing selection flow.
+- Acceptance:
+  - User can draw a freehand lasso path to select intersecting geometries.
+  - Lasso preview is smooth and closed while drawing.
+  - Intersecting geometries are preview-highlighted before commit.
 
 ## Suggested Cross-Cutting Milestones
 

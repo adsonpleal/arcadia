@@ -1,9 +1,9 @@
+import 'package:arcadia/src/constants/arcadia_color.dart';
 import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/logic/viewport_notifier.dart';
 import 'package:arcadia/src/providers/viewport_notifier_provider.dart';
 import 'package:arcadia/src/ui/cursor_paint.dart';
 import 'package:arcadia/src/ui/grid_paint.dart';
-import 'package:arcadia/src/ui/selection_paint.dart';
 import 'package:arcadia/src/ui/snapping_viewport_paint.dart';
 import 'package:arcadia/src/ui/tool_viewport_paint.dart';
 import 'package:arcadia/src/ui/viewport.dart';
@@ -14,6 +14,16 @@ import 'package:flutter/widgets.dart' hide Viewport;
 import 'package:flutter_test/flutter_test.dart';
 
 const _line = Line(start: .zero, end: Offset(10, 0), color: .primary);
+const _insideLine = Line(
+  start: Offset(1, 1),
+  end: Offset(3, 3),
+  color: .primary,
+);
+const _crossingLine = Line(
+  start: Offset(1, 1),
+  end: Offset(20, 1),
+  color: .primary,
+);
 
 void main() {
   group('Viewport', () {
@@ -21,7 +31,7 @@ void main() {
       await _pumpViewport(tester);
 
       final stackFinder = find.byWidgetPredicate(
-        (widget) => widget is Stack && widget.children.length == 7,
+        (widget) => widget is Stack && widget.children.length == 6,
       );
       final stack = tester.widget<Stack>(stackFinder);
       final layerTypes = [
@@ -31,7 +41,6 @@ void main() {
 
       expect(layerTypes, [
         GridPaint,
-        SelectionPaint,
         ViewportPaint,
         SnappingViewportPaint,
         ToolViewportPaint,
@@ -85,7 +94,67 @@ void main() {
       await mouse.up();
       await tester.pump();
 
-      expect(notifier.value.selectionGeometries, isNotEmpty);
+      expect(
+        notifier.value.toolGeometries.whereType<Line>(),
+        contains(
+          isA<Line>()
+              .having((line) => line.start, 'start', _line.start)
+              .having(
+                (line) => line.end,
+                'end',
+                _line.end,
+              ),
+        ),
+      );
+
+      await mouse.removePointer();
+    });
+
+    testWidgets('left-to-right drag applies window selection', (tester) async {
+      final notifier = await _pumpViewport(tester);
+      final center = tester.getCenter(find.byType(Viewport));
+      notifier.addGeometries(const [_insideLine, _crossingLine]);
+      await tester.pump();
+
+      final mouse = await tester.createGesture(kind: .mouse);
+      await mouse.addPointer(location: center);
+      await mouse.down(center);
+      await mouse.moveTo(center + const Offset(50, 50));
+      await mouse.up();
+      await tester.pump();
+
+      expect(
+        notifier.value.toolGeometries.whereType<Line>().where((line) {
+          return line.color == ArcadiaColor.primaryActive;
+        }),
+        hasLength(1),
+      );
+
+      await mouse.removePointer();
+    });
+
+    testWidgets('right-to-left drag applies crossing selection', (
+      tester,
+    ) async {
+      final notifier = await _pumpViewport(tester);
+      final center = tester.getCenter(find.byType(Viewport));
+      notifier.addGeometries(const [_insideLine, _crossingLine]);
+      await tester.pump();
+
+      final mouse = await tester.createGesture(kind: .mouse);
+      await mouse.addPointer(location: center);
+      await mouse.moveTo(center + const Offset(50, 50));
+      await mouse.down(center + const Offset(50, 50));
+      await mouse.moveTo(center);
+      await mouse.up();
+      await tester.pump();
+
+      expect(
+        notifier.value.toolGeometries.whereType<Line>().where((line) {
+          return line.color == ArcadiaColor.primaryActive;
+        }),
+        hasLength(2),
+      );
 
       await mouse.removePointer();
     });

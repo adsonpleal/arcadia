@@ -74,6 +74,16 @@ class Point extends Geometry {
   }
 
   @override
+  bool containedIn(Rect rect) {
+    return rect.contains(position);
+  }
+
+  @override
+  bool intersects(Rect rect) {
+    return rect.contains(position);
+  }
+
+  @override
   Geometry copyWith({double? strokeWidth, ArcadiaColor? color}) {
     return Point(
       position: position,

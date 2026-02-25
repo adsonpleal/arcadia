@@ -41,7 +41,7 @@ void main() {
 
 class _NoopToolAction extends ToolAction {
   @override
-  void onClick() {}
+  void onClickUp() {}
 
   @override
   void onCursorPositionChange() {}

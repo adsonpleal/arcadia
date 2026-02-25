@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../constants/arcadia_color.dart';
 import '../providers/viewport_notifier_provider.dart';
+import '../tools/selection_tool.dart';
 import '../tools/tool.dart';
 import '../tools/tools.dart';
 
@@ -65,7 +66,7 @@ class _ToolButtonState extends State<_ToolButton> {
         child: GestureDetector(
           onTap: () {
             if (selected) {
-              context.viewportNotifier.cancelToolAction();
+              context.viewportNotifier.selectTool(const SelectionTool());
             } else {
               context.viewportNotifier.selectTool(widget.tool);
             }

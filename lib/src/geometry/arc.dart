@@ -5,6 +5,8 @@ import '../constants/arcadia_color.dart';
 import 'geometry.dart';
 import 'point.dart';
 
+const _arcSampleSegments = 1000;
+
 /// An Arc geometry, as a segment of a circle.
 class Arc extends Geometry {
   const Arc._({
@@ -140,6 +142,27 @@ class Arc extends Geometry {
 
     return normalizedAngle <= sweepAngle + startAngle &&
         normalizedAngle >= startAngle;
+  }
+
+  @override
+  bool containedIn(Rect rect) {
+    return _sampleArcPoints().every(rect.contains);
+  }
+
+  @override
+  bool intersects(Rect rect) {
+    return _sampleArcPoints().any(rect.contains);
+  }
+
+  List<Offset> _sampleArcPoints() {
+    return [
+      for (var i = 0; i <= _arcSampleSegments; i++)
+        center +
+            Offset.fromDirection(
+              startAngle + sweepAngle * (i / _arcSampleSegments),
+              radius,
+            ),
+    ];
   }
 
   @override

@@ -33,7 +33,7 @@ class _CircleToolAction extends ToolAction {
   bool get acceptValueInput => true;
 
   @override
-  void onClick() {
+  void onClickUp() {
     if (_center case final center?) {
       addGeometries([_getCurrentCircle(center)]);
       _center = null;

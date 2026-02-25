@@ -38,7 +38,7 @@ class _LineToolAction extends ToolAction {
   }
 
   @override
-  void onClick() {
+  void onClickUp() {
     if (_firstPoint case final point?) {
       final endPoint = _getEndPoint();
       addGeometries([Line(color: .primary, start: point, end: endPoint)]);
