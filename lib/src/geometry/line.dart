@@ -6,6 +6,7 @@ import 'package:flutter/painting.dart';
 import '../constants/arcadia_color.dart';
 import 'geometry.dart';
 import 'point.dart';
+import 'selection_math.dart';
 
 /// A one-dimensional geometry that is defined by two points.
 class Line extends Geometry {
@@ -68,6 +69,42 @@ class Line extends Geometry {
         sqrt(pow(end.dy - start.dy, 2) + pow(end.dx - start.dx, 2));
 
     return distance <= tolerance;
+  }
+
+  @override
+  bool matchesWindowSelection(Rect rect) {
+    return rect.contains(start) && rect.contains(end);
+  }
+
+  @override
+  bool matchesCrossingSelection(Rect rect) {
+    if (rect.contains(start) || rect.contains(end)) {
+      return true;
+    }
+
+    for (final (a, b) in rectEdges(rect)) {
+      if (segmentsIntersect(start, end, a, b)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  @override
+  bool matchesLassoCrossingSelection(List<Offset> closedLassoPath) {
+    if (isPointInsideClosedPolygon(start, closedLassoPath) ||
+        isPointInsideClosedPolygon(end, closedLassoPath)) {
+      return true;
+    }
+
+    for (final (a, b) in closedEdges(closedLassoPath)) {
+      if (segmentsIntersect(start, end, a, b)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   @override

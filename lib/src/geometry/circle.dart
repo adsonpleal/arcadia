@@ -59,6 +59,21 @@ class Circle extends Geometry {
   }
 
   @override
+  bool matchesWindowSelection(Rect rect) {
+    return false;
+  }
+
+  @override
+  bool matchesCrossingSelection(Rect rect) {
+    return false;
+  }
+
+  @override
+  bool matchesLassoCrossingSelection(List<Offset> closedLassoPath) {
+    return false;
+  }
+
+  @override
   Geometry copyWith({double? strokeWidth, ArcadiaColor? color}) {
     return Circle(
       center: center,

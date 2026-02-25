@@ -36,6 +36,16 @@ abstract class Geometry {
   /// Useful to do things like checking if the cursor is hovering a given line.
   bool contains(Offset offset, double tolerance);
 
+  /// Returns whether this geometry is fully contained by [rect].
+  bool matchesWindowSelection(Rect rect);
+
+  /// Returns whether this geometry is contained by or intersects [rect].
+  bool matchesCrossingSelection(Rect rect);
+
+  /// Returns whether this geometry is contained by or intersects the closed
+  /// [closedLassoPath].
+  bool matchesLassoCrossingSelection(List<Offset> closedLassoPath);
+
   /// Creates a copy of this geometry, replacing its [color] or/and [strokeWidth].
   Geometry copyWith({double? strokeWidth, ArcadiaColor? color});
 }
