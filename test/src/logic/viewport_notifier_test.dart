@@ -23,7 +23,7 @@ void main() {
       expect(notifier.value.selectedTool, const SelectionTool());
     });
 
-    test('selectTool keeps selection and clears tool geometries', () {
+    test('selectTool clears selection and tool geometries', () {
       final notifier = ViewportNotifier();
 
       notifier.addGeometries(const [_lineA]);
@@ -35,7 +35,7 @@ void main() {
       notifier.selectTool(const LineTool());
 
       expect(notifier.value.selectedTool, const LineTool());
-      expect(notifier.value.selectionGeometries, hasLength(1));
+      expect(notifier.value.selectionGeometries, isEmpty);
       expect(notifier.value.toolGeometries, isEmpty);
     });
 

@@ -17,8 +17,7 @@ const _maxZoom = 10.0;
 ///
 /// This notifier holds all the necessary logic to
 /// display and control the viewport.
-class ViewportNotifier extends ValueNotifier<ViewportState>
-    with SelectionToolState {
+class ViewportNotifier extends ValueNotifier<ViewportState>{
   /// The default constructor for [ViewportNotifier]
   ViewportNotifier()
     : super(const ViewportState(selectedTool: SelectionTool())) {
@@ -39,10 +38,6 @@ class ViewportNotifier extends ValueNotifier<ViewportState>
 
   /// Select the given tool and start performing its action.
   void selectTool(Tool tool) {
-    if (tool == value.selectedTool) {
-      return;
-    }
-
     clearToolGeometries();
     _lastSnaps.clear();
     _toolAction = tool.toolActionFactory()..bind(this);
@@ -51,27 +46,18 @@ class ViewportNotifier extends ValueNotifier<ViewportState>
 
   /// Cancel the selected tool action and deselect the current tool.
   void cancelToolAction() {
-    clearToolGeometries();
-    _lastSnaps.clear();
-    clearSelectedGeometries();
-    value = value.copyWith(userInput: '', snappingGeometries: []);
     selectTool(const SelectionTool());
   }
 
-  /// Delete the selected geometries
-  void deleteSelectedGeometries() {
-    final selected = selectedGeometries;
-
-    if (selected.isNotEmpty) {
-      _undoStack.add(value.geometries);
-      value = value.copyWith(
-        geometries: [
-          for (final geometry in value.geometries)
-            if (!selected.contains(geometry)) geometry,
-        ],
-      );
-      clearSelectedGeometries();
-    }
+  /// Delete the given geometries
+  void deleteGeometries(List<Geometry> geometries) {
+    _undoStack.add(value.geometries);
+    value = value.copyWith(
+      geometries: [
+        for (final geometry in value.geometries)
+          if (!geometries.contains(geometry)) geometry,
+      ],
+    );
   }
 
   /// Applies the pan delta to the current [ViewportState.panOffset] state.
@@ -247,7 +233,7 @@ class ViewportNotifier extends ValueNotifier<ViewportState>
   void onUserInput(String input) {
     if (_toolAction.acceptValueInput) {
       var userInput = value.userInput;
-      if (input == 'back') {
+      if (input == deleteCharacter) {
         if (userInput != '') {
           userInput = userInput.substring(0, userInput.length - 1);
         }
@@ -262,9 +248,8 @@ class ViewportNotifier extends ValueNotifier<ViewportState>
       _toolAction.onValueTyped(double.tryParse(userInput));
       value = value.copyWith(userInput: userInput);
     } else {
-      // TODO: improve the back logic
-      if (input == 'back') {
-        deleteSelectedGeometries();
+      if (input == deleteCharacter) {
+        _toolAction.onDelete();
       }
     }
   }

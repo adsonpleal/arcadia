@@ -18,7 +18,6 @@ class ViewportState {
     this.geometries = const [],
     this.toolGeometries = const [],
     this.snappingGeometries = const [],
-    this.selectionGeometries = const [],
     this.zoom = 1.0,
     this.panOffset = .zero,
     this.cursorPosition = .zero,
@@ -43,11 +42,6 @@ class ViewportState {
   /// These geometries are used to represent snapping areas.
   final List<Geometry> snappingGeometries;
 
-  /// The selection [Geometry] list.
-  ///
-  /// These geometries are used to hover and selected geometries.
-  final List<Geometry> selectionGeometries;
-
   /// The current zoom.
   final double zoom;
 
@@ -71,7 +65,6 @@ class ViewportState {
     List<Geometry>? geometries,
     List<Geometry>? toolGeometries,
     List<Geometry>? snappingGeometries,
-    List<Geometry>? selectionGeometries,
     double? zoom,
     Offset? panOffset,
     Offset? cursorPosition,
@@ -82,7 +75,6 @@ class ViewportState {
       geometries: geometries ?? this.geometries,
       toolGeometries: toolGeometries ?? this.toolGeometries,
       snappingGeometries: snappingGeometries ?? this.snappingGeometries,
-      selectionGeometries: selectionGeometries ?? this.selectionGeometries,
       zoom: zoom ?? this.zoom,
       panOffset: panOffset ?? this.panOffset,
       cursorPosition: cursorPosition ?? this.cursorPosition,
@@ -100,7 +92,6 @@ class ViewportState {
             listEquals(geometries, other.geometries) &&
             listEquals(toolGeometries, other.toolGeometries) &&
             listEquals(snappingGeometries, other.snappingGeometries) &&
-            listEquals(selectionGeometries, other.selectionGeometries) &&
             zoom == other.zoom &&
             panOffset == other.panOffset &&
             cursorPosition == other.cursorPosition &&
@@ -114,7 +105,6 @@ class ViewportState {
       Object.hashAll(geometries),
       Object.hashAll(toolGeometries),
       Object.hashAll(snappingGeometries),
-      Object.hashAll(selectionGeometries),
       zoom,
       panOffset,
       cursorPosition,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' hide Viewport;
 
+import '../constants/config.dart';
 import '../providers/viewport_notifier_provider.dart';
 import '../tools/selection_tool.dart';
 import '../tools/tool.dart';
@@ -26,7 +27,9 @@ class ProjectPage extends StatelessWidget {
         const SingleActivator(.escape): const _CancelIntent(),
         for (final input in numbersInput)
           CharacterActivator(input): _ValueInputIntent(input),
-        const SingleActivator(.backspace): const _ValueInputIntent('back'),
+        const SingleActivator(.backspace): const _ValueInputIntent(
+          deleteCharacter,
+        ),
         SingleActivator(.keyZ, meta: isMacOS, control: !isMacOS):
             const _UndoIntent(),
         SingleActivator(.keyZ, meta: isMacOS, control: !isMacOS, shift: true):

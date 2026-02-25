@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 
 import '../constants/arcadia_color.dart';
 import '../constants/config.dart';
-import '../data/viewport_state.dart';
 import '../foundation/geometry/rectangle_generation.dart';
 import '../geometry/geometry.dart';
 import 'tool.dart';
@@ -25,57 +24,6 @@ class SelectionTool implements Tool {
   ToolActionFactory get toolActionFactory => _SelectionToolAction.new;
 }
 
-/// Selection state owned by the selection tool module.
-mixin SelectionToolState on ValueNotifier<ViewportState> {
-  final List<Geometry> _selectedGeometries = [];
-  Geometry? _hoveringGeometry;
-
-  /// The currently selected geometries.
-  List<Geometry> get selectedGeometries => [..._selectedGeometries];
-
-  /// Set selected geometries and optional hovering geometry.
-  void setSelectedGeometries(
-    List<Geometry> geometries, {
-    Geometry? hoveringGeometry,
-  }) {
-    _selectedGeometries
-      ..clear()
-      ..addAll(geometries);
-    _hoveringGeometry = hoveringGeometry;
-    _updateSelectedGeometries();
-  }
-
-  /// Return the geometry currently below the cursor.
-  Geometry? geometryBelowCursor() {
-    final tolerance = selectionTolerance / value.zoom;
-    for (final geometry in value.geometries) {
-      if (geometry.contains(value.cursorPosition, tolerance)) {
-        return geometry;
-      }
-    }
-    return null;
-  }
-
-  /// Clear selected and hovering geometries.
-  void clearSelectedGeometries() {
-    _selectedGeometries.clear();
-    _hoveringGeometry = null;
-    _updateSelectedGeometries();
-  }
-
-  void _updateSelectedGeometries() {
-    value = value.copyWith(
-      selectionGeometries: [
-        if (_hoveringGeometry case final hovering?
-            when !_selectedGeometries.contains(hovering))
-          hovering.copyWith(strokeWidth: 5, color: .accentMuted),
-        for (final geometry in _selectedGeometries)
-          geometry.copyWith(strokeWidth: 5, color: .primaryActive),
-      ],
-    );
-  }
-}
-
 const _selectionDragStartDistance = 0.1;
 
 enum _SelectionDragMode {
@@ -93,94 +41,100 @@ class _SelectionDragSession {
   final Offset start;
   Offset current;
   final List<Geometry> baselineSelection;
+
+  Rect get rect => Rect.fromPoints(start, current);
+
+  _SelectionDragMode get mode => current.dx >= start.dx
+      ? _SelectionDragMode.window
+      : _SelectionDragMode.crossing;
 }
 
 class _SelectionToolAction extends ToolAction {
+  List<Geometry> _selectedGeometries = [];
+  Geometry? _hoveringGeometry;
+  _SelectionDragSession? _selectionDragSession;
+
+  Geometry? _geometryBelowCursor() {
+    final tolerance = selectionTolerance / state.zoom;
+    for (final geometry in state.geometries) {
+      if (geometry.contains(state.cursorPosition, tolerance)) {
+        return geometry;
+      }
+    }
+    return null;
+  }
+
+  /// Clear selected and hovering geometries.
+  void clearSelectedGeometries() {
+    _selectedGeometries.clear();
+    _updateToolGeometries();
+  }
+
   @override
   void onClickDown() {
     clearToolGeometries();
-    final baselineSelection = selectedGeometries;
     final cursorPosition = state.cursorPosition;
     _selectionDragSession = _SelectionDragSession(
       start: cursorPosition,
       current: cursorPosition,
-      baselineSelection: baselineSelection,
+      baselineSelection: _selectedGeometries,
     );
-    setSelectedGeometries(baselineSelection);
+    _updateToolGeometries();
+  }
+
+  @override
+  void onDelete() {
+    deleteGeometries(_selectedGeometries);
+    _selectedGeometries = [];
+    _hoveringGeometry = null;
+    _updateToolGeometries();
   }
 
   @override
   void onClickUp() {
     if (_selectionDragSession case final session?) {
-      if (_hasDragStarted(session)) {
-        final selectionRect = Rect.fromPoints(session.start, session.current);
-        final mode = _resolvedRectSelectionMode(session);
-        setSelectedGeometries(
-          _selectionWithMatches(
-            _matchingGeometriesForRect(selectionRect, mode: mode),
-            baselineSelection: session.baselineSelection,
-          ),
-        );
-      } else {
+      if (!_hasDragStarted(session)) {
         _handleSingleSelection(baselineSelection: session.baselineSelection);
       }
       _selectionDragSession = null;
-      clearToolGeometries();
-      return;
+    } else {
+      _handleSingleSelection(baselineSelection: _selectedGeometries);
     }
 
-    _handleSingleSelection(baselineSelection: selectedGeometries);
+    _updateToolGeometries();
   }
 
   @override
   void onCancel() {
     if (_selectionDragSession case final session?) {
-      setSelectedGeometries(session.baselineSelection);
+      _selectedGeometries = session.baselineSelection;
     }
     _selectionDragSession = null;
-    clearToolGeometries();
+    _updateToolGeometries();
   }
 
   @override
   void onCursorPositionChange() {
     if (_selectionDragSession case final session?) {
       _updateDragSelectionPreview(session);
-      return;
+    } else {
+      _hoveringGeometry = _geometryBelowCursor();
     }
 
-    setSelectedGeometries(
-      selectedGeometries,
-      hoveringGeometry: geometryBelowCursor(),
-    );
+    _updateToolGeometries();
   }
-
-  _SelectionDragSession? _selectionDragSession;
 
   void _updateDragSelectionPreview(_SelectionDragSession session) {
     session.current = state.cursorPosition;
 
     if (!_hasDragStarted(session)) {
       clearToolGeometries();
-      setSelectedGeometries(session.baselineSelection);
+      _selectedGeometries = session.baselineSelection;
       return;
     }
 
-    final selectionRect = Rect.fromPoints(session.start, session.current);
-    final mode = _resolvedRectSelectionMode(session);
     clearToolGeometries();
-    addToolGeometries(
-      rectangleLinesFromRect(
-        rect: selectionRect,
-        color: .accentActive,
-        dashed: mode == _SelectionDragMode.crossing,
-      ),
-    );
-    setSelectedGeometries(
-      _selectionWithMatches(
-        _matchingGeometriesForRect(selectionRect, mode: mode),
-        baselineSelection: session.baselineSelection,
-      ),
-    );
+    _selectedGeometries = _selectionWithMatches(session);
   }
 
   bool _hasDragStarted(_SelectionDragSession session) {
@@ -202,17 +156,12 @@ class _SelectionToolAction extends ToolAction {
     ];
   }
 
-  _SelectionDragMode _resolvedRectSelectionMode(_SelectionDragSession session) {
-    return session.current.dx >= session.start.dx
-        ? _SelectionDragMode.window
-        : _SelectionDragMode.crossing;
-  }
-
-  List<Geometry> _selectionWithMatches(
-    List<Geometry> matches, {
-    required List<Geometry> baselineSelection,
-  }) {
-    final nextSelection = [...baselineSelection];
+  List<Geometry> _selectionWithMatches(_SelectionDragSession session) {
+    final matches = _matchingGeometriesForRect(
+      session.rect,
+      mode: session.mode,
+    );
+    final nextSelection = [...session.baselineSelection];
 
     for (final geometry in matches) {
       if (!nextSelection.contains(geometry)) {
@@ -224,14 +173,29 @@ class _SelectionToolAction extends ToolAction {
   }
 
   void _handleSingleSelection({required List<Geometry> baselineSelection}) {
-    final selected = geometryBelowCursor();
-    final nextSelection = [...baselineSelection];
+    _selectedGeometries = [
+      ...baselineSelection,
+      if (_geometryBelowCursor() case final geometry?
+          when !baselineSelection.contains(geometry))
+        geometry,
+    ];
+  }
 
-    if (selected case final geometry? when !nextSelection.contains(geometry)) {
-      nextSelection.add(geometry);
-    }
-
-    setSelectedGeometries(nextSelection);
+  void _updateToolGeometries() {
+    clearToolGeometries();
+    addToolGeometries([
+      for (final geometry in _selectedGeometries)
+        geometry.copyWith(strokeWidth: 5, color: .primaryActive),
+      if (_hoveringGeometry case final hovering?
+          when !_selectedGeometries.contains(hovering))
+        hovering.copyWith(strokeWidth: 5, color: .accentMuted),
+      if (_selectionDragSession case final session?)
+        ...rectangleLinesFromRect(
+          rect: session.rect,
+          color: .accentActive,
+          dashed: session.mode == _SelectionDragMode.crossing,
+        ),
+    ]);
   }
 }
 

@@ -48,6 +48,11 @@ abstract class ToolAction {
     _viewportNotifier.addToolGeometries(geometries);
   }
 
+  /// Delete geometries from [ViewportState].
+  void deleteGeometries(List<Geometry> geometries) {
+    _viewportNotifier.deleteGeometries(geometries);
+  }
+
   /// Add geometries to [ViewportState].
   void addGeometries(List<Geometry> geometries) {
     _viewportNotifier.addGeometries(geometries);
@@ -61,23 +66,6 @@ abstract class ToolAction {
   /// Add a snap point to the list.
   void addSnapPoint(Offset offset) {
     _viewportNotifier.addSnapPoint(offset);
-  }
-
-  /// Get selected geometries.
-  List<Geometry> get selectedGeometries => _viewportNotifier.selectedGeometries;
-
-  /// Return the geometry currently below the cursor.
-  Geometry? geometryBelowCursor() => _viewportNotifier.geometryBelowCursor();
-
-  /// Set selected geometries and optional hovering geometry.
-  void setSelectedGeometries(
-    List<Geometry> geometries, {
-    Geometry? hoveringGeometry,
-  }) {
-    _viewportNotifier.setSelectedGeometries(
-      geometries,
-      hoveringGeometry: hoveringGeometry,
-    );
   }
 
   /// Triggered on cursor position change.
@@ -107,4 +95,14 @@ abstract class ToolAction {
   /// If you want to use this you must override [acceptValueInput] setting
   /// it to true.
   void onValueTyped(double? value) {}
+
+  /// Triggered when the user presses the delete key.
+  ///
+  /// You don't need to call super for this override.
+  /// This has a body just for convenience, there is no implementation in
+  /// the [Tool] class.
+  ///
+  /// This is called when the user presses the delete key and the tool does
+  /// not accept value input.
+  void onDelete() {}
 }

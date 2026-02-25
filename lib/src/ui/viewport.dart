@@ -5,7 +5,6 @@ import '../constants/arcadia_color.dart';
 import '../providers/viewport_notifier_provider.dart';
 import 'cursor_paint.dart';
 import 'grid_paint.dart';
-import 'selection_paint.dart';
 import 'snapping_viewport_paint.dart';
 import 'tool_viewport_paint.dart';
 import 'viewport_overlay.dart';
@@ -53,7 +52,6 @@ class Viewport extends StatelessWidget {
           child: Stack(
             children: [
               Positioned.fill(child: GridPaint()),
-              Positioned.fill(child: SelectionPaint()),
               Positioned.fill(child: ViewportPaint()),
               Positioned.fill(child: SnappingViewportPaint()),
               Positioned.fill(child: ToolViewportPaint()),
