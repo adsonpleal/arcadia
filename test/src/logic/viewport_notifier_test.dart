@@ -3,6 +3,7 @@
 import 'package:arcadia/src/constants/arcadia_color.dart';
 import 'package:arcadia/src/constants/config.dart';
 import 'package:arcadia/src/geometry/line.dart';
+import 'package:arcadia/src/geometry/lasso_preview.dart';
 import 'package:arcadia/src/geometry/point.dart';
 import 'package:arcadia/src/logic/viewport_notifier.dart';
 import 'package:arcadia/src/tools/line_tool.dart';
@@ -183,6 +184,110 @@ void main() {
       },
     );
 
+    test('left-to-right drag uses window selection semantics', () {
+      const insideLine = Line(
+        start: Offset(1, 1),
+        end: Offset(3, 3),
+        color: .primary,
+      );
+      const crossingLine = Line(
+        start: Offset(1, 1),
+        end: Offset(20, 1),
+        color: .primary,
+      );
+      final notifier = ViewportNotifier()
+        ..addGeometries(const [insideLine, crossingLine]);
+
+      _pointerDown(notifier, .zero);
+      _moveCursor(notifier, const Offset(10, 10));
+      notifier.onPointerUp();
+
+      expect(notifier.value.selectionGeometries, hasLength(1));
+      final selected = notifier.value.selectionGeometries.single as Line;
+      expect(selected.start, insideLine.start);
+      expect(selected.end, insideLine.end);
+      expect(selected.color, ArcadiaColor.primaryActive);
+    });
+
+    test('right-to-left drag uses crossing selection semantics', () {
+      const insideLine = Line(
+        start: Offset(1, 1),
+        end: Offset(3, 3),
+        color: .primary,
+      );
+      const crossingLine = Line(
+        start: Offset(1, 1),
+        end: Offset(20, 1),
+        color: .primary,
+      );
+      final notifier = ViewportNotifier()
+        ..addGeometries(const [insideLine, crossingLine]);
+
+      _pointerDown(notifier, const Offset(10, 10));
+      _moveCursor(notifier, .zero);
+      notifier.onPointerUp();
+
+      expect(notifier.value.selectionGeometries, hasLength(2));
+    });
+
+    test('alt+drag lasso previews and highlights intersections while drawing', () {
+      const target = Line(
+        start: Offset(2, 2),
+        end: Offset(8, 2),
+        color: .primary,
+      );
+      final notifier = ViewportNotifier()..addGeometries(const [target]);
+
+      _pointerDown(notifier, const Offset(0, 0), altPressed: true);
+      _moveCursor(notifier, const Offset(10, 0));
+      _moveCursor(notifier, const Offset(10, 10));
+      _moveCursor(notifier, const Offset(0, 10));
+
+      expect(notifier.value.toolGeometries.single, isA<LassoPreview>());
+      expect(notifier.value.selectionGeometries, hasLength(1));
+      final preview = notifier.value.selectionGeometries.single as Line;
+      expect(preview.color, ArcadiaColor.accentMuted);
+
+      notifier.onPointerUp();
+
+      expect(notifier.value.selectionGeometries, hasLength(1));
+      final selected = notifier.value.selectionGeometries.single as Line;
+      expect(selected.color, ArcadiaColor.primaryActive);
+    });
+
+    test('shift drag adds matches to existing selection', () {
+      const first = Line(start: Offset(1, 1), end: Offset(3, 1), color: .primary);
+      const second = Line(
+        start: Offset(20, 1),
+        end: Offset(22, 1),
+        color: .primary,
+      );
+      final notifier = ViewportNotifier()..addGeometries(const [first, second]);
+
+      _moveCursor(notifier, const Offset(2, 1));
+      notifier.onCursorClick();
+
+      _pointerDown(notifier, const Offset(18, 0), shiftPressed: true);
+      _moveCursor(notifier, const Offset(24, 4));
+      notifier.onPointerUp();
+
+      expect(notifier.value.selectionGeometries, hasLength(2));
+    });
+
+    test('active tool keeps priority and does not start drag selection', () {
+      final action = _SpyToolAction();
+      final notifier = ViewportNotifier()
+        ..addGeometries(const [_lineA])
+        ..selectTool(_SpyTool(action));
+
+      _pointerDown(notifier, .zero);
+      _moveCursor(notifier, const Offset(10, 10));
+      notifier.onPointerUp();
+
+      expect(action.clickCalls, 1);
+      expect(notifier.value.selectionGeometries, isEmpty);
+    });
+
     test(
       'onUserInput handles numbers, dot dedupe, and backspace for tools',
       () {
@@ -258,6 +363,22 @@ void _moveCursor(ViewportNotifier notifier, Offset cursorPosition) {
     viewportPosition:
         (cursorPosition * unitVirtualPixelRatio * state.zoom) + state.panOffset,
     viewportMidPoint: .zero,
+  );
+}
+
+void _pointerDown(
+  ViewportNotifier notifier,
+  Offset cursorPosition, {
+  bool altPressed = false,
+  bool shiftPressed = false,
+}) {
+  final state = notifier.value;
+  notifier.onPointerDown(
+    viewportPosition:
+        (cursorPosition * unitVirtualPixelRatio * state.zoom) + state.panOffset,
+    viewportMidPoint: .zero,
+    altPressed: altPressed,
+    shiftPressed: shiftPressed,
   );
 }
 

@@ -4,13 +4,37 @@ import '../constants/config.dart';
 import '../data/viewport_state.dart';
 import '../foundation/extensions/iterable_extensions.dart';
 import '../geometry/geometry.dart';
+import '../geometry/lasso_preview.dart';
 import '../geometry/line.dart';
 import '../geometry/point.dart';
+import 'lasso_path_builder.dart';
 import '../tools/tool.dart';
 
 const _origin = Point(position: .zero, color: .accent, shape: .triangle);
 const _minZoom = 0.01;
 const _maxZoom = 10.0;
+
+enum _SelectionDragMode {
+  window,
+  crossing,
+  lassoCrossing,
+}
+
+class _SelectionDragSession {
+  _SelectionDragSession({
+    required this.start,
+    required this.current,
+    required this.additive,
+    required this.mode,
+    required this.lassoSamples,
+  });
+
+  final Offset start;
+  Offset current;
+  final bool additive;
+  final _SelectionDragMode mode;
+  final List<Offset> lassoSamples;
+}
 
 /// A [ValueNotifier] that holds the [ViewportState].
 ///
@@ -30,14 +54,17 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
   final List<Offset> _lastSnaps = [];
 
   final List<Geometry> _selectedGeometries = [];
+  final List<Geometry> _previewSelectedGeometries = [];
 
   Geometry? _hoveringGeometry;
+  _SelectionDragSession? _selectionDragSession;
 
   final List<List<Geometry>> _undoStack = [];
   final List<List<Geometry>> _redoStack = [];
 
   /// Select the given tool and start performing its action.
   void selectTool(Tool tool) {
+    _clearSelectionDragPreview();
     _clearSelectedGeometries();
     clearToolGeometries();
     _toolAction = tool.toolActionFactory()..bind(this);
@@ -46,6 +73,7 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
 
   /// Cancel the selected tool action and deselect the current tool.
   void cancelToolAction() {
+    _clearSelectionDragPreview();
     clearToolGeometries();
     _toolAction = null;
     value = value.copyWith(selectedTool: null, userInput: '');
@@ -99,6 +127,73 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
     }
 
     value = value.copyWith(zoom: 1, panOffset: panOffset / zoom);
+  }
+
+  /// Handle pointer down and initialize drag selection state.
+  void onPointerDown({
+    required Offset viewportPosition,
+    required Offset viewportMidPoint,
+    required bool altPressed,
+    required bool shiftPressed,
+  }) {
+    onCursorMove(
+      viewportPosition: viewportPosition,
+      viewportMidPoint: viewportMidPoint,
+    );
+
+    if (_toolAction != null) {
+      return;
+    }
+
+    _clearSelectionDragPreview();
+    final cursorPosition = value.cursorPosition;
+    _selectionDragSession = _SelectionDragSession(
+      start: cursorPosition,
+      current: cursorPosition,
+      additive: shiftPressed,
+      mode: altPressed ? .lassoCrossing : .window,
+      lassoSamples: altPressed ? [cursorPosition] : [],
+    );
+    _previewSelectedGeometries.clear();
+  }
+
+  /// Handle pointer up, finalizing either click or drag selection behavior.
+  void onPointerUp({bool shiftPressed = false}) {
+    if (_toolAction != null) {
+      onCursorClick();
+      return;
+    }
+
+    if (_selectionDragSession case final session?) {
+      final canFinalizeLasso =
+          session.mode != _SelectionDragMode.lassoCrossing ||
+          session.lassoSamples.length >= lassoMinSamples;
+
+      if (_hasDragStarted(session) && canFinalizeLasso) {
+        final matches = _matchingGeometriesForSelection(session);
+        _applySelectionMatches(
+          matches,
+          additive: session.additive || shiftPressed,
+        );
+        _hoveringGeometry = null;
+        _clearSelectionDragPreview();
+        _updateSelectedGeometries();
+        return;
+      }
+
+      _clearSelectionDragPreview();
+      onCursorClick();
+      return;
+    }
+
+    onCursorClick();
+  }
+
+  /// Cancel active pointer interactions without changing persisted selection.
+  void onPointerCancel() {
+    if (_toolAction == null) {
+      _clearSelectionDragPreview();
+    }
   }
 
   /// Handle click action.
@@ -210,7 +305,15 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
       }
     } else {
       applyDefaultCursorMovement();
-      _hoveringGeometry = _geometryBellowCursor();
+      if (_selectionDragSession case final selectionSession?) {
+        _updateDragSelectionPreview(
+          selectionSession,
+          cursorPosition: newCursorPosition,
+        );
+        _hoveringGeometry = null;
+      } else {
+        _hoveringGeometry = _geometryBellowCursor();
+      }
       _updateSelectedGeometries();
     }
 
@@ -292,6 +395,131 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
     }
   }
 
+  void _updateDragSelectionPreview(
+    _SelectionDragSession session, {
+    required Offset cursorPosition,
+  }) {
+    session.current = cursorPosition;
+
+    if (session.mode == _SelectionDragMode.lassoCrossing) {
+      if (session.lassoSamples.isEmpty ||
+          (cursorPosition - session.lassoSamples.last).distance > 0) {
+        session.lassoSamples.add(cursorPosition);
+      }
+    }
+
+    if (!_hasDragStarted(session)) {
+      clearToolGeometries();
+      _previewSelectedGeometries.clear();
+      return;
+    }
+
+    final previewGeometries = _selectionPreviewGeometries(session);
+    value = value.copyWith(toolGeometries: previewGeometries);
+    _previewSelectedGeometries
+      ..clear()
+      ..addAll(_matchingGeometriesForSelection(session));
+  }
+
+  bool _hasDragStarted(_SelectionDragSession session) {
+    return (session.current - session.start).distance >= selectionDragStartDistance;
+  }
+
+  List<Geometry> _matchingGeometriesForSelection(_SelectionDragSession session) {
+    if (session.mode == _SelectionDragMode.lassoCrossing) {
+      return _matchingGeometriesForLasso(session.lassoSamples);
+    }
+
+    final selectionRect = Rect.fromPoints(session.start, session.current);
+    final mode = _resolvedRectSelectionMode(session);
+    return _matchingGeometriesForRect(selectionRect, mode: mode);
+  }
+
+  List<Geometry> _matchingGeometriesForRect(
+    Rect selectionRect, {
+    required _SelectionDragMode mode,
+  }) {
+    return [
+      for (final geometry in value.geometries)
+        if (switch (mode) {
+          _SelectionDragMode.window => geometry.matchesWindowSelection(
+            selectionRect,
+          ),
+          _SelectionDragMode.crossing => geometry.matchesCrossingSelection(
+            selectionRect,
+          ),
+          _SelectionDragMode.lassoCrossing => false,
+        })
+          geometry,
+    ];
+  }
+
+  List<Geometry> _matchingGeometriesForLasso(List<Offset> lassoSamples) {
+    final lassoPath = buildClosedQuadraticLassoPolyline(lassoSamples);
+    if (lassoPath.length < lassoMinSamples) {
+      return const [];
+    }
+
+    return [
+      for (final geometry in value.geometries)
+        if (geometry.matchesLassoCrossingSelection(lassoPath)) geometry,
+    ];
+  }
+
+  List<Geometry> _selectionPreviewGeometries(_SelectionDragSession session) {
+    if (session.mode == _SelectionDragMode.lassoCrossing) {
+      return [
+        LassoPreview(
+          points: session.lassoSamples,
+          color: .accentActive,
+        ),
+      ];
+    }
+
+    final selectionRect = Rect.fromPoints(session.start, session.current);
+    final topLeft = selectionRect.topLeft;
+    final topRight = selectionRect.topRight;
+    final bottomRight = selectionRect.bottomRight;
+    final bottomLeft = selectionRect.bottomLeft;
+
+    return [
+      Line(start: topLeft, end: topRight, color: .accentActive),
+      Line(start: topRight, end: bottomRight, color: .accentActive),
+      Line(start: bottomRight, end: bottomLeft, color: .accentActive),
+      Line(start: bottomLeft, end: topLeft, color: .accentActive),
+    ];
+  }
+
+  _SelectionDragMode _resolvedRectSelectionMode(_SelectionDragSession session) {
+    return session.current.dx >= session.start.dx
+        ? _SelectionDragMode.window
+        : _SelectionDragMode.crossing;
+  }
+
+  void _applySelectionMatches(
+    List<Geometry> matches, {
+    required bool additive,
+  }) {
+    if (!additive) {
+      _selectedGeometries
+        ..clear()
+        ..addAll(matches);
+      return;
+    }
+
+    for (final geometry in matches) {
+      if (!_selectedGeometries.contains(geometry)) {
+        _selectedGeometries.add(geometry);
+      }
+    }
+  }
+
+  void _clearSelectionDragPreview() {
+    _selectionDragSession = null;
+    _previewSelectedGeometries.clear();
+    clearToolGeometries();
+  }
+
   void _addLastSnap(Offset offset) {
     if (!_lastSnaps.contains(offset)) {
       if (_lastSnaps.length == 3) {
@@ -305,7 +533,12 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
   void _updateSelectedGeometries() {
     value = value.copyWith(
       selectionGeometries: [
-        if (_hoveringGeometry case final hovering?)
+        for (final geometry in _previewSelectedGeometries)
+          if (!_selectedGeometries.contains(geometry))
+            geometry.copyWith(strokeWidth: 5, color: .accentMuted),
+        if (_hoveringGeometry case final hovering?
+            when !_previewSelectedGeometries.contains(hovering) &&
+                !_selectedGeometries.contains(hovering))
           hovering.copyWith(strokeWidth: 5, color: .accentMuted),
         for (final geometry in _selectedGeometries)
           geometry.copyWith(strokeWidth: 5, color: .primaryActive),
@@ -324,6 +557,7 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
 
   void _clearSelectedGeometries() {
     _selectedGeometries.clear();
+    _previewSelectedGeometries.clear();
     _hoveringGeometry = null;
     _updateSelectedGeometries();
   }
