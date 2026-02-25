@@ -7,10 +7,14 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('Point selection matching', () {
-    const point = Point(position: Offset(5, 5), color: .primary, shape: .square);
+    const point = Point(
+      position: Offset(5, 5),
+      color: .primary,
+      shape: .square,
+    );
     const rect = Rect.fromLTRB(0, 0, 10, 10);
     const lasso = [
-      Offset(0, 0),
+      Offset.zero,
       Offset(10, 0),
       Offset(10, 10),
       Offset(0, 10),
@@ -52,7 +56,7 @@ void main() {
 
     test('lasso crossing matches when line intersects polygon edge', () {
       const lasso = [
-        Offset(0, 0),
+        Offset.zero,
         Offset(10, 0),
         Offset(10, 10),
         Offset(0, 10),
@@ -79,7 +83,7 @@ void main() {
 
     test('lasso crossing matches when circle intersects lasso boundary', () {
       const lasso = [
-        Offset(0, 0),
+        Offset.zero,
         Offset(8, 0),
         Offset(8, 20),
         Offset(0, 20),

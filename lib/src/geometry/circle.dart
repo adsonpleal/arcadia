@@ -88,11 +88,15 @@ class Circle extends Geometry {
   @override
   bool matchesLassoCrossingSelection(List<Offset> closedLassoPath) {
     final points = _samplePerimeterPoints();
-    if (points.every((point) => isPointInsideClosedPolygon(point, closedLassoPath))) {
+    if (points.every(
+      (point) => isPointInsideClosedPolygon(point, closedLassoPath),
+    )) {
       return true;
     }
 
-    if (points.any((point) => isPointInsideClosedPolygon(point, closedLassoPath))) {
+    if (points.any(
+      (point) => isPointInsideClosedPolygon(point, closedLassoPath),
+    )) {
       return true;
     }
 

@@ -37,6 +37,12 @@ bool isPointInsideClosedPolygon(Offset point, List<Offset> polygon) {
     return false;
   }
 
+  for (final (a, b) in closedEdges(polygon)) {
+    if (_isCollinear(a, b, point) && _onSegment(a, point, b)) {
+      return true;
+    }
+  }
+
   var inside = false;
   for (var i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
     final first = polygon[i];
@@ -48,7 +54,9 @@ bool isPointInsideClosedPolygon(Offset point, List<Offset> polygon) {
     }
 
     final xCross =
-        (second.dx - first.dx) * (point.dy - first.dy) / (second.dy - first.dy) +
+        (second.dx - first.dx) *
+            (point.dy - first.dy) /
+            (second.dy - first.dy) +
         first.dx;
 
     if (point.dx < xCross) {
@@ -87,7 +95,8 @@ bool segmentsIntersect(
   final o4 = _orientation(bStart, bEnd, aEnd);
 
   final properIntersection =
-      ((o1 > _epsilon && o2 < -_epsilon) || (o1 < -_epsilon && o2 > _epsilon)) &&
+      ((o1 > _epsilon && o2 < -_epsilon) ||
+          (o1 < -_epsilon && o2 > _epsilon)) &&
       ((o3 > _epsilon && o4 < -_epsilon) || (o3 < -_epsilon && o4 > _epsilon));
 
   if (properIntersection) {

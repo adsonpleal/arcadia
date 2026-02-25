@@ -167,7 +167,9 @@ class Arc extends Geometry {
   @override
   bool matchesLassoCrossingSelection(List<Offset> closedLassoPath) {
     final points = _sampleArcPoints();
-    if (points.any((point) => isPointInsideClosedPolygon(point, closedLassoPath))) {
+    if (points.any(
+      (point) => isPointInsideClosedPolygon(point, closedLassoPath),
+    )) {
       return true;
     }
 

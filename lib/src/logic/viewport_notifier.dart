@@ -7,8 +7,8 @@ import '../geometry/geometry.dart';
 import '../geometry/lasso_preview.dart';
 import '../geometry/line.dart';
 import '../geometry/point.dart';
-import 'lasso_path_builder.dart';
 import '../tools/tool.dart';
+import 'lasso_path_builder.dart';
 
 const _origin = Point(position: .zero, color: .accent, shape: .triangle);
 const _minZoom = 0.01;
@@ -422,10 +422,13 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
   }
 
   bool _hasDragStarted(_SelectionDragSession session) {
-    return (session.current - session.start).distance >= selectionDragStartDistance;
+    return (session.current - session.start).distance >=
+        selectionDragStartDistance;
   }
 
-  List<Geometry> _matchingGeometriesForSelection(_SelectionDragSession session) {
+  List<Geometry> _matchingGeometriesForSelection(
+    _SelectionDragSession session,
+  ) {
     if (session.mode == _SelectionDragMode.lassoCrossing) {
       return _matchingGeometriesForLasso(session.lassoSamples);
     }

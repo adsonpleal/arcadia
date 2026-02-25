@@ -14,7 +14,11 @@ import 'package:flutter/widgets.dart' hide Viewport;
 import 'package:flutter_test/flutter_test.dart';
 
 const _line = Line(start: .zero, end: Offset(10, 0), color: .primary);
-const _insideLine = Line(start: Offset(1, 1), end: Offset(3, 3), color: .primary);
+const _insideLine = Line(
+  start: Offset(1, 1),
+  end: Offset(3, 3),
+  color: .primary,
+);
 const _crossingLine = Line(
   start: Offset(1, 1),
   end: Offset(20, 1),
@@ -114,7 +118,9 @@ void main() {
       await mouse.removePointer();
     });
 
-    testWidgets('right-to-left drag applies crossing selection', (tester) async {
+    testWidgets('right-to-left drag applies crossing selection', (
+      tester,
+    ) async {
       final notifier = await _pumpViewport(tester);
       final center = tester.getCenter(find.byType(Viewport));
       notifier.addGeometries(const [_insideLine, _crossingLine]);

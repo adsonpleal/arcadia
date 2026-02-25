@@ -2,8 +2,8 @@
 
 import 'package:arcadia/src/constants/arcadia_color.dart';
 import 'package:arcadia/src/constants/config.dart';
-import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/geometry/lasso_preview.dart';
+import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/geometry/point.dart';
 import 'package:arcadia/src/logic/viewport_notifier.dart';
 import 'package:arcadia/src/tools/line_tool.dart';
@@ -230,33 +230,40 @@ void main() {
       expect(notifier.value.selectionGeometries, hasLength(2));
     });
 
-    test('alt+drag lasso previews and highlights intersections while drawing', () {
-      const target = Line(
-        start: Offset(2, 2),
-        end: Offset(8, 2),
-        color: .primary,
-      );
-      final notifier = ViewportNotifier()..addGeometries(const [target]);
+    test(
+      'alt+drag lasso previews and highlights intersections while drawing',
+      () {
+        const target = Line(
+          start: Offset(2, 2),
+          end: Offset(8, 2),
+          color: .primary,
+        );
+        final notifier = ViewportNotifier()..addGeometries(const [target]);
 
-      _pointerDown(notifier, const Offset(0, 0), altPressed: true);
-      _moveCursor(notifier, const Offset(10, 0));
-      _moveCursor(notifier, const Offset(10, 10));
-      _moveCursor(notifier, const Offset(0, 10));
+        _pointerDown(notifier, .zero, altPressed: true);
+        _moveCursor(notifier, const Offset(10, 0));
+        _moveCursor(notifier, const Offset(10, 10));
+        _moveCursor(notifier, const Offset(0, 10));
 
-      expect(notifier.value.toolGeometries.single, isA<LassoPreview>());
-      expect(notifier.value.selectionGeometries, hasLength(1));
-      final preview = notifier.value.selectionGeometries.single as Line;
-      expect(preview.color, ArcadiaColor.accentMuted);
+        expect(notifier.value.toolGeometries.single, isA<LassoPreview>());
+        expect(notifier.value.selectionGeometries, hasLength(1));
+        final preview = notifier.value.selectionGeometries.single as Line;
+        expect(preview.color, ArcadiaColor.accentMuted);
 
-      notifier.onPointerUp();
+        notifier.onPointerUp();
 
-      expect(notifier.value.selectionGeometries, hasLength(1));
-      final selected = notifier.value.selectionGeometries.single as Line;
-      expect(selected.color, ArcadiaColor.primaryActive);
-    });
+        expect(notifier.value.selectionGeometries, hasLength(1));
+        final selected = notifier.value.selectionGeometries.single as Line;
+        expect(selected.color, ArcadiaColor.primaryActive);
+      },
+    );
 
     test('shift drag adds matches to existing selection', () {
-      const first = Line(start: Offset(1, 1), end: Offset(3, 1), color: .primary);
+      const first = Line(
+        start: Offset(1, 1),
+        end: Offset(3, 1),
+        color: .primary,
+      );
       const second = Line(
         start: Offset(20, 1),
         end: Offset(22, 1),
