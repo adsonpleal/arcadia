@@ -2,6 +2,7 @@
 
 import 'package:arcadia/src/constants/arcadia_color.dart';
 import 'package:arcadia/src/constants/config.dart';
+import 'package:arcadia/src/data/metric_unit.dart';
 import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/geometry/point.dart';
 import 'package:arcadia/src/logic/viewport_notifier.dart';
@@ -21,6 +22,14 @@ void main() {
       final notifier = ViewportNotifier();
 
       expect(notifier.value.selectedTool, const SelectionTool());
+    });
+
+    test('setSelectedUnit updates viewport state', () {
+      final notifier = ViewportNotifier();
+
+      notifier.setSelectedUnit(MetricUnit.cm);
+
+      expect(notifier.value.selectedUnit, MetricUnit.cm);
     });
 
     test('selectTool clears tool geometries', () {
@@ -368,6 +377,93 @@ void main() {
       },
     );
 
+    test('onUserInput uses selected unit for unitless value', () {
+      final action = _InputSpyToolAction();
+      final notifier = ViewportNotifier()
+        ..selectTool(_SpyTool(action))
+        ..setSelectedUnit(MetricUnit.cm);
+
+      notifier.onUserInput('3');
+      notifier.onUserInput('0');
+
+      expect(action.lastTypedValue, 300);
+    });
+
+    test('onUserInput trailing dot keeps numeric preview value', () {
+      final action = _InputSpyToolAction();
+      final notifier = ViewportNotifier()
+        ..selectTool(_SpyTool(action))
+        ..setSelectedUnit(MetricUnit.mm);
+
+      notifier.onUserInput('1');
+      notifier.onUserInput('0');
+      notifier.onUserInput('.');
+
+      expect(notifier.value.userInput, '10.');
+      expect(action.lastTypedValue, 10);
+    });
+
+    test('onUserInput rejects dot and space at start', () {
+      final notifier = ViewportNotifier()..selectTool(const LineTool());
+
+      notifier.onUserInput('.');
+      notifier.onUserInput(' ');
+
+      expect(notifier.value.userInput, isEmpty);
+    });
+
+    test('onUserInput ignores unit suffix characters when input is empty', () {
+      final notifier = ViewportNotifier()..selectTool(const LineTool());
+
+      notifier.onUserInput('m');
+      notifier.onUserInput('C');
+      notifier.onUserInput(' ');
+
+      expect(notifier.value.userInput, isEmpty);
+    });
+
+    test('onUserInput after c only accepts m', () {
+      final notifier = ViewportNotifier()..selectTool(const LineTool());
+
+      notifier.onUserInput('2');
+      notifier.onUserInput('2');
+      notifier.onUserInput('c');
+      notifier.onUserInput('1');
+      notifier.onUserInput('.');
+
+      expect(notifier.value.userInput, '22c');
+    });
+
+    test('onUserInput after trailing dot only accepts digits', () {
+      final notifier = ViewportNotifier()..selectTool(const LineTool());
+
+      notifier.onUserInput('2');
+      notifier.onUserInput('2');
+      notifier.onUserInput('.');
+      notifier.onUserInput('c');
+      notifier.onUserInput(' ');
+      notifier.onUserInput('m');
+      notifier.onUserInput('3');
+
+      expect(notifier.value.userInput, '22.3');
+    });
+
+    test('onUserInput explicit suffix overrides selected unit', () {
+      final action = _InputSpyToolAction();
+      final notifier = ViewportNotifier()
+        ..selectTool(_SpyTool(action))
+        ..setSelectedUnit(MetricUnit.mm);
+
+      notifier.onUserInput('3');
+      notifier.onUserInput('0');
+      notifier.onUserInput(' ');
+      notifier.onUserInput('C');
+      notifier.onUserInput('M');
+
+      expect(notifier.value.selectedUnit, MetricUnit.mm);
+      expect(action.lastTypedValue, 300);
+    });
+
     test(
       'onUserInput deleteCharacter deletes selected selection',
       () {
@@ -526,6 +622,15 @@ class _DeleteSpyToolAction extends ToolAction {
   @override
   void onDelete() {
     deleteCalls++;
+  }
+}
+
+class _InputSpyToolAction extends _SpyToolAction {
+  double? lastTypedValue;
+
+  @override
+  void onValueTyped(double? value) {
+    lastTypedValue = value;
   }
 }
 

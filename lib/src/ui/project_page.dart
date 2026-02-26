@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' hide Viewport;
 
 import '../constants/config.dart';
 import '../providers/viewport_notifier_provider.dart';
+import '../tools/circle_tool.dart';
 import '../tools/selection_tool.dart';
 import '../tools/tool.dart';
 import '../tools/tools.dart';
@@ -19,13 +20,13 @@ class ProjectPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isMacOS = Theme.of(context).platform == .macOS;
-    final numbersInput = [for (var i = 0; i <= 9; i++) '$i', '.'];
+    final valueInput = [for (var i = 0; i <= 9; i++) '$i', '.', 'm', 'M', ' '];
 
     return Shortcuts(
       shortcuts: {
         for (final tool in tools) tool.shortcut: _ToolIntent(tool),
         const SingleActivator(.escape): const _CancelIntent(),
-        for (final input in numbersInput)
+        for (final input in valueInput)
           CharacterActivator(input): _ValueInputIntent(input),
         const SingleActivator(.backspace): const _ValueInputIntent(
           deleteCharacter,
@@ -42,6 +43,15 @@ class ProjectPage extends StatelessWidget {
               final notifier = context.viewportNotifier;
               final selectedTool = notifier.value.selectedTool;
               final tool = intent.tool;
+              final isCircleShortcutInputConflict =
+                  tool is CircleTool &&
+                  notifier.acceptsValueInput &&
+                  notifier.value.userInput != '';
+
+              if (isCircleShortcutInputConflict) {
+                notifier.onUserInput('c');
+                return null;
+              }
 
               if (tool == selectedTool) {
                 notifier.selectTool(const SelectionTool());

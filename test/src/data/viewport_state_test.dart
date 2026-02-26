@@ -1,3 +1,4 @@
+import 'package:arcadia/src/data/metric_unit.dart';
 import 'package:arcadia/src/data/viewport_state.dart';
 import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/tools/line_tool.dart';
@@ -22,6 +23,7 @@ void main() {
       expect(state.panOffset, _zeroOffset);
       expect(state.cursorPosition, _zeroOffset);
       expect(state.selectedTool, const SelectionTool());
+      expect(state.selectedUnit, MetricUnit.mm);
       expect(state.userInput, isEmpty);
     });
 
@@ -44,6 +46,7 @@ void main() {
         zoom: 2.5,
         panOffset: const Offset(20, 30),
         selectedTool: const SelectionTool(),
+        selectedUnit: MetricUnit.cm,
         userInput: '200',
       );
 
@@ -54,6 +57,7 @@ void main() {
       expect(updated.panOffset, const Offset(20, 30));
       expect(updated.cursorPosition, const Offset(30, 40));
       expect(updated.selectedTool, const SelectionTool());
+      expect(updated.selectedUnit, MetricUnit.cm);
       expect(updated.userInput, '200');
     });
 
@@ -66,6 +70,7 @@ void main() {
         panOffset: Offset(1, 2),
         cursorPosition: Offset(3, 4),
         selectedTool: LineTool(),
+        selectedUnit: MetricUnit.m,
         userInput: '42',
       );
 
@@ -124,6 +129,7 @@ void main() {
         panOffset: const Offset(1, 2),
         cursorPosition: const Offset(3, 4),
         selectedTool: const LineTool(),
+        selectedUnit: MetricUnit.cm,
         userInput: '10',
       );
 
@@ -135,6 +141,7 @@ void main() {
         state.panOffset,
         state.cursorPosition,
         state.selectedTool,
+        state.selectedUnit,
         state.userInput,
       ]);
 
@@ -155,6 +162,7 @@ void main() {
         base,
         isNot(equals(base.copyWith(cursorPosition: const Offset(4, 4)))),
       );
+      expect(base, isNot(equals(base.copyWith(selectedUnit: MetricUnit.cm))));
       expect(base, isNot(equals(base.copyWith(userInput: '2'))));
     });
 

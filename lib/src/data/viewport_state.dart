@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import '../geometry/geometry.dart';
 import '../tools/selection_tool.dart';
 import '../tools/tool.dart';
+import 'metric_unit.dart';
 
 /// The state of the viewport.
 ///
@@ -21,6 +22,7 @@ class ViewportState {
     this.panOffset = .zero,
     this.cursorPosition = .zero,
     this.selectedTool = const SelectionTool(),
+    this.selectedUnit = MetricUnit.mm,
     this.userInput = '',
   });
 
@@ -53,6 +55,9 @@ class ViewportState {
   /// The selected tool.
   final Tool selectedTool;
 
+  /// The selected project unit used for value input interpretation.
+  final MetricUnit selectedUnit;
+
   /// Whether or not show value picker;
   final String userInput;
 
@@ -68,6 +73,7 @@ class ViewportState {
     Offset? panOffset,
     Offset? cursorPosition,
     Tool? selectedTool,
+    MetricUnit? selectedUnit,
     String? userInput,
   }) {
     return ViewportState(
@@ -78,6 +84,7 @@ class ViewportState {
       panOffset: panOffset ?? this.panOffset,
       cursorPosition: cursorPosition ?? this.cursorPosition,
       selectedTool: selectedTool ?? this.selectedTool,
+      selectedUnit: selectedUnit ?? this.selectedUnit,
       userInput: userInput ?? this.userInput,
     );
   }
@@ -93,6 +100,7 @@ class ViewportState {
             panOffset == other.panOffset &&
             cursorPosition == other.cursorPosition &&
             selectedTool == other.selectedTool &&
+            selectedUnit == other.selectedUnit &&
             userInput == other.userInput;
   }
 
@@ -106,6 +114,7 @@ class ViewportState {
       panOffset,
       cursorPosition,
       selectedTool,
+      selectedUnit,
       userInput,
     ]);
   }

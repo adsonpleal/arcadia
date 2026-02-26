@@ -1,3 +1,4 @@
+import 'package:arcadia/src/data/metric_unit.dart';
 import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/providers/viewport_notifier_provider.dart';
 import 'package:arcadia/src/tools/line_tool.dart';
@@ -74,6 +75,28 @@ void main() {
         expect(rebuiltWidgets, isEmpty);
       },
     );
+
+    testWidgets('renders project units control separate from tools', (
+      tester,
+    ) async {
+      await _pumpToolbar(tester);
+
+      expect(find.text('mm'), findsOneWidget);
+      expect(find.text('cm'), findsOneWidget);
+      expect(find.text('m'), findsOneWidget);
+    });
+
+    testWidgets('tapping unit updates selected unit in notifier', (
+      tester,
+    ) async {
+      await _pumpToolbar(tester);
+      final notifier = tester.element(find.byType(Toolbar)).viewportNotifier;
+
+      await tester.tap(find.text('cm'));
+      await tester.pump();
+
+      expect(notifier.value.selectedUnit, MetricUnit.cm);
+    });
   });
 }
 
