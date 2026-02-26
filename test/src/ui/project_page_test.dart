@@ -1,6 +1,7 @@
 import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/logic/viewport_notifier.dart';
 import 'package:arcadia/src/providers/viewport_notifier_provider.dart';
+import 'package:arcadia/src/tools/circle_tool.dart';
 import 'package:arcadia/src/tools/line_tool.dart';
 import 'package:arcadia/src/tools/selection_tool.dart';
 import 'package:arcadia/src/ui/project_page.dart';
@@ -42,6 +43,32 @@ void main() {
       await tester.pump();
 
       expect(notifier.value.userInput, '1.');
+    });
+
+    testWidgets('C still selects Circle when value input is empty', (
+      tester,
+    ) async {
+      final notifier = await _pumpProjectPage(tester);
+
+      await tester.sendKeyEvent(.keyC);
+      await tester.pump();
+
+      expect(notifier.value.selectedTool, const CircleTool());
+    });
+
+    testWidgets('C/M append but trailing space is rejected after complete unit', (
+      tester,
+    ) async {
+      final notifier = await _pumpProjectPage(tester);
+
+      await tester.sendKeyEvent(.keyL);
+      await tester.sendKeyEvent(.digit1);
+      await tester.sendKeyEvent(.keyC);
+      await tester.sendKeyEvent(.keyM);
+      await tester.sendKeyEvent(.space);
+      await tester.pump();
+
+      expect(notifier.value.userInput, '1cm');
     });
 
     testWidgets('undo and redo shortcuts trigger notifier history actions', (

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../constants/config.dart';
+import '../data/metric_unit.dart';
 import '../data/viewport_state.dart';
 import '../foundation/extensions/iterable_extensions.dart';
+import '../foundation/units/metric_value_input.dart';
 import '../geometry/geometry.dart';
 import '../geometry/line.dart';
 import '../geometry/point.dart';
@@ -12,6 +14,20 @@ import '../tools/tool.dart';
 const _origin = Point(position: .zero, color: .accent, shape: .triangle);
 const _minZoom = 0.01;
 const _maxZoom = 10.0;
+final _valueAllowedCharacterInput = RegExp(
+  r'^[0-9.cm ]$',
+  caseSensitive: false,
+);
+final _valueInputPattern = [
+  RegExp(r'^[0-9]+$'),
+  RegExp(r'^[0-9]+\.$'),
+  RegExp(r'^[0-9]+\.[0-9]+$'),
+  RegExp(r'^[0-9]+(?:\.[0-9]+)? $'),
+  RegExp(r'^[0-9]+(?:\.[0-9]+)? ?[cC]$'),
+  RegExp(r'^[0-9]+(?:\.[0-9]+)? ?[mM]$'),
+  RegExp(r'^[0-9]+(?:\.[0-9]+)? ?[cC][mM]$'),
+  RegExp(r'^[0-9]+(?:\.[0-9]+)? ?[mM]{2}$'),
+];
 
 /// A [ValueNotifier] that holds the [ViewportState].
 ///
@@ -41,6 +57,16 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
     _lastSnaps.clear();
     _toolAction = tool.toolActionFactory()..bind(this);
     value = value.copyWith(selectedTool: tool, userInput: '');
+  }
+
+  /// Whether the currently selected tool action accepts typed value input.
+  bool get acceptsValueInput {
+    return _toolAction.acceptValueInput;
+  }
+
+  /// Sets the selected project unit used for value input interpretation.
+  void setSelectedUnit(MetricUnit unit) {
+    value = value.copyWith(selectedUnit: unit);
   }
 
   /// Cancel the selected tool action and deselect the current tool.
@@ -236,15 +262,17 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
         if (userInput != '') {
           userInput = userInput.substring(0, userInput.length - 1);
         }
-      } else if (input == '.') {
-        if (!userInput.contains('.')) {
-          userInput = '$userInput.';
-        }
-      } else {
+      } else if (_isAllowedValueInput(input, userInput)) {
         userInput = '$userInput$input';
+      } else {
+        return;
       }
 
-      _toolAction.onValueTyped(double.tryParse(userInput));
+      final parsedValue = parseMetricValueInput(
+        userInput,
+        fallbackUnit: value.selectedUnit,
+      );
+      _toolAction.onValueTyped(parsedValue?.millimeters);
       value = value.copyWith(userInput: userInput);
     } else {
       if (input == deleteCharacter) {
@@ -287,5 +315,25 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
         _lastSnaps.add(offset);
       }
     }
+  }
+
+  bool _isAllowedValueInput(String input, String currentValue) {
+    if (input.length != 1) {
+      return false;
+    }
+
+    if (!_valueAllowedCharacterInput.hasMatch(input)) {
+      return false;
+    }
+
+    final candidateValue = '$currentValue$input';
+
+    for (final pattern in _valueInputPattern) {
+      if (pattern.hasMatch(candidateValue)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }
