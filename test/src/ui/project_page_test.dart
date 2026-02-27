@@ -3,6 +3,7 @@ import 'package:arcadia/src/logic/viewport_notifier.dart';
 import 'package:arcadia/src/providers/viewport_notifier_provider.dart';
 import 'package:arcadia/src/tools/circle_tool.dart';
 import 'package:arcadia/src/tools/line_tool.dart';
+import 'package:arcadia/src/tools/measure_tool.dart';
 import 'package:arcadia/src/tools/selection_tool.dart';
 import 'package:arcadia/src/ui/project_page.dart';
 import 'package:flutter/material.dart';
@@ -56,6 +57,15 @@ void main() {
       expect(notifier.value.selectedTool, const CircleTool());
     });
 
+    testWidgets('M selects Measure when value input is empty', (tester) async {
+      final notifier = await _pumpProjectPage(tester);
+
+      await tester.sendKeyEvent(.keyM);
+      await tester.pump();
+
+      expect(notifier.value.selectedTool, const MeasureTool());
+    });
+
     testWidgets('C/M append but trailing space is rejected after complete unit', (
       tester,
     ) async {
@@ -69,6 +79,20 @@ void main() {
       await tester.pump();
 
       expect(notifier.value.userInput, '1cm');
+    });
+
+    testWidgets('M appends to active value input instead of selecting Measure', (
+      tester,
+    ) async {
+      final notifier = await _pumpProjectPage(tester);
+
+      await tester.sendKeyEvent(.keyL);
+      await tester.sendKeyEvent(.digit1);
+      await tester.sendKeyEvent(.keyM);
+      await tester.pump();
+
+      expect(notifier.value.selectedTool, const LineTool());
+      expect(notifier.value.userInput, '1m');
     });
 
     testWidgets('undo and redo shortcuts trigger notifier history actions', (
