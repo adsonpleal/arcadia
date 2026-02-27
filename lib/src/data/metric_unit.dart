@@ -18,6 +18,11 @@ enum MetricUnit {
   /// Multiplicative factor from this unit into base millimeters.
   final double millimetersFactor;
 
+  /// Multiplicative factor from this unit into base square millimeters.
+  double get squareMillimetersFactor {
+    return millimetersFactor * millimetersFactor;
+  }
+
   /// Converts [value] from this unit into millimeters.
   double toMillimeters(double value) {
     return value * millimetersFactor;
@@ -26,6 +31,11 @@ enum MetricUnit {
   /// Converts [value] from millimeters into this unit.
   double fromMillimeters(double value) {
     return value / millimetersFactor;
+  }
+
+  /// Converts [value] from square millimeters into this unit squared.
+  double fromSquareMillimeters(double value) {
+    return value / squareMillimetersFactor;
   }
 
   /// Resolves a typed unit suffix into a [MetricUnit].
