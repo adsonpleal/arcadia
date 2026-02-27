@@ -258,6 +258,51 @@ void main() {
       expect(_selectedLines(notifier), hasLength(2));
     });
 
+    test('single selection publishes geometry properties label', () {
+      final notifier = ViewportNotifier()..addGeometries(const [_lineA]);
+
+      _moveCursor(notifier, const Offset(5, 0));
+      notifier.onCursorClickUp();
+
+      expect(notifier.value.selectionPropertiesLabel, 'Length: 10.0 mm');
+    });
+
+    test('multi selection clears geometry properties label', () {
+      final notifier = ViewportNotifier()
+        ..addGeometries(const [_lineA, _lineB]);
+
+      _moveCursor(notifier, const Offset(5, 0));
+      notifier.onCursorClickUp();
+      expect(notifier.value.selectionPropertiesLabel, 'Length: 10.0 mm');
+
+      _moveCursor(notifier, const Offset(25, 0));
+      notifier.onCursorClickUp();
+
+      expect(notifier.value.selectionPropertiesLabel, isNull);
+    });
+
+    test('delete clears geometry properties label', () {
+      final notifier = ViewportNotifier()..addGeometries(const [_lineA]);
+
+      _moveCursor(notifier, const Offset(5, 0));
+      notifier.onCursorClickUp();
+      expect(notifier.value.selectionPropertiesLabel, 'Length: 10.0 mm');
+
+      notifier.onUserInput(deleteCharacter);
+
+      expect(notifier.value.selectionPropertiesLabel, isNull);
+    });
+
+    test('setSelectedUnit recomputes single selection properties label', () {
+      final notifier = ViewportNotifier()..addGeometries(const [_lineA]);
+
+      _moveCursor(notifier, const Offset(5, 0));
+      notifier.onCursorClickUp();
+      notifier.setSelectedUnit(MetricUnit.cm);
+
+      expect(notifier.value.selectionPropertiesLabel, 'Length: 1.0 cm');
+    });
+
     test('onCursorClickDown keeps the current selection', () {
       final notifier = ViewportNotifier()..addGeometries(const [_lineA]);
 
