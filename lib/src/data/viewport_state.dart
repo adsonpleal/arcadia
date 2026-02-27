@@ -7,6 +7,8 @@ import '../tools/selection_tool.dart';
 import '../tools/tool.dart';
 import 'metric_unit.dart';
 
+const _unsetLabel = Object();
+
 /// The state of the viewport.
 ///
 /// It contains all the [geometries] being displayed,
@@ -23,6 +25,8 @@ class ViewportState {
     this.cursorPosition = .zero,
     this.selectedTool = const SelectionTool(),
     this.selectedUnit = MetricUnit.mm,
+    this.selectionPropertiesLabel,
+    this.measureLabel,
     this.userInput = '',
   });
 
@@ -58,6 +62,12 @@ class ViewportState {
   /// The selected project unit used for value input interpretation.
   final MetricUnit selectedUnit;
 
+  /// Overlay text for the current single-selection properties.
+  final String? selectionPropertiesLabel;
+
+  /// Overlay text for the current measure tool output.
+  final String? measureLabel;
+
   /// Whether or not show value picker;
   final String userInput;
 
@@ -74,6 +84,8 @@ class ViewportState {
     Offset? cursorPosition,
     Tool? selectedTool,
     MetricUnit? selectedUnit,
+    Object? selectionPropertiesLabel = _unsetLabel,
+    Object? measureLabel = _unsetLabel,
     String? userInput,
   }) {
     return ViewportState(
@@ -85,6 +97,12 @@ class ViewportState {
       cursorPosition: cursorPosition ?? this.cursorPosition,
       selectedTool: selectedTool ?? this.selectedTool,
       selectedUnit: selectedUnit ?? this.selectedUnit,
+      selectionPropertiesLabel: selectionPropertiesLabel == _unsetLabel
+          ? this.selectionPropertiesLabel
+          : selectionPropertiesLabel as String?,
+      measureLabel: measureLabel == _unsetLabel
+          ? this.measureLabel
+          : measureLabel as String?,
       userInput: userInput ?? this.userInput,
     );
   }
@@ -101,6 +119,8 @@ class ViewportState {
             cursorPosition == other.cursorPosition &&
             selectedTool == other.selectedTool &&
             selectedUnit == other.selectedUnit &&
+            selectionPropertiesLabel == other.selectionPropertiesLabel &&
+            measureLabel == other.measureLabel &&
             userInput == other.userInput;
   }
 
@@ -115,6 +135,8 @@ class ViewportState {
       cursorPosition,
       selectedTool,
       selectedUnit,
+      selectionPropertiesLabel,
+      measureLabel,
       userInput,
     ]);
   }

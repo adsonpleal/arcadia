@@ -24,6 +24,8 @@ void main() {
       expect(state.cursorPosition, _zeroOffset);
       expect(state.selectedTool, const SelectionTool());
       expect(state.selectedUnit, MetricUnit.mm);
+      expect(state.selectionPropertiesLabel, isNull);
+      expect(state.measureLabel, isNull);
       expect(state.userInput, isEmpty);
     });
 
@@ -36,6 +38,8 @@ void main() {
         panOffset: Offset(10, 20),
         cursorPosition: Offset(30, 40),
         selectedTool: LineTool(),
+        selectionPropertiesLabel: 'Length: 10.0 mm',
+        measureLabel: 'Perimeter: 40.0 mm',
         userInput: '100',
       );
 
@@ -47,6 +51,8 @@ void main() {
         panOffset: const Offset(20, 30),
         selectedTool: const SelectionTool(),
         selectedUnit: MetricUnit.cm,
+        selectionPropertiesLabel: 'Length: 1.0 cm',
+        measureLabel: 'Perimeter: 4.0 cm',
         userInput: '200',
       );
 
@@ -58,6 +64,8 @@ void main() {
       expect(updated.cursorPosition, const Offset(30, 40));
       expect(updated.selectedTool, const SelectionTool());
       expect(updated.selectedUnit, MetricUnit.cm);
+      expect(updated.selectionPropertiesLabel, 'Length: 1.0 cm');
+      expect(updated.measureLabel, 'Perimeter: 4.0 cm');
       expect(updated.userInput, '200');
     });
 
@@ -71,6 +79,8 @@ void main() {
         cursorPosition: Offset(3, 4),
         selectedTool: LineTool(),
         selectedUnit: MetricUnit.m,
+        selectionPropertiesLabel: 'X: 1.0 m',
+        measureLabel: 'Length: 2.0 m',
         userInput: '42',
       );
 
@@ -130,6 +140,8 @@ void main() {
         cursorPosition: const Offset(3, 4),
         selectedTool: const LineTool(),
         selectedUnit: MetricUnit.cm,
+        selectionPropertiesLabel: 'Length: 1.0 cm',
+        measureLabel: 'Area: 2.0 cm²',
         userInput: '10',
       );
 
@@ -142,6 +154,8 @@ void main() {
         state.cursorPosition,
         state.selectedTool,
         state.selectedUnit,
+        state.selectionPropertiesLabel,
+        state.measureLabel,
         state.userInput,
       ]);
 
@@ -163,6 +177,16 @@ void main() {
         isNot(equals(base.copyWith(cursorPosition: const Offset(4, 4)))),
       );
       expect(base, isNot(equals(base.copyWith(selectedUnit: MetricUnit.cm))));
+      expect(
+        base,
+        isNot(
+          equals(base.copyWith(selectionPropertiesLabel: 'Length: 10.0 mm')),
+        ),
+      );
+      expect(
+        base,
+        isNot(equals(base.copyWith(measureLabel: 'Perimeter: 20.0 mm'))),
+      );
       expect(base, isNot(equals(base.copyWith(userInput: '2'))));
     });
 

@@ -63,6 +63,26 @@ abstract class ToolAction {
     _viewportNotifier.clearUserInput();
   }
 
+  /// Set the selection-properties overlay label.
+  void setSelectionPropertiesLabel(String? text) {
+    _viewportNotifier.setSelectionPropertiesLabel(text);
+  }
+
+  /// Clear the selection-properties overlay label.
+  void clearSelectionPropertiesLabel() {
+    _viewportNotifier.setSelectionPropertiesLabel(null);
+  }
+
+  /// Set the measure overlay label.
+  void setMeasureLabel(String? text) {
+    _viewportNotifier.setMeasureLabel(text);
+  }
+
+  /// Clear the measure overlay label.
+  void clearMeasureLabel() {
+    _viewportNotifier.setMeasureLabel(null);
+  }
+
   /// Add a snap point to the list.
   void addSnapPoint(Offset offset) {
     _viewportNotifier.addSnapPoint(offset);
@@ -95,6 +115,9 @@ abstract class ToolAction {
   /// If you want to use this you must override [acceptValueInput] setting
   /// it to true.
   void onValueTyped(double? value) {}
+
+  /// Triggered whenever the selected project unit changes.
+  void onSelectedUnitChange() {}
 
   /// Triggered when the user presses the delete key.
   ///

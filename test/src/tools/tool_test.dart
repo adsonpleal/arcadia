@@ -23,10 +23,16 @@ void main() {
         ..addToolGeometries(const [geometry])
         ..clearToolGeometries()
         ..clearUserInput()
-        ..addSnapPoint(const Offset(5, 5));
+        ..addSnapPoint(const Offset(5, 5))
+        ..setSelectionPropertiesLabel('Length: 10.0 mm')
+        ..setMeasureLabel('Perimeter: 10.0 mm')
+        ..clearSelectionPropertiesLabel()
+        ..clearMeasureLabel();
 
       expect(action.state.geometries, const [geometry]);
       expect(action.state.toolGeometries, isEmpty);
+      expect(action.state.selectionPropertiesLabel, isNull);
+      expect(action.state.measureLabel, isNull);
       expect(action.state.userInput, isEmpty);
     });
 
@@ -35,6 +41,12 @@ void main() {
 
       expect(() => action.onValueTyped(10), returnsNormally);
       expect(() => action.onValueTyped(null), returnsNormally);
+    });
+
+    test('default onSelectedUnitChange is a no-op', () {
+      final action = _NoopToolAction();
+
+      expect(() => action.onSelectedUnitChange(), returnsNormally);
     });
   });
 }

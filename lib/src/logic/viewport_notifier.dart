@@ -56,7 +56,12 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
     clearToolGeometries();
     _lastSnaps.clear();
     _toolAction = tool.toolActionFactory()..bind(this);
-    value = value.copyWith(selectedTool: tool, userInput: '');
+    value = value.copyWith(
+      selectedTool: tool,
+      selectionPropertiesLabel: null,
+      measureLabel: null,
+      userInput: '',
+    );
   }
 
   /// Whether the currently selected tool action accepts typed value input.
@@ -67,6 +72,17 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
   /// Sets the selected project unit used for value input interpretation.
   void setSelectedUnit(MetricUnit unit) {
     value = value.copyWith(selectedUnit: unit);
+    _toolAction.onSelectedUnitChange();
+  }
+
+  /// Sets the current selection-properties overlay label.
+  void setSelectionPropertiesLabel(String? text) {
+    value = value.copyWith(selectionPropertiesLabel: text);
+  }
+
+  /// Sets the current measure overlay label.
+  void setMeasureLabel(String? text) {
+    value = value.copyWith(measureLabel: text);
   }
 
   /// Cancel the selected tool action and deselect the current tool.

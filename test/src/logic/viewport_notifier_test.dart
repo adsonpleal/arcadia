@@ -32,6 +32,27 @@ void main() {
       expect(notifier.value.selectedUnit, MetricUnit.cm);
     });
 
+    test('setSelectedUnit notifies the active tool action', () {
+      final action = _SpyToolAction();
+      final notifier = ViewportNotifier()..selectTool(_SpyTool(action));
+
+      notifier.setSelectedUnit(MetricUnit.cm);
+
+      expect(action.selectedUnitChangeCalls, 1);
+    });
+
+    test('selectTool clears overlay labels', () {
+      final notifier = ViewportNotifier();
+      notifier
+        ..setSelectionPropertiesLabel('Length: 10.0 mm')
+        ..setMeasureLabel('Perimeter: 20.0 mm');
+
+      notifier.selectTool(const LineTool());
+
+      expect(notifier.value.selectionPropertiesLabel, isNull);
+      expect(notifier.value.measureLabel, isNull);
+    });
+
     test('selectTool clears tool geometries', () {
       final notifier = ViewportNotifier();
 
@@ -67,6 +88,9 @@ void main() {
 
     test('cancelToolAction resets selected tool, previews, and input', () {
       final notifier = ViewportNotifier()..selectTool(const LineTool());
+      notifier
+        ..setSelectionPropertiesLabel('Length: 10.0 mm')
+        ..setMeasureLabel('Perimeter: 20.0 mm');
 
       _moveCursor(notifier, .zero);
       notifier.onCursorClickUp();
@@ -80,6 +104,8 @@ void main() {
 
       expect(notifier.value.selectedTool, const SelectionTool());
       expect(notifier.value.toolGeometries, isEmpty);
+      expect(notifier.value.selectionPropertiesLabel, isNull);
+      expect(notifier.value.measureLabel, isNull);
       expect(notifier.value.userInput, isEmpty);
     });
 
@@ -590,6 +616,7 @@ class _SpyToolAction extends ToolAction {
   int clickDownCalls = 0;
   int clickUpCalls = 0;
   int cursorPositionChangeCalls = 0;
+  int selectedUnitChangeCalls = 0;
 
   @override
   bool get acceptValueInput => true;
@@ -607,6 +634,11 @@ class _SpyToolAction extends ToolAction {
   @override
   void onCursorPositionChange() {
     cursorPositionChangeCalls++;
+  }
+
+  @override
+  void onSelectedUnitChange() {
+    selectedUnitChangeCalls++;
   }
 }
 
