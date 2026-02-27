@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../constants/arcadia_color.dart';
+import '../constants/config.dart';
 import '../foundation/geometry/measurement_math.dart';
 import '../foundation/units/metric_value_format.dart';
 import '../geometry/line.dart';
@@ -26,9 +27,25 @@ class MeasureTool implements Tool {
 
 class _MeasureToolAction extends ToolAction {
   final List<Offset> _points = [];
+  var _isClosed = false;
 
   @override
   void onClickUp() {
+    if (_isClosed) {
+      _reset();
+      _points.add(state.cursorPosition);
+      _updatePreview();
+      _updateMeasureLabel();
+      return;
+    }
+
+    if (_isClosingClick(state.cursorPosition)) {
+      _isClosed = true;
+      _updatePreview();
+      _updateMeasureLabel();
+      return;
+    }
+
     _points.add(state.cursorPosition);
     _updatePreview();
     _updateMeasureLabel();
@@ -42,7 +59,26 @@ class _MeasureToolAction extends ToolAction {
 
   @override
   void onCancel() {
+    _reset();
+  }
+
+  @override
+  void onSelectedUnitChange() {
+    _updateMeasureLabel();
+  }
+
+  bool _isClosingClick(Offset point) {
+    if (_points.length < 3) {
+      return false;
+    }
+
+    final tolerance = selectionTolerance / state.zoom;
+    return (_points.first - point).distance <= tolerance;
+  }
+
+  void _reset() {
     _points.clear();
+    _isClosed = false;
     clearToolGeometries();
     clearMeasureLabel();
   }
@@ -50,6 +86,10 @@ class _MeasureToolAction extends ToolAction {
   List<Offset> get _previewPoints {
     if (_points.isEmpty) {
       return const [];
+    }
+
+    if (_isClosed) {
+      return [..._points, _points.first];
     }
 
     if (state.cursorPosition == _points.last) {
@@ -78,6 +118,14 @@ class _MeasureToolAction extends ToolAction {
   }
 
   void _updateMeasureLabel() {
+    if (_isClosed) {
+      setMeasureLabel(
+        'Perimeter: ${formatMetricLength(closedPolylinePerimeter(_points), state.selectedUnit)}\n'
+        'Area: ${formatMetricArea(polygonArea(_points), state.selectedUnit)}',
+      );
+      return;
+    }
+
     final previewPoints = _previewPoints;
     if (previewPoints.length < 2) {
       clearMeasureLabel();

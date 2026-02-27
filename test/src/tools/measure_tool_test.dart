@@ -2,6 +2,7 @@ import 'package:arcadia/src/constants/config.dart';
 import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/logic/viewport_notifier.dart';
 import 'package:arcadia/src/tools/measure_tool.dart';
+import 'package:arcadia/src/tools/selection_tool.dart';
 import 'package:arcadia/src/tools/tool.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -41,6 +42,75 @@ void main() {
       expect(chainedPreview.last.end, const Offset(20, 20));
       expect(notifier.value.measureLabel, 'Length: 20.0 mm');
       expect(notifier.value.geometries, isEmpty);
+    });
+
+    test('closes on first vertex and shows perimeter plus area', () {
+      final notifier = ViewportNotifier()..selectTool(const MeasureTool());
+
+      _moveCursor(notifier, .zero);
+      notifier.onCursorClickUp();
+      _moveCursor(notifier, const Offset(10, 0));
+      notifier.onCursorClickUp();
+      _moveCursor(notifier, const Offset(10, 10));
+      notifier.onCursorClickUp();
+      _moveCursor(notifier, .zero);
+      notifier.onCursorClickUp();
+
+      final closedPreview = notifier.value.toolGeometries.whereType<Line>().toList();
+      expect(closedPreview, hasLength(3));
+      expect(closedPreview.last.start, const Offset(10, 10));
+      expect(closedPreview.last.end, Offset.zero);
+      expect(
+        notifier.value.measureLabel,
+        'Perimeter: 34.1 mm\nArea: 50.0 mm²',
+      );
+      expect(notifier.value.geometries, isEmpty);
+    });
+
+    test('cancel clears closed preview and restarts cleanly', () {
+      final notifier = ViewportNotifier()..selectTool(const MeasureTool());
+
+      _moveCursor(notifier, .zero);
+      notifier.onCursorClickUp();
+      _moveCursor(notifier, const Offset(10, 0));
+      notifier.onCursorClickUp();
+      _moveCursor(notifier, const Offset(10, 10));
+      notifier.onCursorClickUp();
+      _moveCursor(notifier, .zero);
+      notifier.onCursorClickUp();
+
+      notifier.cancelToolAction();
+
+      expect(notifier.value.selectedTool, const SelectionTool());
+      expect(notifier.value.measureLabel, isNull);
+      expect(notifier.value.toolGeometries, isEmpty);
+
+      notifier.selectTool(const MeasureTool());
+      _moveCursor(notifier, const Offset(30, 30));
+      notifier.onCursorClickUp();
+
+      expect(notifier.value.measureLabel, isNull);
+      expect(notifier.value.toolGeometries, isEmpty);
+    });
+
+    test('click after closed measurement starts a fresh session', () {
+      final notifier = ViewportNotifier()..selectTool(const MeasureTool());
+
+      _moveCursor(notifier, .zero);
+      notifier.onCursorClickUp();
+      _moveCursor(notifier, const Offset(10, 0));
+      notifier.onCursorClickUp();
+      _moveCursor(notifier, const Offset(10, 10));
+      notifier.onCursorClickUp();
+      _moveCursor(notifier, .zero);
+      notifier.onCursorClickUp();
+
+      _moveCursor(notifier, const Offset(30, 30));
+      notifier.onCursorClickUp();
+
+      expect(notifier.value.measureLabel, isNull);
+      expect(notifier.value.toolGeometries, isEmpty);
+      expect(notifier.value.selectedTool, const MeasureTool());
     });
   });
 }
