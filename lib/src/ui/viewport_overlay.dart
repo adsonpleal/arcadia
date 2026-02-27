@@ -17,6 +17,8 @@ class ViewportOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Stack(
       children: [
+        _ViewportMeasureLabel(),
+        _ViewportSelectionPropertiesLabel(),
         _ViewportZoomLabel(),
         _ViewportCursorPositionLabel(),
         _ViewportCursorInputLabel(),
@@ -50,6 +52,25 @@ class _ViewportZoomLabel extends StatelessWidget {
           child: _OverlayChip(text: zoom),
         ),
       ),
+    );
+  }
+}
+
+class _ViewportMeasureLabel extends StatelessWidget {
+  const _ViewportMeasureLabel();
+
+  @override
+  Widget build(BuildContext context) {
+    final label = context.selectViewportState((state) => state.measureLabel);
+
+    if (label == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Positioned(
+      left: _viewportOverlayOffset,
+      top: _viewportOverlayOffset,
+      child: _OverlayChip(text: label),
     );
   }
 }
@@ -105,6 +126,27 @@ class _ViewportCursorInputLabel extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+}
+
+class _ViewportSelectionPropertiesLabel extends StatelessWidget {
+  const _ViewportSelectionPropertiesLabel();
+
+  @override
+  Widget build(BuildContext context) {
+    final label = context.selectViewportState(
+      (state) => state.selectionPropertiesLabel,
+    );
+
+    if (label == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Positioned(
+      right: _viewportOverlayOffset,
+      top: _viewportOverlayOffset,
+      child: _OverlayChip(text: label),
     );
   }
 }
