@@ -120,7 +120,10 @@ class _MeasureToolAction extends ToolAction {
   void _updateMeasureLabel() {
     if (_isClosed) {
       setMeasureLabel(
-        'Perimeter: ${formatMetricLength(closedPolylinePerimeter(_points), state.selectedUnit)}\n'
+        'Perimeter: ${formatMetricLength(
+          closedPolylinePerimeter(_points),
+          state.selectedUnit,
+        )}\n'
         'Area: ${formatMetricArea(polygonArea(_points), state.selectedUnit)}',
       );
       return;
@@ -133,7 +136,10 @@ class _MeasureToolAction extends ToolAction {
     }
 
     setMeasureLabel(
-      'Length: ${formatMetricLength(polylineLength(previewPoints), state.selectedUnit)}',
+      'Length: ${formatMetricLength(
+        polylineLength(previewPoints),
+        state.selectedUnit,
+      )}',
     );
   }
 }

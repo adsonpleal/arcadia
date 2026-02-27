@@ -14,7 +14,11 @@ void main() {
     test('delegates state mutation helpers to ViewportNotifier', () {
       final notifier = ViewportNotifier();
       final action = _NoopToolAction()..bind(notifier);
-      const geometry = Line(start: .zero, end: Offset(10, 0), color: .primary);
+      const geometry = Line(
+        start: .zero,
+        end: Offset(10, 0),
+        color: .primary,
+      );
 
       notifier.value = notifier.value.copyWith(userInput: '42');
 
@@ -46,7 +50,7 @@ void main() {
     test('default onSelectedUnitChange is a no-op', () {
       final action = _NoopToolAction();
 
-      expect(() => action.onSelectedUnitChange(), returnsNormally);
+      expect(action.onSelectedUnitChange, returnsNormally);
     });
   });
 }

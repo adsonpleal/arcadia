@@ -12,13 +12,21 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('Geometry.buildPropertiesText', () {
     test('returns null by default', () {
-      expect(_TestGeometry(color: .primary).buildPropertiesText(MetricUnit.mm), isNull);
+      expect(
+        const _TestGeometry(
+          color: .primary,
+        ).buildPropertiesText(MetricUnit.mm),
+        isNull,
+      );
     });
 
     test('formats line length', () {
       expect(
-        const Line(start: .zero, end: Offset(3, 4), color: .primary)
-            .buildPropertiesText(MetricUnit.mm),
+        const Line(
+          start: .zero,
+          end: Offset(3, 4),
+          color: .primary,
+        ).buildPropertiesText(MetricUnit.mm),
         'Length: 5.0 mm',
       );
     });
@@ -36,8 +44,11 @@ void main() {
 
     test('formats circle measurements', () {
       expect(
-        const Circle(center: .zero, radius: 10, color: .primary)
-            .buildPropertiesText(MetricUnit.mm),
+        const Circle(
+          center: .zero,
+          radius: 10,
+          color: .primary,
+        ).buildPropertiesText(MetricUnit.mm),
         'Radius: 10.0 mm\n'
         'Diameter: 20.0 mm\n'
         'Circumference: 62.8 mm\n'

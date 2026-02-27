@@ -34,7 +34,9 @@ void main() {
       notifier.onCursorClickUp();
       _moveCursor(notifier, const Offset(20, 20));
 
-      final chainedPreview = notifier.value.toolGeometries.whereType<Line>().toList();
+      final chainedPreview = notifier.value.toolGeometries
+          .whereType<Line>()
+          .toList();
       expect(chainedPreview, hasLength(2));
       expect(chainedPreview.first.start, const Offset(10, 10));
       expect(chainedPreview.first.end, const Offset(20, 10));
@@ -47,16 +49,11 @@ void main() {
     test('closes on first vertex and shows perimeter plus area', () {
       final notifier = ViewportNotifier()..selectTool(const MeasureTool());
 
-      _moveCursor(notifier, .zero);
-      notifier.onCursorClickUp();
-      _moveCursor(notifier, const Offset(10, 0));
-      notifier.onCursorClickUp();
-      _moveCursor(notifier, const Offset(10, 10));
-      notifier.onCursorClickUp();
-      _moveCursor(notifier, .zero);
-      notifier.onCursorClickUp();
+      _closeTriangleMeasurement(notifier);
 
-      final closedPreview = notifier.value.toolGeometries.whereType<Line>().toList();
+      final closedPreview = notifier.value.toolGeometries
+          .whereType<Line>()
+          .toList();
       expect(closedPreview, hasLength(3));
       expect(closedPreview.last.start, const Offset(10, 10));
       expect(closedPreview.last.end, Offset.zero);
@@ -70,14 +67,7 @@ void main() {
     test('cancel clears closed preview and restarts cleanly', () {
       final notifier = ViewportNotifier()..selectTool(const MeasureTool());
 
-      _moveCursor(notifier, .zero);
-      notifier.onCursorClickUp();
-      _moveCursor(notifier, const Offset(10, 0));
-      notifier.onCursorClickUp();
-      _moveCursor(notifier, const Offset(10, 10));
-      notifier.onCursorClickUp();
-      _moveCursor(notifier, .zero);
-      notifier.onCursorClickUp();
+      _closeTriangleMeasurement(notifier);
 
       notifier.cancelToolAction();
 
@@ -96,14 +86,7 @@ void main() {
     test('click after closed measurement starts a fresh session', () {
       final notifier = ViewportNotifier()..selectTool(const MeasureTool());
 
-      _moveCursor(notifier, .zero);
-      notifier.onCursorClickUp();
-      _moveCursor(notifier, const Offset(10, 0));
-      notifier.onCursorClickUp();
-      _moveCursor(notifier, const Offset(10, 10));
-      notifier.onCursorClickUp();
-      _moveCursor(notifier, .zero);
-      notifier.onCursorClickUp();
+      _closeTriangleMeasurement(notifier);
 
       _moveCursor(notifier, const Offset(30, 30));
       notifier.onCursorClickUp();
@@ -120,4 +103,15 @@ void _moveCursor(ViewportNotifier notifier, Offset cursorPosition) {
     viewportPosition: cursorPosition * unitVirtualPixelRatio,
     viewportMidPoint: .zero,
   );
+}
+
+void _closeTriangleMeasurement(ViewportNotifier notifier) {
+  _moveCursor(notifier, .zero);
+  notifier.onCursorClickUp();
+  _moveCursor(notifier, const Offset(10, 0));
+  notifier.onCursorClickUp();
+  _moveCursor(notifier, const Offset(10, 10));
+  notifier.onCursorClickUp();
+  _moveCursor(notifier, .zero);
+  notifier.onCursorClickUp();
 }
