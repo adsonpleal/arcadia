@@ -2,6 +2,8 @@ import 'dart:math';
 import 'dart:ui';
 
 import '../constants/arcadia_color.dart';
+import '../data/metric_unit.dart';
+import '../foundation/units/metric_value_format.dart';
 import 'geometry.dart';
 import 'point.dart';
 
@@ -163,6 +165,12 @@ class Arc extends Geometry {
               radius,
             ),
     ];
+  }
+
+  @override
+  String buildPropertiesText(MetricUnit unit) {
+    return 'Radius: ${formatMetricLength(radius, unit)}\n'
+        'Arc length: ${formatMetricLength(radius * sweepAngle, unit)}';
   }
 
   @override

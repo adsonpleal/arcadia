@@ -4,7 +4,9 @@ import 'dart:ui';
 import 'package:flutter/painting.dart';
 
 import '../constants/arcadia_color.dart';
+import '../data/metric_unit.dart';
 import '../foundation/geometry/selection_math.dart';
+import '../foundation/units/metric_value_format.dart';
 import 'geometry.dart';
 import 'point.dart';
 
@@ -112,6 +114,11 @@ class Line extends Geometry {
     }
 
     return false;
+  }
+
+  @override
+  String buildPropertiesText(MetricUnit unit) {
+    return 'Length: ${formatMetricLength((end - start).distance, unit)}';
   }
 
   @override
