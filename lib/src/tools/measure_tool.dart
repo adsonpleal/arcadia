@@ -34,19 +34,11 @@ class _MeasureToolAction extends ToolAction {
     if (_isClosed) {
       _reset();
       _points.add(state.cursorPosition);
-      _updatePreview();
-      _updateMeasureLabel();
-      return;
-    }
-
-    if (_isClosingClick(state.cursorPosition)) {
+    } else if (_isClosingClick(state.cursorPosition)) {
       _isClosed = true;
-      _updatePreview();
-      _updateMeasureLabel();
-      return;
+    } else {
+      _points.add(state.cursorPosition);
     }
-
-    _points.add(state.cursorPosition);
     _updatePreview();
     _updateMeasureLabel();
   }
@@ -80,7 +72,7 @@ class _MeasureToolAction extends ToolAction {
     _points.clear();
     _isClosed = false;
     clearToolGeometries();
-    clearMeasureLabel();
+    clearOverlayLabel();
   }
 
   List<Offset> get _previewPoints {
@@ -119,7 +111,7 @@ class _MeasureToolAction extends ToolAction {
 
   void _updateMeasureLabel() {
     if (_isClosed) {
-      setMeasureLabel(
+      setOverlayLabel(
         'Perimeter: ${formatMetricLength(
           closedPolylinePerimeter(_points),
           state.selectedUnit,
@@ -131,11 +123,11 @@ class _MeasureToolAction extends ToolAction {
 
     final previewPoints = _previewPoints;
     if (previewPoints.length < 2) {
-      clearMeasureLabel();
+      clearOverlayLabel();
       return;
     }
 
-    setMeasureLabel(
+    setOverlayLabel(
       'Length: ${formatMetricLength(
         polylineLength(previewPoints),
         state.selectedUnit,

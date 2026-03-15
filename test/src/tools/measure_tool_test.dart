@@ -1,4 +1,5 @@
 import 'package:arcadia/src/constants/config.dart';
+import 'package:arcadia/src/data/metric_unit.dart';
 import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/logic/viewport_notifier.dart';
 import 'package:arcadia/src/tools/measure_tool.dart';
@@ -28,7 +29,7 @@ void main() {
       final firstPreview = notifier.value.toolGeometries.single as Line;
       expect(firstPreview.start, const Offset(10, 10));
       expect(firstPreview.end, const Offset(20, 10));
-      expect(notifier.value.measureLabel, 'Length: 10.0 mm');
+      expect(notifier.value.overlayLabel, 'Length: 10.0 mm');
       expect(notifier.value.geometries, isEmpty);
 
       notifier.onCursorClickUp();
@@ -42,7 +43,7 @@ void main() {
       expect(chainedPreview.first.end, const Offset(20, 10));
       expect(chainedPreview.last.start, const Offset(20, 10));
       expect(chainedPreview.last.end, const Offset(20, 20));
-      expect(notifier.value.measureLabel, 'Length: 20.0 mm');
+      expect(notifier.value.overlayLabel, 'Length: 20.0 mm');
       expect(notifier.value.geometries, isEmpty);
     });
 
@@ -58,7 +59,7 @@ void main() {
       expect(closedPreview.last.start, const Offset(10, 10));
       expect(closedPreview.last.end, Offset.zero);
       expect(
-        notifier.value.measureLabel,
+        notifier.value.overlayLabel,
         'Perimeter: 34.1 mm\nArea: 50.0 mm²',
       );
       expect(notifier.value.geometries, isEmpty);
@@ -72,15 +73,29 @@ void main() {
       notifier.cancelToolAction();
 
       expect(notifier.value.selectedTool, const SelectionTool());
-      expect(notifier.value.measureLabel, isNull);
+      expect(notifier.value.overlayLabel, isNull);
       expect(notifier.value.toolGeometries, isEmpty);
 
       notifier.selectTool(const MeasureTool());
       _moveCursor(notifier, const Offset(30, 30));
       notifier.onCursorClickUp();
 
-      expect(notifier.value.measureLabel, isNull);
+      expect(notifier.value.overlayLabel, isNull);
       expect(notifier.value.toolGeometries, isEmpty);
+    });
+
+    test('setSelectedUnit recomputes measure label', () {
+      final notifier = ViewportNotifier()..selectTool(const MeasureTool());
+
+      _moveCursor(notifier, .zero);
+      notifier.onCursorClickUp();
+      _moveCursor(notifier, const Offset(10, 0));
+
+      expect(notifier.value.overlayLabel, 'Length: 10.0 mm');
+
+      notifier.setSelectedUnit(MetricUnit.cm);
+
+      expect(notifier.value.overlayLabel, 'Length: 1.0 cm');
     });
 
     test('click after closed measurement starts a fresh session', () {
@@ -91,7 +106,7 @@ void main() {
       _moveCursor(notifier, const Offset(30, 30));
       notifier.onCursorClickUp();
 
-      expect(notifier.value.measureLabel, isNull);
+      expect(notifier.value.overlayLabel, isNull);
       expect(notifier.value.toolGeometries, isEmpty);
       expect(notifier.value.selectedTool, const MeasureTool());
     });

@@ -25,8 +25,7 @@ class ViewportState {
     this.cursorPosition = .zero,
     this.selectedTool = const SelectionTool(),
     this.selectedUnit = MetricUnit.mm,
-    this.selectionPropertiesLabel,
-    this.measureLabel,
+    this.overlayLabel,
     this.userInput = '',
   });
 
@@ -62,11 +61,8 @@ class ViewportState {
   /// The selected project unit used for value input interpretation.
   final MetricUnit selectedUnit;
 
-  /// Overlay text for the current single-selection properties.
-  final String? selectionPropertiesLabel;
-
-  /// Overlay text for the current measure tool output.
-  final String? measureLabel;
+  /// Overlay text for tool output (measurement results, selection properties).
+  final String? overlayLabel;
 
   /// Whether or not show value picker;
   final String userInput;
@@ -84,8 +80,7 @@ class ViewportState {
     Offset? cursorPosition,
     Tool? selectedTool,
     MetricUnit? selectedUnit,
-    Object? selectionPropertiesLabel = _unsetLabel,
-    Object? measureLabel = _unsetLabel,
+    Object? overlayLabel = _unsetLabel,
     String? userInput,
   }) {
     return ViewportState(
@@ -97,12 +92,9 @@ class ViewportState {
       cursorPosition: cursorPosition ?? this.cursorPosition,
       selectedTool: selectedTool ?? this.selectedTool,
       selectedUnit: selectedUnit ?? this.selectedUnit,
-      selectionPropertiesLabel: selectionPropertiesLabel == _unsetLabel
-          ? this.selectionPropertiesLabel
-          : selectionPropertiesLabel as String?,
-      measureLabel: measureLabel == _unsetLabel
-          ? this.measureLabel
-          : measureLabel as String?,
+      overlayLabel: overlayLabel == _unsetLabel
+          ? this.overlayLabel
+          : overlayLabel as String?,
       userInput: userInput ?? this.userInput,
     );
   }
@@ -119,8 +111,7 @@ class ViewportState {
             cursorPosition == other.cursorPosition &&
             selectedTool == other.selectedTool &&
             selectedUnit == other.selectedUnit &&
-            selectionPropertiesLabel == other.selectionPropertiesLabel &&
-            measureLabel == other.measureLabel &&
+            overlayLabel == other.overlayLabel &&
             userInput == other.userInput;
   }
 
@@ -135,8 +126,7 @@ class ViewportState {
       cursorPosition,
       selectedTool,
       selectedUnit,
-      selectionPropertiesLabel,
-      measureLabel,
+      overlayLabel,
       userInput,
     ]);
   }

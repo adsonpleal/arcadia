@@ -56,34 +56,22 @@ void main() {
       expect(find.text('12.5'), findsNothing);
     });
 
-    testWidgets('shows and hides measure label', (tester) async {
-      final notifier = await _pumpOverlay(tester);
-
-      notifier.value = notifier.value.copyWith(measureLabel: 'Length: 10.0 mm');
-      await tester.pump();
-
-      expect(find.text('Length: 10.0 mm'), findsOneWidget);
-
-      notifier.value = notifier.value.copyWith(measureLabel: null);
-      await tester.pump();
-
-      expect(find.text('Length: 10.0 mm'), findsNothing);
-    });
-
-    testWidgets('shows and hides selection properties label', (tester) async {
+    testWidgets('shows and hides overlay label on the left', (tester) async {
       final notifier = await _pumpOverlay(tester);
 
       notifier.value = notifier.value.copyWith(
-        selectionPropertiesLabel: 'Radius: 5.0 mm',
+        overlayLabel: 'Length: 10.0 mm',
       );
       await tester.pump();
 
-      expect(find.text('Radius: 5.0 mm'), findsOneWidget);
+      expect(find.text('Length: 10.0 mm'), findsOneWidget);
+      final position = tester.getTopLeft(find.text('Length: 10.0 mm'));
+      expect(position.dx, lessThan(100));
 
-      notifier.value = notifier.value.copyWith(selectionPropertiesLabel: null);
+      notifier.value = notifier.value.copyWith(overlayLabel: null);
       await tester.pump();
 
-      expect(find.text('Radius: 5.0 mm'), findsNothing);
+      expect(find.text('Length: 10.0 mm'), findsNothing);
     });
 
     testWidgets('clicking zoom label resets zoom to 100%', (tester) async {

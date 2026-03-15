@@ -17,8 +17,7 @@ class ViewportOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Stack(
       children: [
-        _ViewportMeasureLabel(),
-        _ViewportSelectionPropertiesLabel(),
+        _ViewportTopLeftLabels(),
         _ViewportZoomLabel(),
         _ViewportCursorPositionLabel(),
         _ViewportCursorInputLabel(),
@@ -56,21 +55,23 @@ class _ViewportZoomLabel extends StatelessWidget {
   }
 }
 
-class _ViewportMeasureLabel extends StatelessWidget {
-  const _ViewportMeasureLabel();
+class _ViewportTopLeftLabels extends StatelessWidget {
+  const _ViewportTopLeftLabels();
 
   @override
   Widget build(BuildContext context) {
-    final label = context.selectViewportState((state) => state.measureLabel);
+    final overlayLabel = context.selectViewportState(
+      (state) => state.overlayLabel,
+    );
 
-    if (label == null) {
+    if (overlayLabel == null) {
       return const SizedBox.shrink();
     }
 
     return Positioned(
       left: _viewportOverlayOffset,
       top: _viewportOverlayOffset,
-      child: _OverlayChip(text: label),
+      child: _OverlayChip(text: overlayLabel),
     );
   }
 }
@@ -126,27 +127,6 @@ class _ViewportCursorInputLabel extends StatelessWidget {
           );
         },
       ),
-    );
-  }
-}
-
-class _ViewportSelectionPropertiesLabel extends StatelessWidget {
-  const _ViewportSelectionPropertiesLabel();
-
-  @override
-  Widget build(BuildContext context) {
-    final label = context.selectViewportState(
-      (state) => state.selectionPropertiesLabel,
-    );
-
-    if (label == null) {
-      return const SizedBox.shrink();
-    }
-
-    return Positioned(
-      right: _viewportOverlayOffset,
-      top: _viewportOverlayOffset,
-      child: _OverlayChip(text: label),
     );
   }
 }

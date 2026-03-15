@@ -63,24 +63,14 @@ abstract class ToolAction {
     _viewportNotifier.clearUserInput();
   }
 
-  /// Set the selection-properties overlay label.
-  void setSelectionPropertiesLabel(String? text) {
-    _viewportNotifier.setSelectionPropertiesLabel(text);
+  /// Set the overlay label.
+  void setOverlayLabel(String? text) {
+    _viewportNotifier.setOverlayLabel(text);
   }
 
-  /// Clear the selection-properties overlay label.
-  void clearSelectionPropertiesLabel() {
-    _viewportNotifier.setSelectionPropertiesLabel(null);
-  }
-
-  /// Set the measure overlay label.
-  void setMeasureLabel(String? text) {
-    _viewportNotifier.setMeasureLabel(text);
-  }
-
-  /// Clear the measure overlay label.
-  void clearMeasureLabel() {
-    _viewportNotifier.setMeasureLabel(null);
+  /// Clear the overlay label.
+  void clearOverlayLabel() {
+    _viewportNotifier.setOverlayLabel(null);
   }
 
   /// Add a snap point to the list.

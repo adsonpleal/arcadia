@@ -28,15 +28,12 @@ void main() {
         ..clearToolGeometries()
         ..clearUserInput()
         ..addSnapPoint(const Offset(5, 5))
-        ..setSelectionPropertiesLabel('Length: 10.0 mm')
-        ..setMeasureLabel('Perimeter: 10.0 mm')
-        ..clearSelectionPropertiesLabel()
-        ..clearMeasureLabel();
+        ..setOverlayLabel('Length: 10.0 mm')
+        ..clearOverlayLabel();
 
       expect(action.state.geometries, const [geometry]);
       expect(action.state.toolGeometries, isEmpty);
-      expect(action.state.selectionPropertiesLabel, isNull);
-      expect(action.state.measureLabel, isNull);
+      expect(action.state.overlayLabel, isNull);
       expect(action.state.userInput, isEmpty);
     });
 

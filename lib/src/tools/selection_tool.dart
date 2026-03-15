@@ -62,6 +62,7 @@ class _SelectionToolAction extends ToolAction {
       current: cursorPosition,
       baselineSelection: _selectedGeometries,
     );
+    _updateSelectionPropertiesLabel();
     _updateToolGeometries();
   }
 
@@ -89,6 +90,7 @@ class _SelectionToolAction extends ToolAction {
       _handleSingleSelection(baselineSelection: _selectedGeometries);
     }
 
+    _hoveringGeometry = _geometryBelowCursor();
     _updateSelectionPropertiesLabel();
     _updateToolGeometries();
   }
@@ -99,6 +101,7 @@ class _SelectionToolAction extends ToolAction {
       _selectedGeometries = session.baselineSelection;
     }
     _selectionDragSession = null;
+    _hoveringGeometry = _geometryBelowCursor();
     _updateSelectionPropertiesLabel();
     _updateToolGeometries();
   }
@@ -107,11 +110,11 @@ class _SelectionToolAction extends ToolAction {
   void onCursorPositionChange() {
     if (_selectionDragSession case final session?) {
       _updateDragSelectionPreview(session);
-      _updateSelectionPropertiesLabel();
     } else {
       _hoveringGeometry = _geometryBelowCursor();
     }
 
+    _updateSelectionPropertiesLabel();
     _updateToolGeometries();
   }
 
@@ -179,14 +182,8 @@ class _SelectionToolAction extends ToolAction {
   }
 
   void _updateSelectionPropertiesLabel() {
-    if (_selectedGeometries.length != 1) {
-      clearSelectionPropertiesLabel();
-      return;
-    }
-
-    setSelectionPropertiesLabel(
-      _selectedGeometries.single.buildPropertiesText(state.selectedUnit),
-    );
+    final hovering = _selectionDragSession == null ? _hoveringGeometry : null;
+    setOverlayLabel(hovering?.buildPropertiesText(state.selectedUnit));
   }
 
   void _updateToolGeometries() {

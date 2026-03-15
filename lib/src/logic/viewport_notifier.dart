@@ -58,8 +58,7 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
     _toolAction = tool.toolActionFactory()..bind(this);
     value = value.copyWith(
       selectedTool: tool,
-      selectionPropertiesLabel: null,
-      measureLabel: null,
+      overlayLabel: null,
       userInput: '',
     );
   }
@@ -75,14 +74,9 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
     _toolAction.onSelectedUnitChange();
   }
 
-  /// Sets the current selection-properties overlay label.
-  void setSelectionPropertiesLabel(String? text) {
-    value = value.copyWith(selectionPropertiesLabel: text);
-  }
-
-  /// Sets the current measure overlay label.
-  void setMeasureLabel(String? text) {
-    value = value.copyWith(measureLabel: text);
+  /// Sets the current overlay label.
+  void setOverlayLabel(String? text) {
+    value = value.copyWith(overlayLabel: text);
   }
 
   /// Cancel the selected tool action and deselect the current tool.
