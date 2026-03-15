@@ -63,6 +63,10 @@ All shapes extend the `Geometry` abstract class:
 
 `unitVirtualPixelRatio = 5.0` — each unit (mm) maps to 5 virtual pixels. All geometry coordinates are in virtual space; rendering applies zoom and panOffset transformations.
 
+## Pull Requests
+
+When creating a PR, check `project_plan.md` for an issue related to the changes. If one exists, include `Closes #<issue-number>` in the PR description to link and auto-close it.
+
 ## Code Conventions
 
 - **Immutability**: All data classes use `@immutable` and const constructors. State updates go through `copyWith`.
