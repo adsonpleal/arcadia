@@ -15,6 +15,7 @@ Organize geometry by layer. Users can create, rename, and select an active layer
 - Hidden layers are non-selectable and non-interactive
 - Double-click inline rename
 - Layer wraps geometries (Approach A — `Layer` data class owns its `List<Geometry>`)
+- Layer reordering is out of scope (deferred to issue #58 — advanced layers)
 
 ## Data Model
 
@@ -40,7 +41,7 @@ Implements `==` and `hashCode` comparing all fields, using `listEquals` for the 
 
 ### ID Generation
 
-Simple incrementing counter (`_nextLayerId`) held in `ViewportNotifier`. No UUIDs needed for a local-only app.
+Monotonically incrementing counter (`_nextLayerId`) held in `ViewportNotifier`. Never decremented on undo — undo restores the layers list but the counter only moves forward, preventing ID collisions with undo stack entries. No UUIDs needed for a local-only app.
 
 ## ViewportNotifier Changes
 
@@ -48,16 +49,16 @@ Simple incrementing counter (`_nextLayerId`) held in `ViewportNotifier`. No UUID
 
 - `addLayer(String name)` — creates a new layer with incremented ID, appends to `layers`, sets it as active
 - `renameLayer(String id, String name)` — updates the layer's name
-- `deleteLayer(String id)` — removes the layer and its geometries. If it's the active layer, active switches to the previous layer. Cannot delete the last remaining layer.
+- `deleteLayer(String id)` — removes the layer and its geometries. If it's the active layer, active switches to the layer at `index - 1`, or `index 0` of the remaining list if the deleted layer was first. Cannot delete the last remaining layer.
 - `setActiveLayer(String id)` — sets `activeLayerId`
 - `toggleLayerVisibility(String id)` — flips `visible` on the target layer
 
 ### Modified methods
 
-- `addGeometries()` — finds the active layer and appends geometries to it. Snapping points recomputed from all visible layers.
-- `deleteGeometries()` — searches across all layers to find and remove target geometries
-- Undo/redo stacks change from `List<List<Geometry>>` to `List<List<Layer>>` — captures the full layers list so layer creation/deletion/visibility changes are all undoable
-- `_snappingPoints` recomputed from visible layers only
+- `addGeometries()` — finds the active layer and appends geometries to it. Snapping points recomputed afterward.
+- `deleteGeometries()` — searches across all layers to find and remove target geometries by identity. Since geometries are immutable value objects compared by `==`, identical geometries on different layers would both match — this is acceptable and consistent with the current behavior where duplicate geometries in the flat list would also both be removed.
+- Undo/redo stacks change from `List<List<Geometry>>` to `List<List<Layer>>` — captures the full layers list so layer creation/deletion/visibility changes are all undoable. `activeLayerId` is **not** captured in the undo stack — it is a UI navigation concern, not document state. Undoing a layer deletion restores the layer but does not change which layer is active.
+- `_snappingPoints` recomputed after any mutation that changes the set of visible geometries: `addGeometries`, `deleteGeometries`, `toggleLayerVisibility`, `deleteLayer`, `undo`, `redo`. Only geometries from visible layers are included.
 
 ### Hiding the active layer
 
@@ -90,9 +91,18 @@ Rendering order: layers in list order (index 0 = bottom), geometries within a la
 
 ## Selection Tool Changes
 
-- `_geometryBelowCursor()` — iterates geometries from visible layers only (reversed order, later layers on top)
-- `_matchingGeometriesForRect()` — filters to visible layer geometries only
-- The selection tool does not need layer awareness beyond filtering to visible geometries
+The selection tool accesses `state.geometries` directly today. Since `state.geometries` is replaced by `state.layers`, the selection tool will flatten visible layers inline to get the geometry list:
+
+```dart
+List<Geometry> get _visibleGeometries => [
+  for (final layer in state.layers)
+    if (layer.visible) ...layer.geometries,
+];
+```
+
+- `_geometryBelowCursor()` — uses `_visibleGeometries.reversed` (later layers on top)
+- `_matchingGeometriesForRect()` — iterates `_visibleGeometries`
+- The selection tool does not need further layer awareness beyond this filtering
 
 ## Layers Panel UI
 
@@ -124,7 +134,7 @@ Column: [Toolbar, Expanded(Row: [Viewport, LayersPanel])]
 
 - Draggable divider between viewport and panel for horizontal resizing
 - Collapse button in panel header hides the panel to a thin strip/icon
-- Panel width stored in widget local state (not `ViewportState` — UI concern, not document state)
+- Panel width and collapsed/expanded state stored in widget local state (not `ViewportState` — UI concern, not document state)
 - Minimum width constraint to prevent unusably small panel
 
 ### Styling
