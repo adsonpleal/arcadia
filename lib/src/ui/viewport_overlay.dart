@@ -17,6 +17,7 @@ class ViewportOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Stack(
       children: [
+        _ViewportTopLeftLabels(),
         _ViewportZoomLabel(),
         _ViewportCursorPositionLabel(),
         _ViewportCursorInputLabel(),
@@ -50,6 +51,27 @@ class _ViewportZoomLabel extends StatelessWidget {
           child: _OverlayChip(text: zoom),
         ),
       ),
+    );
+  }
+}
+
+class _ViewportTopLeftLabels extends StatelessWidget {
+  const _ViewportTopLeftLabels();
+
+  @override
+  Widget build(BuildContext context) {
+    final overlayLabel = context.selectViewportState(
+      (state) => state.overlayLabel,
+    );
+
+    if (overlayLabel == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Positioned(
+      left: _viewportOverlayOffset,
+      top: _viewportOverlayOffset,
+      child: _OverlayChip(text: overlayLabel),
     );
   }
 }

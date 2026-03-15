@@ -32,6 +32,24 @@ void main() {
       expect(notifier.value.selectedUnit, MetricUnit.cm);
     });
 
+    test('setSelectedUnit notifies the active tool action', () {
+      final action = _SpyToolAction();
+      final notifier = ViewportNotifier()..selectTool(_SpyTool(action));
+
+      notifier.setSelectedUnit(MetricUnit.cm);
+
+      expect(action.selectedUnitChangeCalls, 1);
+    });
+
+    test('selectTool clears overlay label', () {
+      final notifier = ViewportNotifier();
+      notifier.setOverlayLabel('Length: 10.0 mm');
+
+      notifier.selectTool(const LineTool());
+
+      expect(notifier.value.overlayLabel, isNull);
+    });
+
     test('selectTool clears tool geometries', () {
       final notifier = ViewportNotifier();
 
@@ -67,6 +85,7 @@ void main() {
 
     test('cancelToolAction resets selected tool, previews, and input', () {
       final notifier = ViewportNotifier()..selectTool(const LineTool());
+      notifier.setOverlayLabel('Length: 10.0 mm');
 
       _moveCursor(notifier, .zero);
       notifier.onCursorClickUp();
@@ -80,6 +99,7 @@ void main() {
 
       expect(notifier.value.selectedTool, const SelectionTool());
       expect(notifier.value.toolGeometries, isEmpty);
+      expect(notifier.value.overlayLabel, isNull);
       expect(notifier.value.userInput, isEmpty);
     });
 
@@ -230,6 +250,95 @@ void main() {
       notifier.onCursorClickUp();
 
       expect(_selectedLines(notifier), hasLength(2));
+    });
+
+    test('hovering geometry publishes properties label', () {
+      final notifier = ViewportNotifier()..addGeometries(const [_lineA]);
+
+      _moveCursor(notifier, const Offset(5, 0));
+
+      expect(notifier.value.overlayLabel, 'Length: 10.0 mm');
+    });
+
+    test('moving away clears hover properties label even when selected', () {
+      final notifier = ViewportNotifier()..addGeometries(const [_lineA]);
+
+      _moveCursor(notifier, const Offset(5, 0));
+      notifier.onCursorClickUp();
+      expect(notifier.value.overlayLabel, 'Length: 10.0 mm');
+
+      _moveCursor(notifier, const Offset(100, 100));
+
+      expect(_selectedLines(notifier), hasLength(1));
+      expect(notifier.value.overlayLabel, isNull);
+    });
+
+    test('starting drag selection clears hover properties label', () {
+      final notifier = ViewportNotifier()..addGeometries(const [_lineA]);
+
+      _moveCursor(notifier, const Offset(5, 0));
+      expect(notifier.value.overlayLabel, 'Length: 10.0 mm');
+
+      notifier.onCursorClickDown();
+
+      expect(notifier.value.overlayLabel, isNull);
+    });
+
+    test('canceling drag restores hover properties label', () {
+      final notifier = ViewportNotifier()..addGeometries(const [_lineA]);
+
+      _moveCursor(notifier, const Offset(5, 0));
+      expect(notifier.value.overlayLabel, 'Length: 10.0 mm');
+
+      notifier.onCursorClickDown();
+      expect(notifier.value.overlayLabel, isNull);
+
+      notifier.onCursorCancel();
+
+      expect(notifier.value.overlayLabel, 'Length: 10.0 mm');
+    });
+
+    test('completing drag over geometry restores hover properties label', () {
+      final notifier = ViewportNotifier()..addGeometries(const [_lineA]);
+
+      _pointerDown(notifier, const Offset(100, 100));
+      _moveCursor(notifier, const Offset(5, 0));
+
+      expect(notifier.value.overlayLabel, isNull);
+
+      notifier.onCursorClickUp();
+
+      expect(notifier.value.overlayLabel, 'Length: 10.0 mm');
+    });
+
+    test('label stays null while dragging over a geometry', () {
+      final notifier = ViewportNotifier()..addGeometries(const [_lineA]);
+
+      _pointerDown(notifier, const Offset(100, 100));
+      _moveCursor(notifier, const Offset(5, 0));
+
+      expect(notifier.value.overlayLabel, isNull);
+    });
+
+    test('delete clears geometry properties label', () {
+      final notifier = ViewportNotifier()..addGeometries(const [_lineA]);
+
+      _moveCursor(notifier, const Offset(5, 0));
+      notifier.onCursorClickUp();
+      expect(notifier.value.overlayLabel, 'Length: 10.0 mm');
+
+      notifier.onUserInput(deleteCharacter);
+
+      expect(notifier.value.overlayLabel, isNull);
+    });
+
+    test('setSelectedUnit recomputes hovered geometry properties label', () {
+      final notifier = ViewportNotifier()..addGeometries(const [_lineA]);
+
+      _moveCursor(notifier, const Offset(5, 0));
+      notifier.setSelectedUnit(MetricUnit.cm);
+
+      expect(notifier.value.overlayLabel, 'Length: 1.0 cm');
     });
 
     test('onCursorClickDown keeps the current selection', () {
@@ -590,6 +699,7 @@ class _SpyToolAction extends ToolAction {
   int clickDownCalls = 0;
   int clickUpCalls = 0;
   int cursorPositionChangeCalls = 0;
+  int selectedUnitChangeCalls = 0;
 
   @override
   bool get acceptValueInput => true;
@@ -607,6 +717,11 @@ class _SpyToolAction extends ToolAction {
   @override
   void onCursorPositionChange() {
     cursorPositionChangeCalls++;
+  }
+
+  @override
+  void onSelectedUnitChange() {
+    selectedUnitChangeCalls++;
   }
 }
 

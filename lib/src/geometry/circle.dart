@@ -2,6 +2,8 @@ import 'dart:math';
 import 'dart:ui';
 
 import '../constants/arcadia_color.dart';
+import '../data/metric_unit.dart';
+import '../foundation/units/metric_value_format.dart';
 import 'geometry.dart';
 import 'point.dart';
 
@@ -79,6 +81,18 @@ class Circle extends Geometry {
               radius * sin(2 * pi * i / _circleSampleSegments),
             ),
     ];
+  }
+
+  @override
+  String buildPropertiesText(MetricUnit unit) {
+    final diameter = radius * 2;
+    final circumference = 2 * pi * radius;
+    final area = pi * radius * radius;
+
+    return 'Radius: ${formatMetricLength(radius, unit)}\n'
+        'Diameter: ${formatMetricLength(diameter, unit)}\n'
+        'Circumference: ${formatMetricLength(circumference, unit)}\n'
+        'Area: ${formatMetricArea(area, unit)}';
   }
 
   @override

@@ -56,6 +56,24 @@ void main() {
       expect(find.text('12.5'), findsNothing);
     });
 
+    testWidgets('shows and hides overlay label on the left', (tester) async {
+      final notifier = await _pumpOverlay(tester);
+
+      notifier.value = notifier.value.copyWith(
+        overlayLabel: 'Length: 10.0 mm',
+      );
+      await tester.pump();
+
+      expect(find.text('Length: 10.0 mm'), findsOneWidget);
+      final position = tester.getTopLeft(find.text('Length: 10.0 mm'));
+      expect(position.dx, lessThan(100));
+
+      notifier.value = notifier.value.copyWith(overlayLabel: null);
+      await tester.pump();
+
+      expect(find.text('Length: 10.0 mm'), findsNothing);
+    });
+
     testWidgets('clicking zoom label resets zoom to 100%', (tester) async {
       final notifier = await _pumpOverlay(tester);
       notifier.value = notifier.value.copyWith(

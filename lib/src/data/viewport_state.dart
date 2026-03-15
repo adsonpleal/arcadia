@@ -7,6 +7,8 @@ import '../tools/selection_tool.dart';
 import '../tools/tool.dart';
 import 'metric_unit.dart';
 
+const _unsetLabel = Object();
+
 /// The state of the viewport.
 ///
 /// It contains all the [geometries] being displayed,
@@ -23,6 +25,7 @@ class ViewportState {
     this.cursorPosition = .zero,
     this.selectedTool = const SelectionTool(),
     this.selectedUnit = MetricUnit.mm,
+    this.overlayLabel,
     this.userInput = '',
   });
 
@@ -58,6 +61,9 @@ class ViewportState {
   /// The selected project unit used for value input interpretation.
   final MetricUnit selectedUnit;
 
+  /// Overlay text for tool output (measurement results, selection properties).
+  final String? overlayLabel;
+
   /// Whether or not show value picker;
   final String userInput;
 
@@ -74,6 +80,7 @@ class ViewportState {
     Offset? cursorPosition,
     Tool? selectedTool,
     MetricUnit? selectedUnit,
+    Object? overlayLabel = _unsetLabel,
     String? userInput,
   }) {
     return ViewportState(
@@ -85,6 +92,9 @@ class ViewportState {
       cursorPosition: cursorPosition ?? this.cursorPosition,
       selectedTool: selectedTool ?? this.selectedTool,
       selectedUnit: selectedUnit ?? this.selectedUnit,
+      overlayLabel: overlayLabel == _unsetLabel
+          ? this.overlayLabel
+          : overlayLabel as String?,
       userInput: userInput ?? this.userInput,
     );
   }
@@ -101,6 +111,7 @@ class ViewportState {
             cursorPosition == other.cursorPosition &&
             selectedTool == other.selectedTool &&
             selectedUnit == other.selectedUnit &&
+            overlayLabel == other.overlayLabel &&
             userInput == other.userInput;
   }
 
@@ -115,6 +126,7 @@ class ViewportState {
       cursorPosition,
       selectedTool,
       selectedUnit,
+      overlayLabel,
       userInput,
     ]);
   }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart' hide Viewport;
 import '../constants/config.dart';
 import '../providers/viewport_notifier_provider.dart';
 import '../tools/circle_tool.dart';
+import '../tools/measure_tool.dart';
 import '../tools/selection_tool.dart';
 import '../tools/tool.dart';
 import '../tools/tools.dart';
@@ -43,13 +44,17 @@ class ProjectPage extends StatelessWidget {
               final notifier = context.viewportNotifier;
               final selectedTool = notifier.value.selectedTool;
               final tool = intent.tool;
-              final isCircleShortcutInputConflict =
-                  tool is CircleTool &&
-                  notifier.acceptsValueInput &&
-                  notifier.value.userInput != '';
+              final shortcutInputConflict =
+                  notifier.acceptsValueInput && notifier.value.userInput != ''
+                  ? switch (tool) {
+                      CircleTool() => 'c',
+                      MeasureTool() => 'm',
+                      _ => null,
+                    }
+                  : null;
 
-              if (isCircleShortcutInputConflict) {
-                notifier.onUserInput('c');
+              if (shortcutInputConflict case final input?) {
+                notifier.onUserInput(input);
                 return null;
               }
 

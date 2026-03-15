@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import '../constants/arcadia_color.dart';
+import '../data/metric_unit.dart';
 import 'point.dart';
 
 /// A class that represents a generic geometry.
@@ -41,6 +42,11 @@ abstract class Geometry {
 
   /// Returns whether this geometry is contained by or intersects [rect].
   bool intersects(Rect rect);
+
+  /// Builds formatted display text for this geometry, or `null` if none.
+  String? buildPropertiesText(MetricUnit unit) {
+    return null;
+  }
 
   /// Creates a copy of this geometry, replacing its [color] or/and [strokeWidth].
   Geometry copyWith({double? strokeWidth, ArcadiaColor? color});

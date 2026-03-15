@@ -1,6 +1,8 @@
 import 'dart:ui';
 
 import '../constants/arcadia_color.dart';
+import '../data/metric_unit.dart';
+import '../foundation/units/metric_value_format.dart';
 import 'geometry.dart';
 
 /// The shape of a point.
@@ -81,6 +83,12 @@ class Point extends Geometry {
   @override
   bool intersects(Rect rect) {
     return rect.contains(position);
+  }
+
+  @override
+  String buildPropertiesText(MetricUnit unit) {
+    return 'X: ${formatMetricCoordinate(position.dx, unit)}\n'
+        'Y: ${formatMetricCoordinate(position.dy, unit)}';
   }
 
   @override

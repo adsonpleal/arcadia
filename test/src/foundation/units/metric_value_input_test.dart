@@ -15,6 +15,12 @@ void main() {
       expect(MetricUnit.cm.fromMillimeters(300), 30);
       expect(MetricUnit.m.fromMillimeters(2500), 2.5);
     });
+
+    test('converts from square millimeters', () {
+      expect(MetricUnit.mm.fromSquareMillimeters(42), 42);
+      expect(MetricUnit.cm.fromSquareMillimeters(900), 9);
+      expect(MetricUnit.m.fromSquareMillimeters(2_000_000), 2);
+    });
   });
 
   group('parseMetricValueInput', () {

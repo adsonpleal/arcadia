@@ -63,6 +63,16 @@ abstract class ToolAction {
     _viewportNotifier.clearUserInput();
   }
 
+  /// Set the overlay label.
+  void setOverlayLabel(String? text) {
+    _viewportNotifier.setOverlayLabel(text);
+  }
+
+  /// Clear the overlay label.
+  void clearOverlayLabel() {
+    _viewportNotifier.setOverlayLabel(null);
+  }
+
   /// Add a snap point to the list.
   void addSnapPoint(Offset offset) {
     _viewportNotifier.addSnapPoint(offset);
@@ -95,6 +105,9 @@ abstract class ToolAction {
   /// If you want to use this you must override [acceptValueInput] setting
   /// it to true.
   void onValueTyped(double? value) {}
+
+  /// Triggered whenever the selected project unit changes.
+  void onSelectedUnitChange() {}
 
   /// Triggered when the user presses the delete key.
   ///

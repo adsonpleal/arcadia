@@ -3,6 +3,7 @@ import 'package:arcadia/src/tools/center_rectangle_tool.dart';
 import 'package:arcadia/src/tools/circle_tool.dart';
 import 'package:arcadia/src/tools/corners_rectangle_tool.dart';
 import 'package:arcadia/src/tools/line_tool.dart';
+import 'package:arcadia/src/tools/measure_tool.dart';
 import 'package:arcadia/src/tools/selection_tool.dart';
 import 'package:arcadia/src/tools/tools.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,6 +14,7 @@ void main() {
       expect(tools.map((tool) => tool.runtimeType).toList(), [
         SelectionTool,
         LineTool,
+        MeasureTool,
         ArcTool,
         CircleTool,
         CenterRectangleTool,

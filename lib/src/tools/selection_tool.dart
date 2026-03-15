@@ -62,6 +62,7 @@ class _SelectionToolAction extends ToolAction {
       current: cursorPosition,
       baselineSelection: _selectedGeometries,
     );
+    _updateSelectionPropertiesLabel();
     _updateToolGeometries();
   }
 
@@ -74,6 +75,7 @@ class _SelectionToolAction extends ToolAction {
     deleteGeometries(_selectedGeometries);
     _selectedGeometries = [];
     _hoveringGeometry = null;
+    _updateSelectionPropertiesLabel();
     _updateToolGeometries();
   }
 
@@ -88,6 +90,8 @@ class _SelectionToolAction extends ToolAction {
       _handleSingleSelection(baselineSelection: _selectedGeometries);
     }
 
+    _hoveringGeometry = _geometryBelowCursor();
+    _updateSelectionPropertiesLabel();
     _updateToolGeometries();
   }
 
@@ -97,6 +101,8 @@ class _SelectionToolAction extends ToolAction {
       _selectedGeometries = session.baselineSelection;
     }
     _selectionDragSession = null;
+    _hoveringGeometry = _geometryBelowCursor();
+    _updateSelectionPropertiesLabel();
     _updateToolGeometries();
   }
 
@@ -108,7 +114,13 @@ class _SelectionToolAction extends ToolAction {
       _hoveringGeometry = _geometryBelowCursor();
     }
 
+    _updateSelectionPropertiesLabel();
     _updateToolGeometries();
+  }
+
+  @override
+  void onSelectedUnitChange() {
+    _updateSelectionPropertiesLabel();
   }
 
   void _updateDragSelectionPreview(_SelectionDragSession session) {
@@ -167,6 +179,11 @@ class _SelectionToolAction extends ToolAction {
           when !baselineSelection.contains(geometry))
         geometry,
     ];
+  }
+
+  void _updateSelectionPropertiesLabel() {
+    final hovering = _selectionDragSession == null ? _hoveringGeometry : null;
+    setOverlayLabel(hovering?.buildPropertiesText(state.selectedUnit));
   }
 
   void _updateToolGeometries() {

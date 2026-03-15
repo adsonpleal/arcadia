@@ -14,7 +14,11 @@ void main() {
     test('delegates state mutation helpers to ViewportNotifier', () {
       final notifier = ViewportNotifier();
       final action = _NoopToolAction()..bind(notifier);
-      const geometry = Line(start: .zero, end: Offset(10, 0), color: .primary);
+      const geometry = Line(
+        start: .zero,
+        end: Offset(10, 0),
+        color: .primary,
+      );
 
       notifier.value = notifier.value.copyWith(userInput: '42');
 
@@ -23,10 +27,13 @@ void main() {
         ..addToolGeometries(const [geometry])
         ..clearToolGeometries()
         ..clearUserInput()
-        ..addSnapPoint(const Offset(5, 5));
+        ..addSnapPoint(const Offset(5, 5))
+        ..setOverlayLabel('Length: 10.0 mm')
+        ..clearOverlayLabel();
 
       expect(action.state.geometries, const [geometry]);
       expect(action.state.toolGeometries, isEmpty);
+      expect(action.state.overlayLabel, isNull);
       expect(action.state.userInput, isEmpty);
     });
 
@@ -35,6 +42,12 @@ void main() {
 
       expect(() => action.onValueTyped(10), returnsNormally);
       expect(() => action.onValueTyped(null), returnsNormally);
+    });
+
+    test('default onSelectedUnitChange is a no-op', () {
+      final action = _NoopToolAction();
+
+      expect(action.onSelectedUnitChange, returnsNormally);
     });
   });
 }
