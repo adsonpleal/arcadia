@@ -2,7 +2,9 @@
 
 import 'package:arcadia/src/constants/arcadia_color.dart';
 import 'package:arcadia/src/constants/config.dart';
+import 'package:arcadia/src/data/layer.dart';
 import 'package:arcadia/src/data/metric_unit.dart';
+import 'package:arcadia/src/geometry/geometry.dart';
 import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/geometry/point.dart';
 import 'package:arcadia/src/logic/viewport_notifier.dart';
@@ -585,7 +587,7 @@ void main() {
 
         notifier.onUserInput(deleteCharacter);
 
-        expect(notifier.value.geometries, const [_lineB]);
+        expect(_allGeometries(notifier), const [_lineB]);
         expect(_selectedLines(notifier), isEmpty);
       },
     );
@@ -596,7 +598,7 @@ void main() {
       notifier.onUserInput(deleteCharacter);
       notifier.undo();
 
-      expect(notifier.value.geometries, isEmpty);
+      expect(_allGeometries(notifier), isEmpty);
     });
 
     test('onUserInput deleteCharacter delegates to tool onDelete', () {
@@ -615,25 +617,25 @@ void main() {
 
         notifier.addGeometries(const [_lineA]);
         notifier.addGeometries(const [_lineB]);
-        expect(notifier.value.geometries, const [_lineA, _lineB]);
+        expect(_allGeometries(notifier), const [_lineA, _lineB]);
 
         notifier.undo();
-        expect(notifier.value.geometries, const [_lineA]);
+        expect(_allGeometries(notifier), const [_lineA]);
 
         notifier.undo();
-        expect(notifier.value.geometries, isEmpty);
+        expect(_allGeometries(notifier), isEmpty);
 
         notifier.redo();
-        expect(notifier.value.geometries, const [_lineA]);
+        expect(_allGeometries(notifier), const [_lineA]);
 
         notifier.redo();
-        expect(notifier.value.geometries, const [_lineA, _lineB]);
+        expect(_allGeometries(notifier), const [_lineA, _lineB]);
 
         notifier.undo();
         notifier.addGeometries(const [_lineC]);
         notifier.redo();
 
-        expect(notifier.value.geometries, const [_lineA, _lineC]);
+        expect(_allGeometries(notifier), const [_lineA, _lineC]);
       },
     );
 
@@ -655,6 +657,201 @@ void main() {
 
       expect(action.clickDownCalls, 0);
       expect(action.clickUpCalls, 1);
+    });
+
+    group('layer management', () {
+      test('starts with a single default layer as active', () {
+        final notifier = ViewportNotifier();
+
+        expect(notifier.value.layers, hasLength(1));
+        expect(notifier.value.layers.first.id, '0');
+        expect(notifier.value.layers.first.name, 'Layer 0');
+        expect(notifier.value.activeLayerId, '0');
+      });
+
+      test('addLayer creates a new layer and sets it active', () {
+        final notifier = ViewportNotifier();
+
+        notifier.addLayer('Dimensions');
+
+        expect(notifier.value.layers, hasLength(2));
+        expect(notifier.value.layers.last.name, 'Dimensions');
+        expect(notifier.value.activeLayerId, notifier.value.layers.last.id);
+      });
+
+      test('addLayer uses monotonically incrementing IDs', () {
+        final notifier = ViewportNotifier();
+
+        notifier.addLayer('A');
+        notifier.addLayer('B');
+
+        expect(notifier.value.layers[1].id, '1');
+        expect(notifier.value.layers[2].id, '2');
+      });
+
+      test('renameLayer updates the layer name', () {
+        final notifier = ViewportNotifier();
+
+        notifier.renameLayer('0', 'Renamed');
+
+        expect(notifier.value.layers.first.name, 'Renamed');
+      });
+
+      test('renameLayer is undoable', () {
+        final notifier = ViewportNotifier();
+
+        notifier.renameLayer('0', 'Renamed');
+        notifier.undo();
+
+        expect(notifier.value.layers.first.name, 'Layer 0');
+      });
+
+      test('deleteLayer removes the layer', () {
+        final notifier = ViewportNotifier();
+        notifier.addLayer('Second');
+
+        notifier.deleteLayer(notifier.value.layers.last.id);
+
+        expect(notifier.value.layers, hasLength(1));
+        expect(notifier.value.layers.first.name, 'Layer 0');
+      });
+
+      test('deleteLayer cannot delete the last remaining layer', () {
+        final notifier = ViewportNotifier();
+
+        notifier.deleteLayer('0');
+
+        expect(notifier.value.layers, hasLength(1));
+      });
+
+      test('deleteLayer switches active to index-1 when deleting active', () {
+        final notifier = ViewportNotifier();
+        notifier.addLayer('Second');
+        notifier.addLayer('Third');
+        final thirdId = notifier.value.layers[2].id;
+        final secondId = notifier.value.layers[1].id;
+
+        expect(notifier.value.activeLayerId, thirdId);
+
+        notifier.deleteLayer(thirdId);
+
+        expect(notifier.value.activeLayerId, secondId);
+      });
+
+      test('deleteLayer switches active to index 0 when deleting first', () {
+        final notifier = ViewportNotifier();
+        notifier.addLayer('Second');
+        notifier.setActiveLayer('0');
+
+        notifier.deleteLayer('0');
+
+        expect(notifier.value.activeLayerId, notifier.value.layers.first.id);
+      });
+
+      test('setActiveLayer updates activeLayerId', () {
+        final notifier = ViewportNotifier();
+        notifier.addLayer('Second');
+
+        notifier.setActiveLayer('0');
+
+        expect(notifier.value.activeLayerId, '0');
+      });
+
+      test('toggleLayerVisibility flips the visible flag', () {
+        final notifier = ViewportNotifier();
+
+        notifier.toggleLayerVisibility('0');
+
+        expect(notifier.value.layers.first.visible, isFalse);
+
+        notifier.toggleLayerVisibility('0');
+
+        expect(notifier.value.layers.first.visible, isTrue);
+      });
+
+      test('addGeometries adds to the active layer', () {
+        final notifier = ViewportNotifier();
+        notifier.addLayer('Second');
+
+        notifier.addGeometries(const [_lineA]);
+
+        final secondLayer = notifier.value.layers.last;
+        expect(secondLayer.geometries, const [_lineA]);
+        expect(notifier.value.layers.first.geometries, isEmpty);
+      });
+
+      test('deleteGeometries removes from any layer', () {
+        final notifier = ViewportNotifier();
+        notifier.addGeometries(const [_lineA]);
+        notifier.addLayer('Second');
+        notifier.addGeometries(const [_lineB]);
+
+        notifier.deleteGeometries(const [_lineA, _lineB]);
+
+        expect(notifier.value.layers[0].geometries, isEmpty);
+        expect(notifier.value.layers[1].geometries, isEmpty);
+      });
+
+      test('undo restores previous layers state', () {
+        final notifier = ViewportNotifier();
+        notifier.addGeometries(const [_lineA]);
+        notifier.addLayer('Second');
+
+        notifier.undo();
+
+        expect(notifier.value.layers, hasLength(1));
+      });
+
+      test('redo reapplies layers state', () {
+        final notifier = ViewportNotifier();
+        notifier.addLayer('Second');
+        notifier.undo();
+
+        notifier.redo();
+
+        expect(notifier.value.layers, hasLength(2));
+      });
+
+      test('undo falls back activeLayerId to first layer when orphaned', () {
+        final notifier = ViewportNotifier();
+        notifier.addLayer('Second');
+        final secondId = notifier.value.layers.last.id;
+
+        // activeLayerId is secondId, but undo removes that layer
+        notifier.undo();
+
+        // activeLayerId should fall back to the first available layer
+        expect(notifier.value.activeLayerId, isNot(secondId));
+        expect(notifier.value.activeLayerId, notifier.value.layers.first.id);
+
+        // addGeometries should work correctly after this fallback
+        notifier.addGeometries(const [_lineA]);
+        expect(notifier.value.layers.first.geometries, const [_lineA]);
+      });
+
+      test('snapping points only include visible layers', () {
+        final notifier = ViewportNotifier()
+          ..addGeometries(const [_lineA])
+          ..selectTool(const LineTool());
+
+        notifier.toggleLayerVisibility('0');
+
+        // lineA endpoint is at (10, 0). Move cursor near it.
+        // Should NOT snap because layer is hidden.
+        _moveCursor(notifier, const Offset(10.5, 0));
+
+        expect(notifier.value.snappingGeometries, isEmpty);
+        expect(notifier.value.cursorPosition, isNot(const Offset(10, 0)));
+      });
+
+      test('ID counter does not decrement on undo', () {
+        final notifier = ViewportNotifier();
+        notifier.addLayer('First');
+        notifier.undo();
+        notifier.addLayer('Second');
+
+        expect(notifier.value.layers.last.id, '2');
+      });
     });
   });
 }
@@ -753,4 +950,10 @@ List<Line> _selectedLines(ViewportNotifier notifier) {
   return notifier.value.toolGeometries.whereType<Line>().where((line) {
     return line.color == ArcadiaColor.primaryActive;
   }).toList();
+}
+
+List<Geometry> _allGeometries(ViewportNotifier notifier) {
+  return [
+    for (final layer in notifier.value.layers) ...layer.geometries,
+  ];
 }

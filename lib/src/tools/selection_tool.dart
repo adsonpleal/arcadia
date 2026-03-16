@@ -147,12 +147,14 @@ class _SelectionToolAction extends ToolAction {
     required _SelectionDragMode mode,
   }) {
     return [
-      for (final geometry in state.geometries)
-        if (switch (mode) {
-          _SelectionDragMode.window => geometry.containedIn(selectionRect),
-          _SelectionDragMode.crossing => geometry.intersects(selectionRect),
-        })
-          geometry,
+      for (final layer in state.layers)
+        if (layer.visible)
+          for (final geometry in layer.geometries)
+            if (switch (mode) {
+              _SelectionDragMode.window => geometry.containedIn(selectionRect),
+              _SelectionDragMode.crossing => geometry.intersects(selectionRect),
+            })
+              geometry,
     ];
   }
 
@@ -205,11 +207,13 @@ class _SelectionToolAction extends ToolAction {
 
   Geometry? _geometryBelowCursor() {
     final tolerance = selectionTolerance / state.zoom;
-    for (final geometry in state.geometries.reversed) {
-      if (geometry.contains(state.cursorPosition, tolerance)) {
-        return geometry;
-      }
-    }
+    for (final layer in state.layers.reversed)
+      if (layer.visible)
+        for (final geometry in layer.geometries.reversed) {
+          if (geometry.contains(state.cursorPosition, tolerance)) {
+            return geometry;
+          }
+        }
     return null;
   }
 }
