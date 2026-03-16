@@ -30,7 +30,10 @@ void main() {
       expect(firstPreview.start, const Offset(10, 10));
       expect(firstPreview.end, const Offset(20, 10));
       expect(notifier.value.overlayLabel, 'Length: 10.0 mm');
-      expect(notifier.value.geometries, isEmpty);
+      expect(
+        [for (final layer in notifier.value.layers) ...layer.geometries],
+        isEmpty,
+      );
 
       notifier.onCursorClickUp();
       _moveCursor(notifier, const Offset(20, 20));
@@ -44,7 +47,10 @@ void main() {
       expect(chainedPreview.last.start, const Offset(20, 10));
       expect(chainedPreview.last.end, const Offset(20, 20));
       expect(notifier.value.overlayLabel, 'Length: 20.0 mm');
-      expect(notifier.value.geometries, isEmpty);
+      expect(
+        [for (final layer in notifier.value.layers) ...layer.geometries],
+        isEmpty,
+      );
     });
 
     test('closes on first vertex and shows perimeter plus area', () {
@@ -62,7 +68,10 @@ void main() {
         notifier.value.overlayLabel,
         'Perimeter: 34.1 mm\nArea: 50.0 mm²',
       );
-      expect(notifier.value.geometries, isEmpty);
+      expect(
+        [for (final layer in notifier.value.layers) ...layer.geometries],
+        isEmpty,
+      );
     });
 
     test('cancel clears closed preview and restarts cleanly', () {

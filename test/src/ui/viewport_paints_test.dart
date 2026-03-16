@@ -1,3 +1,4 @@
+import 'package:arcadia/src/data/layer.dart';
 import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/logic/viewport_notifier.dart';
 import 'package:arcadia/src/providers/viewport_notifier_provider.dart';
@@ -27,7 +28,9 @@ void main() {
       notifier.value = notifier.value.copyWith(
         zoom: 2,
         panOffset: const Offset(10, 20),
-        geometries: const [_geometry],
+        layers: const [
+          Layer(id: '0', name: 'Layer 0', geometries: [_geometry]),
+        ],
       );
       await tester.pump();
 
@@ -102,7 +105,9 @@ void main() {
         expect(builds, 1);
 
         notifier.value = notifier.value.copyWith(
-          geometries: const [_geometry],
+          layers: const [
+            Layer(id: '0', name: 'Layer 0', geometries: [_geometry]),
+          ],
           toolGeometries: const [_geometry],
           cursorPosition: const Offset(4, 5),
           userInput: '3',
@@ -151,7 +156,9 @@ void main() {
         expect(builds, 1);
 
         notifier.value = notifier.value.copyWith(
-          geometries: const [_geometry],
+          layers: const [
+            Layer(id: '0', name: 'Layer 0', geometries: [_geometry]),
+          ],
           snappingGeometries: const [_geometry],
           cursorPosition: const Offset(1, 2),
           userInput: '9',
@@ -175,7 +182,9 @@ void main() {
         expect(builds, 1);
 
         notifier.value = notifier.value.copyWith(
-          geometries: const [_geometry],
+          layers: const [
+            Layer(id: '0', name: 'Layer 0', geometries: [_geometry]),
+          ],
           toolGeometries: const [_geometry],
           snappingGeometries: const [_geometry],
           cursorPosition: const Offset(6, 6),

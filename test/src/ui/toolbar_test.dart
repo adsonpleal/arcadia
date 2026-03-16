@@ -1,3 +1,4 @@
+import 'package:arcadia/src/data/layer.dart';
 import 'package:arcadia/src/data/metric_unit.dart';
 import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/providers/viewport_notifier_provider.dart';
@@ -64,7 +65,7 @@ void main() {
         rebuiltWidgets.clear();
 
         notifier.value = notifier.value.copyWith(
-          geometries: const [_line],
+          layers: const [Layer(id: '0', name: 'Layer 0', geometries: [_line])],
           toolGeometries: const [_line],
           snappingGeometries: const [_line],
           cursorPosition: const Offset(6, 7),

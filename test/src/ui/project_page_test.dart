@@ -1,3 +1,4 @@
+import 'package:arcadia/src/geometry/geometry.dart';
 import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/logic/viewport_notifier.dart';
 import 'package:arcadia/src/providers/viewport_notifier_provider.dart';
@@ -102,19 +103,23 @@ void main() {
     ) async {
       final notifier = await _pumpProjectPage(tester);
 
+      List<Geometry> allGeometries() => [
+        for (final layer in notifier.value.layers) ...layer.geometries,
+      ];
+
       notifier
         ..addGeometries(const [_lineA])
         ..addGeometries(const [_lineB]);
       await tester.pump();
-      expect(notifier.value.geometries, const [_lineA, _lineB]);
+      expect(allGeometries(), const [_lineA, _lineB]);
 
       await _sendControlCombo(tester, .keyZ);
       await tester.pump();
-      expect(notifier.value.geometries, const [_lineA]);
+      expect(allGeometries(), const [_lineA]);
 
       await _sendControlCombo(tester, .keyZ, withShift: true);
       await tester.pump();
-      expect(notifier.value.geometries, const [_lineA, _lineB]);
+      expect(allGeometries(), const [_lineA, _lineB]);
     });
 
     testWidgets('escape clears tool preview and switches to selection tool', (

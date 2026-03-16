@@ -1,3 +1,4 @@
+import 'package:arcadia/src/data/layer.dart';
 import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/logic/viewport_notifier.dart';
 import 'package:arcadia/src/providers/viewport_notifier_provider.dart';
@@ -29,7 +30,9 @@ void main() {
         expect(builds, 1);
 
         notifier.value = notifier.value.copyWith(
-          geometries: const [_line],
+          layers: const [
+            Layer(id: '0', name: 'Layer 0', geometries: [_line]),
+          ],
           toolGeometries: const [_line],
           snappingGeometries: const [_line],
         );
