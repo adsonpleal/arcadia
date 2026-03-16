@@ -5,19 +5,22 @@ import 'package:flutter/foundation.dart';
 import '../geometry/geometry.dart';
 import '../tools/selection_tool.dart';
 import '../tools/tool.dart';
+import 'layer.dart';
 import 'metric_unit.dart';
 
 const _unsetLabel = Object();
+const _defaultLayer = Layer(id: '0', name: 'Layer 0');
 
 /// The state of the viewport.
 ///
-/// It contains all the [geometries] being displayed,
+/// It contains all the [layers] being displayed,
 /// the current [zoom] and the [panOffset].
 @immutable
 class ViewportState {
   /// The default [ViewportState] constructor
   const ViewportState({
-    this.geometries = const [],
+    this.layers = const [_defaultLayer],
+    this.activeLayerId = '0',
     this.toolGeometries = const [],
     this.snappingGeometries = const [],
     this.zoom = 1.0,
@@ -29,11 +32,14 @@ class ViewportState {
     this.userInput = '',
   });
 
-  /// The [Geometry] list of the viewport.
+  /// The drawing layers.
   ///
-  /// All the given geometries will be rendered in the viewport,
-  /// given that they intersect the viewport rect.
-  final List<Geometry> geometries;
+  /// Each layer owns its own list of geometries.
+  /// Layers are rendered in list order (index 0 = bottom).
+  final List<Layer> layers;
+
+  /// The ID of the layer that receives new geometry.
+  final String activeLayerId;
 
   /// The tool [Geometry] list.
   ///
@@ -72,7 +78,8 @@ class ViewportState {
   /// For [selectedTool], passing `null` explicitly clears the selected tool.
   /// Omitting [selectedTool] preserves the previous value.
   ViewportState copyWith({
-    List<Geometry>? geometries,
+    List<Layer>? layers,
+    String? activeLayerId,
     List<Geometry>? toolGeometries,
     List<Geometry>? snappingGeometries,
     double? zoom,
@@ -84,7 +91,8 @@ class ViewportState {
     String? userInput,
   }) {
     return ViewportState(
-      geometries: geometries ?? this.geometries,
+      layers: layers ?? this.layers,
+      activeLayerId: activeLayerId ?? this.activeLayerId,
       toolGeometries: toolGeometries ?? this.toolGeometries,
       snappingGeometries: snappingGeometries ?? this.snappingGeometries,
       zoom: zoom ?? this.zoom,
@@ -103,7 +111,8 @@ class ViewportState {
   bool operator ==(Object other) {
     return identical(this, other) ||
         other is ViewportState &&
-            listEquals(geometries, other.geometries) &&
+            listEquals(layers, other.layers) &&
+            activeLayerId == other.activeLayerId &&
             listEquals(toolGeometries, other.toolGeometries) &&
             listEquals(snappingGeometries, other.snappingGeometries) &&
             zoom == other.zoom &&
@@ -118,7 +127,8 @@ class ViewportState {
   @override
   int get hashCode {
     return Object.hashAll([
-      Object.hashAll(geometries),
+      Object.hashAll(layers),
+      activeLayerId,
       Object.hashAll(toolGeometries),
       Object.hashAll(snappingGeometries),
       zoom,

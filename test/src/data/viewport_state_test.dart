@@ -1,3 +1,5 @@
+// test/src/data/viewport_state_test.dart
+import 'package:arcadia/src/data/layer.dart';
 import 'package:arcadia/src/data/metric_unit.dart';
 import 'package:arcadia/src/data/viewport_state.dart';
 import 'package:arcadia/src/geometry/line.dart';
@@ -11,12 +13,21 @@ const _lineB = Line(start: Offset(5, 6), end: Offset(7, 8), color: .primary);
 const _lineC = Line(start: Offset(8, 7), end: Offset(6, 5), color: .primary);
 const Offset _zeroOffset = .zero;
 
+const _defaultLayer = Layer(id: '0', name: 'Layer 0');
+const _layerWithGeometry = Layer(
+  id: '0',
+  name: 'Layer 0',
+  geometries: [_lineA],
+);
+const _secondLayer = Layer(id: '1', name: 'Layer 1');
+
 void main() {
   group('ViewportState', () {
     test('has expected defaults', () {
       const state = ViewportState();
 
-      expect(state.geometries, isEmpty);
+      expect(state.layers, const [_defaultLayer]);
+      expect(state.activeLayerId, '0');
       expect(state.toolGeometries, isEmpty);
       expect(state.snappingGeometries, isEmpty);
       expect(state.zoom, 1.0);
@@ -30,7 +41,8 @@ void main() {
 
     test('copyWith updates each field', () {
       const initial = ViewportState(
-        geometries: [_lineA],
+        layers: [_layerWithGeometry],
+        activeLayerId: '0',
         toolGeometries: [_lineB],
         snappingGeometries: [_lineC],
         zoom: 1.5,
@@ -42,7 +54,8 @@ void main() {
       );
 
       final updated = initial.copyWith(
-        geometries: const [_lineB, _lineC],
+        layers: const [_layerWithGeometry, _secondLayer],
+        activeLayerId: '1',
         toolGeometries: const [_lineA],
         snappingGeometries: const [_lineA, _lineB],
         zoom: 2.5,
@@ -53,7 +66,8 @@ void main() {
         userInput: '200',
       );
 
-      expect(updated.geometries, const [_lineB, _lineC]);
+      expect(updated.layers, const [_layerWithGeometry, _secondLayer]);
+      expect(updated.activeLayerId, '1');
       expect(updated.toolGeometries, const [_lineA]);
       expect(updated.snappingGeometries, const [_lineA, _lineB]);
       expect(updated.zoom, 2.5);
@@ -67,7 +81,8 @@ void main() {
 
     test('copyWith preserves values when omitted', () {
       const initial = ViewportState(
-        geometries: [_lineA],
+        layers: [_layerWithGeometry],
+        activeLayerId: '0',
         toolGeometries: [_lineB],
         snappingGeometries: [_lineC],
         zoom: 1.25,
@@ -104,16 +119,16 @@ void main() {
     });
 
     test('uses deep equality for list fields', () {
-      final geometries = [_lineA, _lineB];
+      final layers = [_layerWithGeometry];
       final toolGeometries = [_lineC];
       final snappingGeometries = [_lineB, _lineC];
       final first = ViewportState(
-        geometries: geometries,
+        layers: layers,
         toolGeometries: toolGeometries,
         snappingGeometries: snappingGeometries,
       );
       final second = ViewportState(
-        geometries: [...geometries],
+        layers: [...layers],
         toolGeometries: [...toolGeometries],
         snappingGeometries: [...snappingGeometries],
       );
@@ -123,11 +138,12 @@ void main() {
     });
 
     test('hashCode uses Object.hashAll for list hashes', () {
-      final geometries = [_lineA, _lineB];
+      final layers = [_layerWithGeometry];
       final toolGeometries = [_lineC];
       final snappingGeometries = [_lineB, _lineC];
       final state = ViewportState(
-        geometries: geometries,
+        layers: layers,
+        activeLayerId: '0',
         toolGeometries: toolGeometries,
         snappingGeometries: snappingGeometries,
         zoom: 2,
@@ -140,7 +156,8 @@ void main() {
       );
 
       final expected = Object.hashAll([
-        Object.hashAll(state.geometries),
+        Object.hashAll(state.layers),
+        state.activeLayerId,
         Object.hashAll(state.toolGeometries),
         Object.hashAll(state.snappingGeometries),
         state.zoom,
@@ -164,7 +181,10 @@ void main() {
       );
 
       expect(base, isNot(equals(base.copyWith(zoom: 3))));
-      expect(base, isNot(equals(base.copyWith(panOffset: const Offset(3, 3)))));
+      expect(
+        base,
+        isNot(equals(base.copyWith(panOffset: const Offset(3, 3)))),
+      );
       expect(
         base,
         isNot(equals(base.copyWith(cursorPosition: const Offset(4, 4)))),
@@ -175,16 +195,20 @@ void main() {
         isNot(equals(base.copyWith(overlayLabel: 'Length: 10.0 mm'))),
       );
       expect(base, isNot(equals(base.copyWith(userInput: '2'))));
+      expect(base, isNot(equals(base.copyWith(activeLayerId: '1'))));
     });
 
     test('states are different when any list field changes', () {
       const base = ViewportState(
-        geometries: [_lineA],
+        layers: [_defaultLayer],
         toolGeometries: [_lineB],
         snappingGeometries: [_lineC],
       );
 
-      expect(base, isNot(equals(base.copyWith(geometries: const [_lineB]))));
+      expect(
+        base,
+        isNot(equals(base.copyWith(layers: const [_secondLayer]))),
+      );
       expect(
         base,
         isNot(equals(base.copyWith(toolGeometries: const [_lineC]))),
