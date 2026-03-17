@@ -114,6 +114,10 @@ class _LayersPanelState extends State<LayersPanel> {
                           setState(() {
                             _editingLayerId = null;
                           });
+                          // Restore focus so keyboard shortcuts
+                          // continue working after the rename
+                          // TextField is removed.
+                          Focus.maybeOf(context)?.requestFocus();
                         },
                         onToggleVisibility: () {
                           context.viewportNotifier
@@ -124,9 +128,11 @@ class _LayersPanelState extends State<LayersPanel> {
                         onDelete: () {
                           context.viewportNotifier
                               .deleteLayer(layer.id);
-                          setState(() {
-                            _editingLayerId = null;
-                          });
+                          if (_editingLayerId == layer.id) {
+                            setState(() {
+                              _editingLayerId = null;
+                            });
+                          }
                         },
                       );
                     },
@@ -316,6 +322,7 @@ class _RenameFieldState extends State<_RenameField> {
         border: InputBorder.none,
       ),
       onSubmitted: widget.onSubmit,
+      onTapOutside: (_) => widget.onSubmit(_controller.text),
     );
   }
 }

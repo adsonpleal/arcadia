@@ -24,20 +24,22 @@ class ProjectPage extends StatelessWidget {
     final isMacOS = Theme.of(context).platform == .macOS;
     final valueInput = [for (var i = 0; i <= 9; i++) '$i', '.', 'm', 'M', ' '];
 
-    return Shortcuts(
-      shortcuts: {
-        for (final tool in tools) tool.shortcut: _ToolIntent(tool),
-        const SingleActivator(.escape): const _CancelIntent(),
-        for (final input in valueInput)
-          CharacterActivator(input): _ValueInputIntent(input),
-        const SingleActivator(.backspace): const _ValueInputIntent(
-          deleteCharacter,
-        ),
-        SingleActivator(.keyZ, meta: isMacOS, control: !isMacOS):
-            const _UndoIntent(),
-        SingleActivator(.keyZ, meta: isMacOS, control: !isMacOS, shift: true):
-            const _RedoIntent(),
-      },
+    return Shortcuts.manager(
+      manager: _TextFieldAwareShortcutManager(
+        shortcuts: {
+          for (final tool in tools) tool.shortcut: _ToolIntent(tool),
+          const SingleActivator(.escape): const _CancelIntent(),
+          for (final input in valueInput)
+            CharacterActivator(input): _ValueInputIntent(input),
+          const SingleActivator(.backspace): const _ValueInputIntent(
+            deleteCharacter,
+          ),
+          SingleActivator(.keyZ, meta: isMacOS, control: !isMacOS):
+              const _UndoIntent(),
+          SingleActivator(.keyZ, meta: isMacOS, control: !isMacOS, shift: true):
+              const _RedoIntent(),
+        },
+      ),
       child: Actions(
         actions: {
           _ToolIntent: CallbackAction<_ToolIntent>(
@@ -138,4 +140,20 @@ class _RedoIntent extends Intent {
 
 class _UndoIntent extends Intent {
   const _UndoIntent();
+}
+
+/// Ignores all shortcuts when a [TextField] (backed by [EditableText]) has
+/// focus, so that key events flow to the platform text-input system instead.
+class _TextFieldAwareShortcutManager extends ShortcutManager {
+  _TextFieldAwareShortcutManager({super.shortcuts});
+
+  @override
+  KeyEventResult handleKeypress(BuildContext context, KeyEvent event) {
+    final focus = primaryFocus;
+    if (focus?.context != null &&
+        focus!.context!.findAncestorWidgetOfExactType<EditableText>() != null) {
+      return KeyEventResult.ignored;
+    }
+    return super.handleKeypress(context, event);
+  }
 }
