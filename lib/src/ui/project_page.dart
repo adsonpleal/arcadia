@@ -8,6 +8,7 @@ import '../tools/selection_tool.dart';
 import '../tools/tool.dart';
 import '../tools/tools.dart';
 import 'horizontal_separator.dart';
+import 'layers_panel.dart';
 import 'toolbar.dart';
 import 'viewport.dart';
 
@@ -99,7 +100,14 @@ class ProjectPage extends StatelessWidget {
               HorizontalSeparator(),
               Toolbar(),
               HorizontalSeparator(),
-              Expanded(child: Viewport()),
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(child: Viewport()),
+                    LayersPanel(),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

@@ -6,6 +6,7 @@ import 'package:arcadia/src/tools/circle_tool.dart';
 import 'package:arcadia/src/tools/line_tool.dart';
 import 'package:arcadia/src/tools/measure_tool.dart';
 import 'package:arcadia/src/tools/selection_tool.dart';
+import 'package:arcadia/src/ui/layers_panel.dart';
 import 'package:arcadia/src/ui/project_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,6 +17,12 @@ const _lineB = Line(start: Offset(2, 0), end: Offset(3, 0), color: .primary);
 
 void main() {
   group('ProjectPage', () {
+    testWidgets('layers panel is present in layout', (tester) async {
+      await _pumpProjectPage(tester);
+
+      expect(find.byType(LayersPanel), findsOneWidget);
+    });
+
     testWidgets('keyboard shortcuts select and cancel active tool', (
       tester,
     ) async {
