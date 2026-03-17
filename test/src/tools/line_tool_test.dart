@@ -30,7 +30,9 @@ void main() {
 
       notifier.onCursorClickUp();
 
-      final committed = notifier.value.geometries.single as Line;
+      final committed = [
+        for (final layer in notifier.value.layers) ...layer.geometries,
+      ].single as Line;
       expect(committed.start, const Offset(10, 10));
       expect(committed.end, const Offset(20, 10));
       expect(notifier.value.userInput, isEmpty);
@@ -53,7 +55,9 @@ void main() {
 
       notifier.onCursorClickUp();
 
-      final line = notifier.value.geometries.single as Line;
+      final line = [
+        for (final layer in notifier.value.layers) ...layer.geometries,
+      ].single as Line;
       expect(line.start, const Offset(10, 0));
       expect(line.end.dx, closeTo(15, 0.0001));
       expect(line.end.dy, closeTo(0, 0.0001));

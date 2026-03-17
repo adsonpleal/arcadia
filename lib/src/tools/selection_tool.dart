@@ -142,12 +142,17 @@ class _SelectionToolAction extends ToolAction {
     return dragDistanceInPixels >= _selectionDragStartDistanceInPixels;
   }
 
+  List<Geometry> get _visibleGeometries => [
+        for (final layer in state.layers)
+          if (layer.visible) ...layer.geometries,
+      ];
+
   List<Geometry> _matchingGeometriesForRect(
     Rect selectionRect, {
     required _SelectionDragMode mode,
   }) {
     return [
-      for (final geometry in state.geometries)
+      for (final geometry in _visibleGeometries)
         if (switch (mode) {
           _SelectionDragMode.window => geometry.containedIn(selectionRect),
           _SelectionDragMode.crossing => geometry.intersects(selectionRect),
@@ -205,7 +210,7 @@ class _SelectionToolAction extends ToolAction {
 
   Geometry? _geometryBelowCursor() {
     final tolerance = selectionTolerance / state.zoom;
-    for (final geometry in state.geometries.reversed) {
+    for (final geometry in _visibleGeometries.reversed) {
       if (geometry.contains(state.cursorPosition, tolerance)) {
         return geometry;
       }

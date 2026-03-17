@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../constants/config.dart';
+import '../data/layer.dart';
 import '../data/metric_unit.dart';
 import '../data/viewport_state.dart';
 import '../foundation/extensions/iterable_extensions.dart';
@@ -48,8 +49,9 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
   /// Saves the last three snaps for right angle snapping.
   final List<Offset> _lastSnaps = [];
 
-  final List<List<Geometry>> _undoStack = [];
-  final List<List<Geometry>> _redoStack = [];
+  final List<List<Layer>> _undoStack = [];
+  final List<List<Layer>> _redoStack = [];
+  int _nextLayerId = 1;
 
   /// Select the given tool and start performing its action.
   void selectTool(Tool tool) {
@@ -84,15 +86,22 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
     selectTool(const SelectionTool());
   }
 
-  /// Delete the given geometries
+  /// Delete the given geometries from all layers.
   void deleteGeometries(List<Geometry> geometries) {
-    _undoStack.add(value.geometries);
+    _undoStack.add([...value.layers]);
+    _redoStack.clear();
     value = value.copyWith(
-      geometries: [
-        for (final geometry in value.geometries)
-          if (!geometries.contains(geometry)) geometry,
+      layers: [
+        for (final layer in value.layers)
+          layer.copyWith(
+            geometries: [
+              for (final geometry in layer.geometries)
+                if (!geometries.contains(geometry)) geometry,
+            ],
+          ),
       ],
     );
+    _recomputeSnappingPoints();
   }
 
   /// Applies the pan delta to the current [ViewportState.panOffset] state.
@@ -241,15 +250,22 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
     _toolAction.onCursorPositionChange();
   }
 
-  /// Add geometries to state.
+  /// Add geometries to the active layer.
   void addGeometries(List<Geometry> geometries) {
-    _undoStack.add([...value.geometries]);
+    _undoStack.add([...value.layers]);
     _redoStack.clear();
-    value = value.copyWith(geometries: [...value.geometries, ...geometries]);
-    _snappingPoints = [
-      _origin,
-      for (final geometry in value.geometries) ...geometry.snappingPoints,
-    ];
+    value = value.copyWith(
+      layers: [
+        for (final layer in value.layers)
+          if (layer.id == value.activeLayerId)
+            layer.copyWith(
+              geometries: [...layer.geometries, ...geometries],
+            )
+          else
+            layer,
+      ],
+    );
+    _recomputeSnappingPoints();
   }
 
   /// Add tool geometries to state.
@@ -301,20 +317,119 @@ class ViewportNotifier extends ValueNotifier<ViewportState> {
     _addLastSnap(offset);
   }
 
-  /// Undo the latest geometries changes.
+  /// Undo the latest layers change.
   void undo() {
     if (_undoStack.isNotEmpty) {
-      _redoStack.add([...value.geometries]);
-      value = value.copyWith(geometries: _undoStack.removeLast());
+      _redoStack.add([...value.layers]);
+      final restoredLayers = _undoStack.removeLast();
+      final activeLayerId = _validActiveLayerId(restoredLayers);
+      value = value.copyWith(
+        layers: restoredLayers,
+        activeLayerId: activeLayerId,
+      );
+      _recomputeSnappingPoints();
     }
   }
 
   /// Redo the latest undo.
   void redo() {
     if (_redoStack.isNotEmpty) {
-      _undoStack.add(value.geometries);
-      value = value.copyWith(geometries: _redoStack.removeLast());
+      _undoStack.add([...value.layers]);
+      final restoredLayers = _redoStack.removeLast();
+      final activeLayerId = _validActiveLayerId(restoredLayers);
+      value = value.copyWith(
+        layers: restoredLayers,
+        activeLayerId: activeLayerId,
+      );
+      _recomputeSnappingPoints();
     }
+  }
+
+  /// Creates a new layer and sets it as active.
+  void addLayer(String name) {
+    final id = '${_nextLayerId++}';
+    final layer = Layer(id: id, name: name);
+    _undoStack.add([...value.layers]);
+    _redoStack.clear();
+    value = value.copyWith(
+      layers: [...value.layers, layer],
+      activeLayerId: id,
+    );
+    _recomputeSnappingPoints();
+  }
+
+  /// Renames the layer with the given [id].
+  void renameLayer(String id, String name) {
+    _undoStack.add([...value.layers]);
+    _redoStack.clear();
+    value = value.copyWith(
+      layers: [
+        for (final layer in value.layers)
+          if (layer.id == id) layer.copyWith(name: name) else layer,
+      ],
+    );
+  }
+
+  /// Deletes the layer with the given [id].
+  ///
+  /// Cannot delete the last remaining layer.
+  /// If the deleted layer was active, switches to the layer at index-1
+  /// or index 0 of the remaining list.
+  void deleteLayer(String id) {
+    if (value.layers.length <= 1) return;
+
+    final index = value.layers.indexWhere((l) => l.id == id);
+    if (index == -1) return;
+
+    _undoStack.add([...value.layers]);
+    _redoStack.clear();
+
+    final newLayers = [...value.layers]..removeAt(index);
+    var activeLayerId = value.activeLayerId;
+
+    if (activeLayerId == id) {
+      final newIndex = index > 0 ? index - 1 : 0;
+      activeLayerId = newLayers[newIndex].id;
+    }
+
+    value = value.copyWith(layers: newLayers, activeLayerId: activeLayerId);
+    _recomputeSnappingPoints();
+  }
+
+  /// Sets the active layer.
+  void setActiveLayer(String id) {
+    value = value.copyWith(activeLayerId: id);
+  }
+
+  /// Toggles visibility of the layer with the given [id].
+  void toggleLayerVisibility(String id) {
+    value = value.copyWith(
+      layers: [
+        for (final layer in value.layers)
+          if (layer.id == id)
+            layer.copyWith(visible: !layer.visible)
+          else
+            layer,
+      ],
+    );
+    _recomputeSnappingPoints();
+  }
+
+  void _recomputeSnappingPoints() {
+    _snappingPoints = [
+      _origin,
+      for (final layer in value.layers)
+        if (layer.visible)
+          for (final geometry in layer.geometries) ...geometry.snappingPoints,
+    ];
+  }
+
+  /// Returns the current activeLayerId if it exists in [layers],
+  /// otherwise falls back to the first layer's ID.
+  String _validActiveLayerId(List<Layer> layers) {
+    final current = value.activeLayerId;
+    if (layers.any((l) => l.id == current)) return current;
+    return layers.first.id;
   }
 
   void _addLastSnap(Offset offset) {

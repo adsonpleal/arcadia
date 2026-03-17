@@ -36,7 +36,11 @@ void main() {
 
         notifier.onCursorClickUp();
 
-        expect(notifier.value.geometries.single, isA<Arc>());
+        expect(
+          [for (final layer in notifier.value.layers) ...layer.geometries]
+              .single,
+          isA<Arc>(),
+        );
 
         _moveCursor(notifier, const Offset(5, 5));
         expect(notifier.value.toolGeometries, isEmpty);

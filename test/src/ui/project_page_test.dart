@@ -1,3 +1,4 @@
+import 'package:arcadia/src/geometry/geometry.dart';
 import 'package:arcadia/src/geometry/line.dart';
 import 'package:arcadia/src/logic/viewport_notifier.dart';
 import 'package:arcadia/src/providers/viewport_notifier_provider.dart';
@@ -5,6 +6,7 @@ import 'package:arcadia/src/tools/circle_tool.dart';
 import 'package:arcadia/src/tools/line_tool.dart';
 import 'package:arcadia/src/tools/measure_tool.dart';
 import 'package:arcadia/src/tools/selection_tool.dart';
+import 'package:arcadia/src/ui/layers_panel.dart';
 import 'package:arcadia/src/ui/project_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,6 +17,12 @@ const _lineB = Line(start: Offset(2, 0), end: Offset(3, 0), color: .primary);
 
 void main() {
   group('ProjectPage', () {
+    testWidgets('layers panel is present in layout', (tester) async {
+      await _pumpProjectPage(tester);
+
+      expect(find.byType(LayersPanel), findsOneWidget);
+    });
+
     testWidgets('keyboard shortcuts select and cancel active tool', (
       tester,
     ) async {
@@ -102,19 +110,23 @@ void main() {
     ) async {
       final notifier = await _pumpProjectPage(tester);
 
+      List<Geometry> allGeometries() => [
+        for (final layer in notifier.value.layers) ...layer.geometries,
+      ];
+
       notifier
         ..addGeometries(const [_lineA])
         ..addGeometries(const [_lineB]);
       await tester.pump();
-      expect(notifier.value.geometries, const [_lineA, _lineB]);
+      expect(allGeometries(), const [_lineA, _lineB]);
 
       await _sendControlCombo(tester, .keyZ);
       await tester.pump();
-      expect(notifier.value.geometries, const [_lineA]);
+      expect(allGeometries(), const [_lineA]);
 
       await _sendControlCombo(tester, .keyZ, withShift: true);
       await tester.pump();
-      expect(notifier.value.geometries, const [_lineA, _lineB]);
+      expect(allGeometries(), const [_lineA, _lineB]);
     });
 
     testWidgets('escape clears tool preview and switches to selection tool', (

@@ -31,7 +31,10 @@ void main() {
         ..setOverlayLabel('Length: 10.0 mm')
         ..clearOverlayLabel();
 
-      expect(action.state.geometries, const [geometry]);
+      expect(
+        [for (final layer in action.state.layers) ...layer.geometries],
+        const [geometry],
+      );
       expect(action.state.toolGeometries, isEmpty);
       expect(action.state.overlayLabel, isNull);
       expect(action.state.userInput, isEmpty);
